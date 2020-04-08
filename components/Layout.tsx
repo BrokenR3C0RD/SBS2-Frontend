@@ -1,43 +1,51 @@
-import * as React from 'react'
-import Link from 'next/link'
-import Head from 'next/head'
+import React from "react";
 
-type Props = {
-  title?: string
-}
+const Grid = (({
+    children,
+    rows,
+    cols,
+    gapX = "0",
+    gapY = "0",
+    style = {}
+}) => {
+    return <div className="grid" style={Object.assign({}, {
+        gridTemplateColumns: cols.join(" "),
+        gridTemplateRows: rows.join(" "),
+        gridRowGap: gapY,
+        gridColumnGap: gapX
+    }, style)}>
+        {children}
+    </div>
+}) as React.FunctionComponent<{
+    rows: string[],
+    cols: string[],
+    gapX?: string,
+    gapY?: string,
+    style?: React.CSSProperties
+}>;
 
-const Layout: React.FunctionComponent<Props> = ({
-  children,
-  title = 'This is the default title',
-}) => (
-  <div>
-    <Head>
-      <title>{title}</title>
-      <meta charSet="utf-8" />
-      <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-    </Head>
-    <header>
-      <nav>
-        <Link href="/">
-          <a>Home</a>
-        </Link>{' '}
-        |{' '}
-        <Link href="/about">
-          <a>About</a>
-        </Link>{' '}
-        |{' '}
-        <Link href="/users">
-          <a>Users List</a>
-        </Link>{' '}
-        | <a href="/api/users">Users API</a>
-      </nav>
-    </header>
-    {children}
-    <footer>
-      <hr />
-      <span>I'm here to stay (Footer)</span>
-    </footer>
-  </div>
-)
+const Cell = (({
+    children,
+    x,
+    y,
+    width = 1,
+    height = 1,
+    style = {}
+}) => {
+    return <div className="cell" style={Object.assign({}, {
+        gridColumnStart: x,
+        gridColumnEnd: x + width,
+        gridRowStart: y,
+        gridRowEnd: y + height
+    }, style)}>
+        {children}
+    </div>
+}) as React.FunctionComponent<{
+    x: number,
+    y: number,
+    width?: number,
+    height?: number,
+    style?: React.CSSProperties
+}>;
 
-export default Layout
+export { Grid, Cell }

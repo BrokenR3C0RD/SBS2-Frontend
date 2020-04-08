@@ -1,22 +1,36 @@
 {
-  "name": "with-typescript",
+  "name": "sbs2-frontend",
   "version": "1.0.0",
   "scripts": {
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "type-check": "tsc"
+    "type-check": "tsc",
+    "export": "next export"
   },
   "dependencies": {
+    "babel-plugin-transform-typescript-metadata": "^0.3.0",
+    "class-transformer": "^0.2.3",
+    "class-validator": "^0.11.1",
     "isomorphic-unfetch": "3.0.0",
     "next": "latest",
+    "normalize.css": "^8.0.1",
     "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "react-dom": "^16.12.0",
+    "reflect-metadata": "^0.1.13",
+    "simplebar-react": "^2.1.0",
+    "swr": "^0.2.0"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.8.3",
     "@types/node": "^12.12.21",
     "@types/react": "^16.9.16",
     "@types/react-dom": "^16.9.4",
+    "@typescript-eslint/eslint-plugin": "^2.27.0",
+    "@typescript-eslint/parser": "^2.27.0",
+    "eslint": "^6.8.0",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react-hooks": "^3.0.0",
     "typescript": "3.7.3"
   },
   "license": "ISC"

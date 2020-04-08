@@ -1,0 +1,354 @@
+/* Default styles for SBS 2.0 */
+::-webkit-scrollbar {
+    background-color: transparent;
+    width: 1em;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #666;
+}
+
+* {
+    box-sizing: border-box;
+}
+body {
+    font-family: "Roboto", "Arial", sans-serif;
+    background-color: #111;
+    background-image: url("/res/img/tiles.png");
+    background-attachment: fixed;
+    color: white;
+}
+
+input {
+    color: #878787;
+}
+
+a {
+    color: #99b;
+    text-decoration: none;
+    transition: color .25s;
+}
+
+a:hover {
+    color: gray;
+}
+
+footer {
+    background-color: black;
+    width: 80%;
+    padding: 6px;
+    margin-right: 20    %;
+}
+
+nav {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: black;
+    height: 1.5em;
+    line-height: 1.5em;
+    border-bottom: 1px solid #333;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, .7);
+    overflow: hidden;
+    z-index: 1000000;
+}
+
+nav #nav-brand {
+    vertical-align: top;
+}
+
+nav #nav-brand img {
+    width: 3em;
+    padding: 0 .75em;
+    text-align: center;
+}
+
+nav input {
+    width: 50%;
+    height: 1.5em;
+    background: #222;
+    border: 1px solid #333;
+    outline: none;
+    vertical-align: top;
+}
+
+nav #user-info {
+    display: block;
+    float: right;
+    line-height: 1.5em;
+    margin-right: .75em;
+    height: 1.5em;
+    width: fit-content;
+    max-width: calc(100% - 4.5em);
+}
+
+nav #user-info .user-avatar {
+    width: 1.5em;
+    height: 1.5em;
+    line-height: 1.5em;
+    display: inline-block;
+    margin: 0 1em;
+}
+
+nav #user-info #user-name {
+    line-height: 1.5em;
+    vertical-align: top;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 1.5em;
+    display: block;
+    width: max-content;
+    max-width: calc(100% - 3.5em);
+    float: right;
+    transition: color .2s;
+}
+
+nav #user-info:hover #user-name {
+    color: #878787;
+    cursor: pointer;
+}
+
+nav #user-info #user-name:before {
+    content: "▼";
+    font-size: .75em;
+    display: block;
+    float: right;
+}
+
+nav #user-info[data-open="true"] #user-name:before {
+    content: "▲";
+}
+
+nav #user-info ul {
+    display: none;
+}
+
+nav #user-info[data-open="true"] ul {
+    display: block;
+    position: fixed;
+    background: black;
+    top: 0;
+    right: 0;
+    margin-top: 1.5em;
+    width: 10em;
+    list-style: none;
+    box-shadow: -3px 3px 10px rgba(0, 0, 0, .7);
+}
+
+nav #user-info[data-open="true"] ul li a:hover {
+    cursor: pointer;
+}
+
+#sidebar {
+    position: fixed;
+    z-index: 10000;
+    right: 0;
+    top: 1.5em;
+    background-color: #222;
+    float: left;
+    height: 100vh;
+    width: 20%;
+    opacity: 1;
+    box-shadow: -3px 0 5px rgba(0, 0, 0, .7);
+}
+
+#sidebar ul {
+    font-size: 1.25rem;
+}
+
+#sidebar h2 {
+    text-align: center;
+}
+
+#sidebar ul {
+    list-style-type: none;
+}
+
+#sidebar > ul > li {
+    font-size: 1.75rem;
+}
+
+#sidebar ul > li {
+    margin-bottom: .5em;
+}
+
+#sidebar ul > li > a {
+    color: white; 
+}
+
+#sidebar ul > li > a:hover {
+    color: #878787;
+}
+
+#sidebar ul > li[data-open]:before {
+    content: "+ ";
+    color: white;
+    font-weight: bold;
+    margin-left: -1em;
+    float: left;
+    text-align: right;
+    cursor: pointer;
+}
+
+#sidebar ul > li[data-open="true"]:before {
+    content: " -";
+}
+
+#sidebar ul > li:not([data-open="true"]) > ul {
+    display: none;
+}
+
+#sidebar ul > li > ul {
+    margin-top: .5em;   
+}
+
+nav #show-sidebar {
+    display: none;
+}
+
+#content {
+    margin-top: 4em;
+    margin-left: 2em;
+    margin-right: calc(20% + 2em);
+    margin-bottom: 2em;
+    width: calc(80% - 5em);
+    min-height: calc(100vh - 5em);
+    position: relative;
+    font-size: 1em;
+}
+
+#content > form {
+    display: block;
+    width: 100%;
+    background-color: rgba(27, 27, 27, 0.7);
+    padding: 2em;
+    min-width: min-content;
+    margin-bottom: 2em;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, .7);  
+}
+
+form .errors {
+    color: red;
+}
+
+#content input:not([type="checkbox"]) {
+    display: block;
+    background-color: #333;
+    border: 1px solid #878787;
+    margin-bottom: 1em;
+    padding: .25em;
+    width: 100%;
+}
+#content label {
+    display: block;
+    margin-bottom: 1em;
+}
+
+#content input[type="submit"] {
+    color: white;
+}
+
+@media only screen and (max-width: 1280px){
+    #content {
+        margin: 6em 2em;
+        width: calc(100% - 5em);
+    }
+    nav #user-info {
+        max-width: calc(50% - 6em);
+    }
+    nav #show-sidebar {
+        display: block;
+        float: right;
+        width: 1.5em;
+        height: 1.5em;
+        margin-right: .5em;
+        transition: transform .3s ease-in;
+    }
+    nav #show-sidebar[data-open="true"] {
+        transform: rotate(90deg);
+    }
+    nav #show-sidebar:hover {
+        filter: drop-shadow(0px 0px 10px white);
+        cursor: pointer;
+    }
+    nav #show-sidebar:active {
+        filter: invert(75%);
+    }
+
+    #sidebar:not([data-open="true"]){
+        margin-right: -15em;
+    }
+    #sidebar {
+        width: 15em;     
+        overflow-x: hidden;
+    }
+    footer {
+        margin-left: 0;
+        width: 100%;
+    }
+    nav, #sidebar {
+        font-size: 1.5em;
+    }
+}
+
+@media only screen and (max-width: 1280px) and (min-width: 800px){
+    #sidebar {
+        transition: margin-right .5s;
+    }
+}
+
+.left {
+    float: left;
+}
+.right {
+    float: right;
+}
+
+.grid {
+    display: grid;
+    position: absolute;
+}
+.cell {
+    min-height: max-content;
+    background-color: rgba(27, 27, 27, 0.7);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, .7);
+    padding: 1em;
+}
+.cell > h2, form > h2 {
+    margin-top: -.25em;
+}
+
+@media only screen and (max-width: 860px){
+    nav #user-info #user-name {
+        display: none;
+    }
+    nav #user-info .user-avatar {
+        margin-right: 0;
+    }
+
+    #sidebar {
+        width: 120%;
+        margin-right: -20%;
+        transition: margin-right .75s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    #sidebar:not([data-open="true"]){
+        margin-right: -120%;
+    }
+    
+    .grid {
+        display: block;
+    }
+    .cell {
+        margin-bottom: 1em;
+    }
+
+    .left, .right {
+        float: none;
+        width: 100%!important;
+    }
+}

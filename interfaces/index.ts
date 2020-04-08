@@ -1,10 +1,10 @@
-// You can include shared interfaces/types in a separate file
-// and then use them in any component by importing them. For
-// example, to import the interface below do:
-//
-// import User from 'path/to/interfaces';
+import { User } from "../classes";
 
-export type User = {
-  id: number
-  name: string
+export type PageProps<T = {}> = {
+  setInfo: (title: string, selected: number[]) => void,
+  user?: User
+} & T;
+
+export type Dictionary<T> = {
+  [i: string] : T
 }

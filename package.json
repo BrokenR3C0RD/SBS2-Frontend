@@ -9,6 +9,10 @@
     "export": "next export"
   },
   "dependencies": {
+    "@bbob/core": "^2.5.5",
+    "@bbob/html": "^2.5.5",
+    "@bbob/preset": "^2.5.5",
+    "@bbob/react": "^2.5.5",
     "babel-plugin-transform-typescript-metadata": "^0.3.0",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.11.1",
@@ -17,8 +21,8 @@
     "normalize.css": "^8.0.1",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
+    "react-quill": "^1.3.5",
     "reflect-metadata": "^0.1.13",
-    "simplebar-react": "^2.1.0",
     "swr": "^0.2.0"
   },
   "devDependencies": {

@@ -28,6 +28,7 @@ export default (({
                     <img src="http://kland.smilebasicsource.com/i/xtnno.png" />
                 </Gallery>
                 <table cellSpacing={5}>
+                    <tbody>
                     <tr>
                         <td>Submitted</td>
                         <td>5 years ago</td>
@@ -48,6 +49,7 @@ export default (({
                         <td>Compatible devices</td>
                         <td>3DS, Wii U, Switch</td>
                     </tr>
+                    </tbody>
                 </table>
             </Cell>
             <Cell x={2} y={2} width={2} className="program-description">

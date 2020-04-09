@@ -216,8 +216,9 @@ nav #show-sidebar {
     margin-left: 2em;
     margin-right: calc(20% + 2em);
     margin-bottom: 2em;
-    width: calc(80% - 5em);
+    width: calc(80% - 4em);
     min-height: calc(100vh - 5em);
+    height: 100%;
     position: relative;
     font-size: 1em;
 }
@@ -255,111 +256,6 @@ form .errors {
 
 #content input[type="submit"]:active {
     filter: invert(25%);
-}
-
-@media only screen and (max-width: 1280px){
-    #content {
-        margin: 6em 2em;
-        width: calc(100% - 5em);
-    }
-    nav #user-info {
-        max-width: calc(50% - 6em);
-    }
-    nav #show-sidebar {
-        display: block;
-        float: right;
-        width: 1.5em;
-        height: 1.5em;
-        margin-right: .5em;
-        transition: transform .5s ease-out;
-    }
-    nav #show-sidebar[data-open="true"] {
-        transform: rotate(90deg);
-    }
-    nav #show-sidebar:hover {
-        filter: drop-shadow(0px 0px 10px white);
-        cursor: pointer;
-    }
-    nav #show-sidebar:active {
-        filter: invert(75%);
-    }
-
-    #sidebar:not([data-open="true"]){
-        margin-right: -15em;
-    }
-    #sidebar {
-        width: 15em;     
-        overflow-x: hidden;
-    }
-    footer {
-        margin-left: 0;
-        width: 100%;
-    }
-    nav, #sidebar {
-        font-size: 1.5em;
-    }
-}
-
-@media only screen and (max-width: 1280px) and (min-width: 800px){
-    #sidebar {
-        transition: margin-right .5s;
-    }
-}
-
-.left {
-    float: left;
-}
-.right {
-    float: right;
-}
-
-.grid {
-    display: grid;
-    position: absolute;
-}
-.cell {
-    min-height: max-content;
-    background-color: var(--cell-background);
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, .7);
-    padding: 1em;
-}
-.cell > h2, form > h2 {
-    margin-top: -.25em;
-}
-
-.cell > h1:first-child:last-child {
-    margin: 0;
-}
-
-@media only screen and (max-width: 860px){
-    nav #user-info #user-name {
-        display: none;
-    }
-    nav #user-info .user-avatar {
-        margin-right: 0;
-    }
-
-    #sidebar {
-        width: 120%;
-        margin-right: -20%;
-        transition: margin-right .75s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    }
-
-    #sidebar:not([data-open="true"]){
-        margin-right: -120%;
-    }
-    
-    .grid {
-        display: block;
-    }
-    .cell {
-        margin-bottom: 1em;
-    }
-
-    .left, .right {
-        float: none;
-        width: 100%!important;
-    }
 }
 
 .gallery {
@@ -443,4 +339,195 @@ form .errors {
 }
 .program-description > p {
     white-space: pre-wrap;
+}
+
+.composer {
+    width: 100%;
+    background-color: var(--secondary-accent);
+    border: 2px solid var(--secondary-bg);
+    padding: 2em;
+    display: flex;
+}
+
+.composer .composer-commands {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    min-height: 3em;
+    width: 100%;
+}
+.composer .composer-commands li {
+    display: inline-block;
+    min-width: 1em;
+}
+.composer .composer-commands li button {
+    background-color: var(--secondary-bg);
+    color: var(--primary-text);
+    border: none;
+    vertical-align: middle;
+    text-align: center;
+    line-height: 1em;
+    min-height: 1.25em;
+}
+.composer .composer-editor {
+    background-color: var(--primary-bg);
+    border: 1px solid var(--primary-accent);
+    color: var(--input-color);
+    width: 100%;
+    padding: .5em 1em;
+    overflow: auto;
+    resize: none;
+    height: 100%;
+    flex-grow: 1;
+}
+
+.composer .composer-editorwrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    position: relative;
+}
+
+.composer .composer-editorwrapper:after {
+    position: absolute;
+    content: "Source";
+    color: var(--secondary-accent);
+    bottom: 0;
+    right: 0;
+    padding: .5em;
+}
+
+.composer .composer-preview {
+    width: 100%;
+    height: 20em;
+    background-color: var(--primary-bg);
+    border: 1px solid var(--primary-accent);
+    color: var(--primary-text);
+    white-space: pre-line;
+    padding: .5em 1em;
+    overflow: auto;
+    position: relative;
+}
+
+.composer .composer-preview:after {
+    position: absolute;
+    content: "Preview";
+    color: var(--secondary-accent);
+    bottom: 0;
+    right: 0;
+    padding: .5em;
+}
+
+.left {
+    float: left;
+}
+.right {
+    float: right;
+}
+
+.grid {
+    display: grid;
+}
+.cell {
+    min-height: max-content;
+    background-color: var(--cell-background);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, .7);
+    padding: 1em;
+}
+.cell > h2, form > h2 {
+    margin-top: -.25em;
+}
+
+.cell > h1:first-child:last-child {
+    margin: 0;
+}
+
+@media only screen and (max-width: 1280px){
+    #content {
+        margin: 6em 2em;
+        width: calc(100% - 4em);
+    }
+    nav #user-info {
+        max-width: calc(50% - 6em);
+    }
+    nav #show-sidebar {
+        display: block;
+        float: right;
+        width: 1.5em;
+        height: 1.5em;
+        margin-right: .5em;
+        transition: transform .5s ease-out;
+    }
+    nav #show-sidebar[data-open="true"] {
+        transform: rotate(90deg);
+    }
+    nav #show-sidebar:hover {
+        filter: drop-shadow(0px 0px 10px white);
+        cursor: pointer;
+    }
+    nav #show-sidebar:active {
+        filter: invert(75%);
+    }
+
+    #sidebar:not([data-open="true"]){
+        margin-right: -15em;
+    }
+    #sidebar {
+        width: 15em;     
+        overflow-x: hidden;
+    }
+    footer {
+        margin-left: 0;
+        width: 100%;
+    }
+    nav, #sidebar {
+        font-size: 1.5em;
+    }
+}
+
+@media only screen and (max-width: 1280px) and (min-width: 800px){
+    #sidebar {
+        transition: margin-right .5s;
+    }
+}
+
+
+
+@media only screen and (max-width: 800px){
+    nav #user-info #user-name {
+        display: none;
+    }
+    nav #user-info .user-avatar {
+        margin-right: 0;
+    }
+
+    #sidebar {
+        width: 120%;
+        margin-right: -20%;
+        transition: margin-right .75s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    #sidebar:not([data-open="true"]){
+        margin-right: -120%;
+    }
+    
+    .grid {
+        display: block;
+    }
+    .cell {
+        margin-bottom: 1em;
+    }
+
+    .left, .right {
+        float: none;
+        width: 100%!important;
+    }
+
+    .composer {
+        display: block;
+    }
+    .composer .composer-editor {
+        height: 18em;
+    }
 }

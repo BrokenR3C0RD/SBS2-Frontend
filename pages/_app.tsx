@@ -7,6 +7,7 @@ import "normalize.css";
 import { useState, useEffect, useRef } from "react";
 import "../styles/global.css";
 import "../styles/light.css";
+import "draft-js/dist/Draft.css";
 import { Logout, useUser } from "../utils/UserAuth";
 
 export default (({
@@ -54,7 +55,8 @@ export default (({
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <link rel="shortcut icon" href="/favicon.svg" />
             <title>{title ? `${title} | SmileBASIC Source` : "SmileBASIC Source"}</title>
-            <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet"></link>
+            <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+            <script src="https://code.iconify.design/1/1.0.5/iconify.min.js"></script>
         </Head>
         <nav>
             <span id="nav-brand">

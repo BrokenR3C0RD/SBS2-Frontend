@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Form from "../components/Form";
 import { Dictionary, PageProps } from "../interfaces";
 import { Login, Register } from "../utils/UserAuth";
+import { Grid, Cell } from "../components/Layout";
 
 export default (({
     setInfo
@@ -34,7 +35,7 @@ export default (({
 
     async function register(data: Dictionary<string | number | boolean>) {
         setRerrors([]);
-        if(data["password"] !== data["confirm-password"]){
+        if (data["password"] !== data["confirm-password"]) {
             setRerrors([
                 "Passwords do not match!"
             ]);
@@ -58,33 +59,48 @@ export default (({
     }
 
     return <>
-        <Form onSubmit={login} style={{
-            width: "45%"
-        }} className="left">
-            <h2>Login</h2>
-            {confirm && <p style={{color: "green"}}>
-                Your account has successfully been confirmed! You can now log in!
+        <Grid
+            cols={["1fr", "1fr"]}
+            rows={["fit-content(50%)", "fit-content(50%)"]}
+            gapX="2em"
+            gapY="0"
+            style={{
+                width: "100%",
+                height: "100%"
+            }}
+        >
+            <Cell x={1} y={1}>
+                <Form onSubmit={login} style={{
+                    width: "100%"
+                }}>
+                    <h2>Login</h2>
+                    {confirm && <p style={{ color: "green" }}>
+                        Your account has successfully been confirmed! You can now log in!
             </p>}
-            <input type="text" name="username" placeholder="Username" />
-            <input type="password" name="password" placeholder="Password" />
-            <label><input type="checkbox" name="rememberme" /> Remember me</label>
-            <input type="submit" value="Log in!" />
-            <p className="errors">
-                {lerrors.join(", ")}
-            </p>
-        </Form>
-        <Form onSubmit={register} style={{
-            width: "45%"
-        }} className="right">
-            <h2>Register</h2>
-            <input type="text" name="username" placeholder="Username" />
-            <input type="email" name="email" placeholder="Email" />
-            <input type="password" name="password" placeholder="Password" />
-            <input type="password" name="confirm-password" placeholder="Confirm Password" />
-            <input type="submit" value="Register" />
-            <p className="errors">
-                {rerrors.join(", ")}
-            </p>
-        </Form>
+                    <input type="text" name="username" placeholder="Username" />
+                    <input type="password" name="password" placeholder="Password" />
+                    <label><input type="checkbox" name="rememberme" /> Remember me</label>
+                    <input type="submit" value="Log in!" />
+                    <p className="errors">
+                        {lerrors.join(", ")}
+                    </p>
+                </Form>
+            </Cell>
+            <Cell x={2} y={1}>
+                <Form onSubmit={register} style={{
+                    width: "100%"
+                }}>
+                    <h2>Register</h2>
+                    <input type="text" name="username" placeholder="Username" />
+                    <input type="email" name="email" placeholder="Email" />
+                    <input type="password" name="password" placeholder="Password" />
+                    <input type="password" name="confirm-password" placeholder="Confirm Password" />
+                    <input type="submit" value="Register" />
+                    <p className="errors">
+                        {rerrors.join(", ")}
+                    </p>
+                </Form>
+            </Cell>
+        </Grid>
     </>;
 }) as NextPage<PageProps>;

@@ -5,7 +5,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: #666;
+    background-color: var(--scroll-thumb);
 }
 
 * {
@@ -13,14 +13,14 @@
 }
 body {
     font-family: "Roboto", "Arial", sans-serif;
-    background-color: #111;
-    background-image: url("/res/img/tiles.png");
+    background-color: var(--primary-bg);
+    background-image: var(--background-tile);
     background-attachment: fixed;
-    color: white;
+    color: var(--primary-text);
 }
 
 input {
-    color: #878787;
+    color: var(--input-color);
 }
 
 a {
@@ -35,9 +35,10 @@ a:hover {
 
 footer {
     background-color: black;
+    color: white;
     width: 80%;
     padding: 6px;
-    margin-right: 20    %;
+    margin-right: 20%;
 }
 
 nav {
@@ -50,7 +51,7 @@ nav {
     height: 1.5em;
     line-height: 1.5em;
     border-bottom: 1px solid #333;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, .7);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, .7);
     overflow: hidden;
     z-index: 1000000;
 }
@@ -68,9 +69,10 @@ nav #nav-brand img {
 nav input {
     width: 50%;
     height: 1.5em;
-    background: #222;
-    border: 1px solid #333;
+    background: var(--secondary-bg);
+    border: 1px solid var(--secondary-accent);
     outline: none;
+    color: var(--input-color);
     vertical-align: top;
 }
 
@@ -94,7 +96,6 @@ nav #user-info .user-avatar {
 
 nav #user-info #user-name {
     line-height: 1.5em;
-    vertical-align: top;
     font-weight: bold;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -148,7 +149,7 @@ nav #user-info[data-open="true"] ul li a:hover {
     z-index: 10000;
     right: 0;
     top: 1.5em;
-    background-color: #222;
+    background-color: var(--secondary-bg);
     float: left;
     height: 100vh;
     width: 20%;
@@ -177,16 +178,16 @@ nav #user-info[data-open="true"] ul li a:hover {
 }
 
 #sidebar ul > li > a {
-    color: white; 
+    color: var(--primary-text); 
 }
 
 #sidebar ul > li > a:hover {
-    color: #878787;
+    color: var(--primary-accent);
 }
 
 #sidebar ul > li[data-open]:before {
     content: "+ ";
-    color: white;
+    color: var(--primary-text);
     font-weight: bold;
     margin-left: -1em;
     float: left;
@@ -224,7 +225,7 @@ nav #show-sidebar {
 #content > form {
     display: block;
     width: 100%;
-    background-color: rgba(27, 27, 27, 0.7);
+    background-color: var(--cell-background);
     padding: 2em;
     min-width: min-content;
     margin-bottom: 2em;
@@ -237,8 +238,8 @@ form .errors {
 
 #content input:not([type="checkbox"]) {
     display: block;
-    background-color: #333;
-    border: 1px solid #878787;
+    background-color: var(--secondary-accent);
+    border: 1px solid var(--primary-accent);
     margin-bottom: 1em;
     padding: .25em;
     width: 100%;
@@ -249,7 +250,11 @@ form .errors {
 }
 
 #content input[type="submit"] {
-    color: white;
+    color: var(--primary-text);
+}
+
+#content input[type="submit"]:active {
+    filter: invert(25%);
 }
 
 @media only screen and (max-width: 1280px){
@@ -266,7 +271,7 @@ form .errors {
         width: 1.5em;
         height: 1.5em;
         margin-right: .5em;
-        transition: transform .3s ease-in;
+        transition: transform .5s ease-out;
     }
     nav #show-sidebar[data-open="true"] {
         transform: rotate(90deg);
@@ -314,12 +319,16 @@ form .errors {
 }
 .cell {
     min-height: max-content;
-    background-color: rgba(27, 27, 27, 0.7);
+    background-color: var(--cell-background);
     box-shadow: 2px 2px 5px rgba(0, 0, 0, .7);
     padding: 1em;
 }
 .cell > h2, form > h2 {
     margin-top: -.25em;
+}
+
+.cell > h1:first-child:last-child {
+    margin: 0;
 }
 
 @media only screen and (max-width: 860px){
@@ -351,4 +360,87 @@ form .errors {
         float: none;
         width: 100%!important;
     }
+}
+
+.gallery {
+    max-width: 100%;
+    position: relative;
+    box-sizing: content-box;
+    background-color: var(--primary-bg);
+    border: 1px solid var(--primary-accent);
+    text-align: center;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gallery > .gallery-content > *[data-chosen] {
+    display: block;
+    flex-grow: 1;
+    text-align: center;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+}
+.gallery > .gallery-content > *:not([data-chosen]) {
+    display: none;
+}
+
+.gallery > .gallery-next {
+    display: block;
+    position: absolute;
+    right: 0;
+    top: calc(50% - 16px);
+    width: 32px;
+    height: 32px;
+    background-image: url("/res/img/gallery-next.png");
+    mix-blend-mode: difference;
+    cursor: pointer;
+
+}
+
+.gallery > .gallery-prev {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: calc(50% - 16px);
+    width: 32px;
+    height: 32px;
+    background-image: url("/res/img/gallery-prev.png");
+    mix-blend-mode: difference;
+    cursor: pointer;
+}
+
+
+
+.program-infobox > table {
+    width: 100%;
+    background-color: var(--primary-bg);
+    margin-top: 2em;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, .7);
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1em;
+}
+
+.program-infobox > table > thead > td:first-child {
+    text-align: center;
+    font-weight: bold;
+}
+.program-infobox > table > tr > td:first-child {
+    text-align: right;
+    font-weight: bold;
+
+}
+.program-infobox > table > tr > td:first-child:after {
+    content: ": ";
+}
+
+.program-infobox > table > tr#pubkey > td:last-child {
+    color: var(--pubkey-color);
+    font-weight: 900;
+}
+.program-description > p {
+    white-space: pre-wrap;
 }

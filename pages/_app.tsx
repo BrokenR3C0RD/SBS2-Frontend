@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import "normalize.css";
 import { useState, useEffect, useRef } from "react";
 import "../styles/global.css";
+import "../styles/light.css";
 import { Logout, useUser } from "../utils/UserAuth";
 
 export default (({
@@ -111,10 +112,10 @@ export default (({
             <style jsx global>{`
             
                 #sidebar ${" > " + selected.map(num => `ul > li:nth-child(${num})`).join(" > ")} a {
-                    color: #999;
+                    color: var(--sidebar-selected);
                 }
                 #sidebar ${" > " + selected.map(num => `ul > li:nth-child(${num})`).join(" > ")} a:hover {
-                    color: #555;
+                    color: var(--sidebar-selected-hover);
                 }
             `}</style>
         }

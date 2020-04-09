@@ -1,0 +1,22 @@
+:root {
+    --primary-bg: #111;
+    --scroll-thumb: #666;
+    --secondary-bg: #222;
+
+    --primary-text: white;
+    --primary-accent: #878787;
+
+    --input-color: #878787;
+
+    --secondary-accent: #333;
+
+    --sidebar-selected: #999;
+    --sidebar-hover: #555;
+
+    --cell-background: rgba(27, 27, 27, 0.7);
+
+    --pubkey-color: #ccc;
+
+    --background-tile: url("/res/img/tiles_dark.png");
+}
+

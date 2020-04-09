@@ -22,14 +22,14 @@ export default (({
             <Cell x={1} y={1} style={{
                 textAlign: "center"
             }}>
-                <h2>404 Not Found</h2>
-                <p>
+                <h1>404 Not Found</h1>
+                <h2>
                     Well, you've gotten yourself stuck, haven't you. How unfortunate...
                     <br/>
                     You should get out quick, before a hungry grue comes by.
                     <br/>
                     Just <Link href="/"><a>RUN</a></Link> and you'll be out of here in no time.
-                </p>
+                </h2>
             </Cell>
         </Grid>
     </>;

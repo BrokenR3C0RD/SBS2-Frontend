@@ -6,8 +6,7 @@ import { useRouter } from "next/router";
 import "normalize.css";
 import { useState, useEffect, useRef } from "react";
 import "../styles/global.css";
-import "../styles/light.css";
-import "draft-js/dist/Draft.css";
+import "../styles/dark.css";
 import { Logout, useUser } from "../utils/UserAuth";
 
 export default (({

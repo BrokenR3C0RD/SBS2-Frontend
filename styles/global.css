@@ -12,7 +12,7 @@
     box-sizing: border-box;
 }
 body {
-    font-family: "Roboto", "Arial", sans-serif;
+    font-family: "Roboto", "Arial", sans-serif, "SMILEBASIC";
     background-color: var(--primary-bg);
     background-image: var(--background-tile);
     background-attachment: fixed;
@@ -237,7 +237,7 @@ form .errors {
     color: red;
 }
 
-#content input:not([type="checkbox"]) {
+#content input:not([type="checkbox"]), button {
     display: block;
     background-color: var(--secondary-accent);
     border: 1px solid var(--primary-accent);
@@ -250,11 +250,15 @@ form .errors {
     margin-bottom: 1em;
 }
 
-#content input[type="submit"] {
+#content input:disabled, button:disabled {
+    filter: invert(25%);
+}
+
+#content input[type="submit"], button {
     color: var(--primary-text);
 }
 
-#content input[type="submit"]:active {
+#content input[type="submit"]:active, button:active {
     filter: invert(25%);
 }
 
@@ -350,15 +354,21 @@ form .errors {
 }
 
 .composer .composer-commands {
+    top: 1px;
+    position: absolute;
     list-style: none;
-    margin: 0;
+    margin: 0 auto;
+    text-align: center;
     padding: 0;
     min-height: 3em;
     width: 100%;
+    vertical-align: top
 }
 .composer .composer-commands li {
     display: inline-block;
     min-width: 1em;
+    line-height: 1.25em;
+
 }
 .composer .composer-commands li button {
     background-color: var(--secondary-bg);
@@ -366,27 +376,32 @@ form .errors {
     border: none;
     vertical-align: middle;
     text-align: center;
-    line-height: 1em;
     min-height: 1.25em;
+    max-height: 1.5em;
+    height: 100%;
+    padding: 0 auto;
+    margin-bottom: 0;
 }
 .composer .composer-editor {
     background-color: var(--primary-bg);
     border: 1px solid var(--primary-accent);
     color: var(--input-color);
     width: 100%;
-    padding: .5em 1em;
+    padding: 1em 1em;
+    padding-top: 3em;
     overflow: auto;
     resize: none;
     height: 100%;
-    flex-grow: 1;
 }
 
 .composer .composer-editorwrapper {
-    width: 100%;
+    min-width: 50%;
     display: flex;
     flex-direction: column;
     min-height: 100%;
     position: relative;
+    flex-grow: 1;
+
 }
 
 .composer .composer-editorwrapper:after {
@@ -394,28 +409,34 @@ form .errors {
     content: "Source";
     color: var(--secondary-accent);
     bottom: 0;
-    right: 0;
+    right: 1em;
     padding: .5em;
 }
 
 .composer .composer-preview {
     width: 100%;
-    height: 20em;
-    background-color: var(--primary-bg);
+    height: 100%;
     border: 1px solid var(--primary-accent);
-    color: var(--primary-text);
-    white-space: pre-line;
-    padding: .5em 1em;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    white-space: pre-wrap;
+    word-break: break-all;
     position: relative;
 }
 
-.composer .composer-preview:after {
+.composer .composer-previewwrapper {
+    min-width: 50%;
+    height: 20em;
+    width: 100%;
+    position: relative;
+    flex-grow: 1;
+}
+.composer .composer-previewwrapper:after {
     position: absolute;
     content: "Preview";
     color: var(--secondary-accent);
     bottom: 0;
-    right: 0;
+    right: 1em;
     padding: .5em;
 }
 
@@ -530,4 +551,104 @@ form .errors {
     .composer .composer-editor {
         height: 18em;
     }
+}
+
+
+@media only screen and (max-width: 400px){
+    nav #nav-brand img {
+        width: 1.75em;
+        padding: 0 .125em;
+        text-align: center;
+    }
+    nav #user-info {
+        float: none;
+        display: inline-block;
+        padding-left: .25em;
+    }
+
+    .cell, .composer {
+        padding: .5em;
+    }
+
+    .composer .composer-editor {
+        padding-top: 5em;
+    }
+}
+
+.bbcode-view {
+    background-color: var(--primary-bg);
+    color: var(--primary-text);
+    white-space: pre-line;
+    padding: .5em 1em;
+}
+
+.bbcode-view * {
+    margin-bottom: 0em;
+}
+
+.bbcode-view .spoiler {
+    background-color: var(--secondary-bg);
+}
+.bbcode-view .spoiler .spoiler-open[data-open="true"][data-open="true"] {
+    filter: invert(25%);
+}
+.bbcode-view .spoiler .spoiler-open + .spoiler-content {
+    display: none;
+}
+.bbcode-view .spoiler .spoiler-open[data-open="true"] + .spoiler-content {
+    display: block;
+    padding-bottom: 1em;
+    border-bottom: 2px solid var(--secondary-accent);
+}
+.bbcode-view > .spoiler > .spoiler-open[data-open="true"] + .spoiler-content {
+    padding: .5em;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, .7);
+}
+
+.bbcode-view blockquote {
+    background-color: var(--secondary-bg);
+    width: 100%;
+    margin: 0;
+}
+.bbcode-view > blockquote > h3:first-child {
+    margin-top: 0;
+    margin-bottom: 1em;
+    font-style: italic;
+    margin-left: -.5em;
+}
+.bbcode-view > blockquote > h3:first-child:after {
+    content: ":";
+}
+.bbcode-view blockquote {
+    padding-left: .5em;
+    border-left: 2px solid var(--secondary-accent);
+}
+
+.bbcode-view > blockquote {
+    padding: 1em;
+    padding-left: 1em;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, .7);
+}
+
+
+.bbcode-view code {
+    font-family: "SMILEBASIC", 'Courier New', Courier, monospace;
+    font-size: 1em;
+    display: inline-block;
+    white-space: pre-wrap;
+}
+
+.bbcode-view code:not([data-inline]){
+    display: block;
+    background: black;
+    color: white;
+    padding: .5em;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, .7);
+}
+
+@font-face {
+    font-family: "SMILEBASIC";
+    src: url("/res/font/SMILEBASIC.ttf");
+    /*font-size: 16px;*/
+    text-rendering: geometricPrecision;
 }

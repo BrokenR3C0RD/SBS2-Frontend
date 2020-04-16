@@ -55,17 +55,6 @@ export default (({
             <Cell x={2} y={2} width={2} className="program-description">
                 <h2>Description</h2>
                 <p>
-                    {`
-                    i got this new anime plot. basically there's this high school girl except she's got huge boobs.
-                    i mean some serious honkers.
-                    a real set of badonkers.
-                    packin some dobonhonkeros.
-                    massive dohoonkabhankoloos.
-                    big ol' tonhongerekoogers.
-                    
-                    what happens next?!
-                    transfer student shows up with even bigger bonkhonagahoogs.
-                    humongous hungolomghononoloughongous.`}
                 </p>
             </Cell>
         </Grid>

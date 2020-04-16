@@ -7,7 +7,7 @@ import "normalize.css";
 import { useState, useEffect, useRef } from "react";
 import "../styles/global.css";
 import "../styles/dark.css";
-import { Logout, useUser } from "../utils/UserAuth";
+import { Logout, useUser } from "../utils/User";
 
 export default (({
     Component,
@@ -23,9 +23,8 @@ export default (({
 
     useEffect(() => {
         router.events.on("routeChangeStart", () => {
-            console.log(userInfo);
             setSidebar(false);
-            if(userInfo.current)
+            if (userInfo.current)
                 userInfo.current!.dataset.open = "false";
         })
     });
@@ -63,12 +62,13 @@ export default (({
             </span>
             <input type="text" placeholder="Search..." />
             <img src="/res/img/hamburger.png" id="show-sidebar" onClick={updateSideBar} data-open={sidebar} />
-            <div id="user-info" ref={userInfo} data-open={false} onClick={toggle} >
+            <div id="user-info" ref={userInfo} data-open={false} onClick={toggle}>
                 {user && (
                     <>
                         <span id="user-name" onClick={toggleParent}>{user.username}</span>
                         <img src="/res/img/sample-useravatar.png" className="user-avatar" onClick={toggleParent} />
                         <ul>
+                            <li><Link href="/user/[uid]" as={`/user/${user.id}`}><a>Profile</a></Link></li>
                             <li><Link href="/usersettings"><a>Settings</a></Link></li>
                             <li><a onClick={Logout}>Logout</a></li>
                         </ul>
@@ -104,9 +104,11 @@ export default (({
                         <li>Staff</li>
                     </ul>
                 </li>
-                <li>
-                    <Link href="/admin"><a>Admin Panel</a></Link>
-                </li>
+                {user && user.super &&
+                    <li>
+                        <Link href="/admin"><a>Admin Panel</a></Link>
+                    </li>
+                }
             </ul>
         </div>
         {selected[0] !== 0 &&

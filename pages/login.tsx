@@ -4,7 +4,7 @@ import { useRouter } from "next/dist/client/router";
 import { useEffect, useState } from "react";
 import Form from "../components/Form";
 import { Dictionary, PageProps } from "../interfaces";
-import { Login, Register } from "../utils/UserAuth";
+import { Login, Register } from "../utils/User";
 import { Grid, Cell } from "../components/Layout";
 
 export default (({
@@ -17,12 +17,14 @@ export default (({
     const [rerrors, setRerrors] = useState<string[]>([]);
 
     async function login(data: Dictionary<string | number | boolean>) {
-        const { username, password, rememberMe } = data;
+        const { username, password, rememberme } = data;
         setLerrors([]);
         try {
-            await Login(username as string, password as string, rememberMe as boolean);
+            await Login(username as string, password as string, (rememberme == "on") as boolean);
+            console.log("logged in. redirecting to home page.")
             await router.push("/");
         } catch (e) {
+            console.log(e.stack);
             let errors: string[] = [];
             if (e instanceof Error) {
                 errors.push(e.message);
@@ -46,8 +48,10 @@ export default (({
 
         try {
             await Register(username as string, email as string, password as string);
+            console.log("Registration success. Redirecting to home page.");
             await router.push("/confirm");
         } catch (e) {
+            console.log(e.stack);
             let errors: string[] = [];
             if (e instanceof Error) {
                 errors.push(e.message);

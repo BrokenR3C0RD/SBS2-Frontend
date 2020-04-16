@@ -106,6 +106,7 @@ nav #user-info #user-name {
     max-width: calc(100% - 3.5em);
     float: right;
     transition: color .2s;
+    color: white;
 }
 
 nav #user-info:hover #user-name {
@@ -237,13 +238,15 @@ form .errors {
     color: red;
 }
 
-#content input:not([type="checkbox"]), button {
+#content input:not([type="checkbox"]), button, textarea {
     display: block;
     background-color: var(--secondary-accent);
+    color: var(--primary-accent);
     border: 1px solid var(--primary-accent);
     margin-bottom: 1em;
     padding: .25em;
     width: 100%;
+    resize: vertical;
 }
 #content label {
     display: block;
@@ -328,16 +331,16 @@ form .errors {
     text-align: center;
     font-weight: bold;
 }
-.program-infobox > table > tr > td:first-child {
+.program-infobox > table > tbody > tr > td:first-child {
     text-align: right;
     font-weight: bold;
 
 }
-.program-infobox > table > tr > td:first-child:after {
+.program-infobox > table > tbody > tr > td:first-child:after {
     content: ": ";
 }
 
-.program-infobox > table > tr#pubkey > td:last-child {
+.program-infobox > table > tbody > tr#pubkey > td:last-child {
     color: var(--pubkey-color);
     font-weight: 900;
 }
@@ -387,6 +390,7 @@ form .errors {
     border: 1px solid var(--primary-accent);
     color: var(--input-color);
     width: 100%;
+    margin: 0;
     padding: 1em 1em;
     padding-top: 3em;
     overflow: auto;
@@ -466,8 +470,8 @@ form .errors {
 
 @media only screen and (max-width: 1280px){
     #content {
-        margin: 6em 2em;
-        width: calc(100% - 4em);
+        margin: 6em 0.5em;
+        width: calc(100% - 1em);
     }
     nav #user-info {
         max-width: calc(50% - 6em);
@@ -554,7 +558,7 @@ form .errors {
 }
 
 
-@media only screen and (max-width: 400px){
+@media only screen and (max-width: 480px){
     nav #nav-brand img {
         width: 1.75em;
         padding: 0 .125em;

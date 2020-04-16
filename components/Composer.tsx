@@ -6,7 +6,7 @@ export default (({}) => {
     const areaRef = useRef<HTMLTextAreaElement>(null);
     
     function updatePreview(evt: React.FormEvent<HTMLTextAreaElement>) {
-        setCode(evt.currentTarget.value.replace(/\\\[/g, "&lsqb;").replace(/\\\]/g, "&rsqb;"));
+        setCode(evt.currentTarget.value);
     }
 
     function handleKeys(evt: React.KeyboardEvent<HTMLTextAreaElement>){
@@ -31,19 +31,22 @@ export default (({}) => {
             insertTag("url")();
         }
     }
-    function insertTag(tagName: string){
+    function insertTag(tagName: string, defaultContent?: string){
         return () => {
             let area = areaRef.current!;
             const selectionStart = Math.min(area.selectionStart, area.selectionEnd);
             const selectionEnd = Math.max(area.selectionStart, area.selectionEnd);
 
             let between = area.value.substring(selectionStart, selectionEnd);
+            if(between.length == 0)
+                between = defaultContent || "";
+            
             area.value = area.value.substr(0, selectionStart) + `[${tagName}]` + between + `[/${tagName.substr(0, tagName.indexOf("=") == -1 ? tagName.length : tagName.indexOf("="))}]` + area.value.substr(selectionEnd);
             area.selectionStart = selectionStart + tagName.length + 2;
             area.selectionEnd = selectionEnd + tagName.length + 2;
             area.focus();
 
-            setCode(area.value.replace(/\\\[/g, "&lsqb;").replace(/\\\]/g, "&rsqb;"));
+            setCode(area.value);
         }
     }
 
@@ -66,6 +69,7 @@ export default (({}) => {
                     <li><button onClick={insertTag("align=center")}><span className="iconify" data-icon="oi-align-center" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("align=right")}><span className="iconify" data-icon="oi-align-right" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("url=")}><span className="iconify" data-icon="oi:link-intact" data-inline="true"></span></button></li>
+                    <li><button onClick={insertTag("anchor=")}><span className="iconify" data-icon="vaadin:anchor" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("img")}><span className="iconify" data-icon="oi:image" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("list")}><span className="iconify" data-icon="oi:list" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("poll")} disabled><span className="iconify" data-icon="mdi-poll" data-inline="true"></span></button></li>
@@ -73,6 +77,7 @@ export default (({}) => {
                     <li><button onClick={insertTag("spoiler")}><span className="iconify" data-icon="dashicons:hidden" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("youtube")}><span className="iconify" data-icon="ant-design:youtube-filled" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("quote")}><span className="iconify" data-icon="oi:double-quote-serif-left" data-inline="true"></span></button></li>
+                    <li><button onClick={insertTag("table", "\n [tr]\n  [th]Table Heading 1[/th]\n  [th]Table Heading 2[/th]\n [/tr]\n[tr]\n  [td]Data1[/td]\n  [td]Data2[/td]\n [/tr]\n")}><span className="iconify" data-icon="mdi:table" data-inline="true"></span></button></li>
                     <li><select value={1}>
                         <option>BBCode</option>
                         <option>Markdown</option>

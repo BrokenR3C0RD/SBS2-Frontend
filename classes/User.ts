@@ -1,20 +1,28 @@
-import {IsInt, IsDate, IsString, Length, MinLength, IsEmail, IsOptional} from "class-validator";
-import { Type } from "class-transformer";
+import {IsString, Length, MinLength, IsEmail, IsOptional, IsBoolean} from "class-validator";
+import { plainToClass } from "class-transformer";
+import { Entity } from "./Entity";
 
-export class User {
-    @IsInt()
-    uid: number = 0;
-
-    @Type(() => Date)
-    @IsDate()
-    createdDate: Date = new Date();
-
-    @IsOptional()
+export class BaseUser extends Entity {
     @IsString()
     @Length(3, 20)
     username: string = "";
 
-    @IsOptional()
+    public static async GetByIDs(ids: number[]): Promise<BaseUser[]> {
+        return (await Entity
+            .GetByIDs(ids, "User"))
+            .map(entity => plainToClass(BaseUser, entity));
+    }
+
+    public static useUser(ids: number[]): [any, BaseUser[] | null, () => void] {
+        return Entity.useEntity(ids, "User", async (e) => plainToClass(BaseUser, e)) as [any, BaseUser[] | null, () => void];
+    }
+}
+
+export class FullUser extends BaseUser {
+    @IsBoolean()
+    super: boolean = false;
+
+    @IsString()
     @IsEmail()
     email: string = "";
 }

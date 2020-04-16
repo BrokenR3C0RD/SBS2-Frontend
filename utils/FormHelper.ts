@@ -2,7 +2,7 @@ import React from "react";
 
 type Dictionary = {[i: string]: string | boolean | number};
 
-type InputElements = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+type InputElements = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | HTMLSelectElement;
 
 export function FormHelper(evt: React.FormEvent, callback: (data: Dictionary) => void){
     evt.preventDefault();

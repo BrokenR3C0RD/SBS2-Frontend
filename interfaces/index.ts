@@ -1,8 +1,8 @@
-import { User } from "../classes";
+import { FullUser } from "../classes";
 
 export type PageProps<T = {}> = {
     setInfo: (title: string, selected: number[]) => void,
-    user?: User
+    user?: FullUser
 } & T;
 
 export type Dictionary<T> = {

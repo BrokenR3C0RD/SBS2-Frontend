@@ -1,7 +1,7 @@
 import BBCode from "@bbob/html";
 import createPreset, { Node, TagNode } from "@bbob/preset";
 import { Dictionary } from "../interfaces";
-import { isURL } from "validator";
+import { isURL, isDataURI } from "validator";
 
 import { Html5Entities } from "html-entities";
 
@@ -13,7 +13,7 @@ function getSoleAttr(attrs: Dictionary<string | object>) {
 
 const urlOptions = {
     protocols: ['http', 'https', 'ftp'],
-    require_tld: true,
+    require_tld: false,
     require_protocol: false,
     require_host: false,
     require_valid_protocol: true,
@@ -21,7 +21,8 @@ const urlOptions = {
     host_whitelist: undefined,
     host_blacklist: undefined,
     allow_trailing_dot: false,
-    allow_protocol_relative_urls: true, disallow_auth: false
+    allow_protocol_relative_urls: true,
+    disallow_auth: false
 }
 function cssPropertiesToString(inp: React.CSSProperties) {
     let x = document.createElement("span")
@@ -78,7 +79,7 @@ const tags = {
         content: node.content
     }),
     sub: node => ({
-        tag: "sup",
+        tag: "sub",
         content: node.content
     }),
     url: node => ({
@@ -149,7 +150,22 @@ const tags = {
     img: node => ({
         tag: "img",
         attrs: {
-            src: isURL((node.content?.toString() || node.content[0]?.toString() || "").trim()) ? ((node.content?.toString() || node.content[0]?.toString() || "")).trim() : ""
+            src: (() => {
+                let url = "";
+                if(typeof node.content == "string"){
+                    url = node.content;
+                } else if(typeof node.content == "object" && node.content.length > 0) {
+                    url = node.content[0] as string;
+                } else {
+                    return "";
+                }
+
+                if(isURL(url, urlOptions) || isDataURI(url)){
+                    return url;
+                } else {
+                    return "/res/img/blocked.png";
+                }
+            })()
         },
         content: []
     }),
@@ -193,6 +209,37 @@ const tags = {
             } : "",
             ...node.content
         ]
+    }),
+    anchor: node => ({
+        tag: "a",
+        attrs: {
+            id: getSoleAttr(node.attrs!)
+        },
+        content: node.content
+    }),
+    table: node => ({
+        tag: "table",
+        attrs: {
+            style: cssPropertiesToString({
+                borderWidth: +(node.attrs!["border"] || 0)
+            })
+        },
+        content: node.content
+    }),
+    th: node => ({
+        tag: "th",
+        attrs: {},
+        content: node.content
+    }),
+    tr: node => ({
+        tag: "tr",
+        attrs: {},
+        content: node.content
+    }),
+    td: node => ({
+        tag: "td",
+        attrs: {},
+        content: node.content
     })
 } as (Dictionary<((node: TagNode) => TagNode)>)
 const preset = createPreset(tags);
@@ -204,7 +251,7 @@ export default (({
     className = ""
 }) => {
     return (<div className={`bbcode-view ${className}`} dangerouslySetInnerHTML={{
-        __html: BBCode(entities.encode(code), preset(), {
+        __html: BBCode(entities.encode(code).replace(/\\\[/g, "&lsqb;").replace(/\\\]/g, "&rsqb;").replace(/&quot;/g, "\""), preset(), {
             onlyAllowTags: Object.keys(tags)
         })
     }}></div>);

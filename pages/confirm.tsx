@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import Form from "../components/Form";
 import { Grid, Cell } from "../components/Layout";
 import { Dictionary, PageProps } from "../interfaces";
-import { Confirm, SendEmail } from "../utils/UserAuth";
+import { Confirm, SendEmail } from "../utils/User";
 
 export default (({
     setInfo
@@ -22,8 +22,9 @@ export default (({
         setCerrors([]);
         try {
             await Confirm(confirmationKey as string);
-            await router.push("/login", "/login?confirm=1");
+            await router.push("/login?confirm=1");
         } catch (e) {
+            console.log(e.stack);
             let errors: string[] = [];
             if (e instanceof Error) {
                 errors.push(e.message);

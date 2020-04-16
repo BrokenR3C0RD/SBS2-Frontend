@@ -1,3 +1,4 @@
 import "reflect-metadata";
 
-export { User, UserCredential } from "./User";
+export { BaseUser, FullUser, UserCredential } from "./User";
+export { Category } from "./Category";

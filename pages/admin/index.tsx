@@ -44,8 +44,8 @@ export default (({
 
     useEffect(() => setInfo("Admin Panel", [4]), []);
     useEffect(() => {
-        (user == null || !user.super) && router.push("/")
-    });
+        (user == null || (user != null && !user.super)) && router.push("/")
+    }, [user]);
 
     let categoryTree: ParentCategory[] = [];
     if (categories) {
@@ -72,7 +72,6 @@ export default (({
         };
 
         Object.keys(data).forEach(key => {
-            console.log(key);
             if (key.indexOf("-") != -1) {
                 const [user, value] = key.split("-");
                 newCategory.permissions![user] = (newCategory.permissions![user] || "") + (data[key] == "on" ? value : "");
@@ -82,8 +81,12 @@ export default (({
         try {
             newCategory = await Category.Update(newCategory);
         } catch (e) {
-            setErrors(e);
+            setErrors([e instanceof Error ? e.stack : e]);
         }
+        if(selected == -1)
+            setNewPerms(Object.assign({}, newPerms, {
+                "-1": {}
+            }));
         mutate()
     }
     async function DeleteCategory() {
@@ -93,7 +96,7 @@ export default (({
             await Category.Delete(selectedCategory!);
             setSelected(undefined);
         } catch (e) {
-            setErrors(e);
+            setErrors([e instanceof Error ? e.stack : e]);
         }
         mutate();
     }
@@ -126,7 +129,7 @@ export default (({
                     {categoryTree && (categoryTree.map(
                         function build(category) {
                             return (<li key={category.id} data-selected={category.id == selected} onClick={(evt) => evt.currentTarget == evt.target && setSelected(category.id)}>
-                                {category.name}
+                                {category.id} : {category.name}
                                 {category.children.length > 0 && <ul>
                                     {category.children.map(build)}
                                 </ul>}
@@ -201,9 +204,9 @@ export default (({
                             )}
                         </ul>
                         <input ref={newPermRef} type="number" placeholder="New permission UID..." />
-                        <button onClick={addPermission}>Add new permission</button>
+                        <button onClick={addPermission} type="button">Add new permission</button>
                         <input type="submit" value={selected != -1 ? "Update Category" : "Add Category"} />
-                        {selected !== -1 && <button onClick={DeleteCategory} id="delete">Delete Category</button>}
+                        {selected !== -1 && <button onClick={DeleteCategory} id="delete" type="button">Delete Category</button>}
                         <div className="errors">
                             {errors.join(", ")}
                         </div>

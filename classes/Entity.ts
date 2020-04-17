@@ -20,14 +20,18 @@ export class Entity {
     @IsDate()
     createDate: Date = new Date(0);
 
+    @Type(() => Date)
+    @IsDate()
+    editDate: Date = new Date(0);
+
     public static async GetByIDs(ids: number[], type: string): Promise<Entity[]> {
-        return await DoRequest<Entity[]>({
+        return (await DoRequest<Entity[]>({
             url: API_ENTITY(type),
             method: "GET",
             data: {
                 ids: ids
             }
-        });
+        }))!;
     }
 
     public static useEntity(ids: number[], type: string, mutate: (e: Entity) => Promise<Entity> = (async (e) => e)): [any, Entity[] | null, () => void] {
@@ -38,6 +42,7 @@ export class Entity {
                 ids: ids
             }
         }, async (entities) => {
+            console.log(entities);
             if(entities.length == 0){
                 return [];
             } else {
@@ -52,7 +57,10 @@ export abstract class AccessControlledEntity extends Entity {
     @IsObject()
     permissions: Dictionary<string> = {};
 
+    @IsInt()
+    userId: number = 0;
+
     public Permitted(user: BaseUser, permission: CRUD = CRUD.Read): boolean {
-        return (this.permissions[user.id.toString()] || this.permissions["0"] || "").indexOf(permission) !== -1;
+        return ((this.permissions[user.id.toString()] || this.permissions["0"] || "").indexOf(permission) !== -1) || this.userId == user.id;
     }
 }

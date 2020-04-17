@@ -1,3 +1,3 @@
 require("reflect-metadata");
 
-module.exports = {}
+module.exports = {};

@@ -6,6 +6,8 @@ type InputElements = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement 
 
 export function FormHelper(evt: React.FormEvent, callback: (data: Dictionary) => void){
     evt.preventDefault();
+    if(evt.target !== evt.currentTarget)
+        return;
 
     const target: HTMLFormElement = evt.target as HTMLFormElement;
     const data: Dictionary = {};

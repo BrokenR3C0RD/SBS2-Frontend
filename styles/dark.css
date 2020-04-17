@@ -1,4 +1,4 @@
-:root {
+:root[data-theme="dark"] {
     --primary-bg: #111;
     --scroll-thumb: #666;
     --secondary-bg: #222;

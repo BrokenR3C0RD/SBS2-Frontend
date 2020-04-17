@@ -7,3 +7,7 @@ export const API_USER_LOGIN = `${APIRoot}/api/User/authenticate`;
 export const API_USER_REGISTER = `${APIRoot}/api/User/register`;
 export const API_USER_REGISTER_SENDEMAIL = `${APIRoot}/api/User/register/sendemail`;
 export const API_USER_REGISTER_CONFIRM = `${APIRoot}/api/User/register/confirm`;
+export const API_USER_VARIABLE = `${APIRoot}/api/Variable`;
+
+
+export const PROGRAM_PAGE_CATEGORY = 5;

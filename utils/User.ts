@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import useSWR, { mutate } from "swr";
 import { isEmail, isUUID } from "validator";
 import { FullUser, UserCredential } from "../classes";
-import { API_USER_LOGIN, API_USER_ME, API_USER_REGISTER, API_USER_REGISTER_CONFIRM, API_USER_REGISTER_SENDEMAIL } from "./Constants";
-import { DoRequest } from "./Request";
+import { API_USER_LOGIN, API_USER_ME, API_USER_REGISTER, API_USER_REGISTER_CONFIRM, API_USER_REGISTER_SENDEMAIL, API_USER_VARIABLE } from "./Constants";
+import { DoRequest, useRequest } from "./Request";
+import { Dictionary } from "../interfaces";
 
 async function fetchWithToken(key: string) {
     let token = window.localStorage.getItem("sbs-auth") || window.sessionStorage.getItem("sbs-auth");
@@ -61,7 +62,7 @@ export async function Login(username: string, password: string, rememberMe: bool
         data: creds
     });
 
-    (rememberMe ? localStorage : sessionStorage).setItem("sbs-auth", resp);
+    (rememberMe ? localStorage : sessionStorage).setItem("sbs-auth", resp!);
     mutate(API_USER_ME, null, true);
 }
 
@@ -115,4 +116,46 @@ export async function Logout() {
     sessionStorage.removeItem("sbs-auth");
 
     mutate(API_USER_ME, false, true);
+}
+
+export async function GetVariableNames() {
+    return await DoRequest<string[]>({
+        url: API_USER_VARIABLE,
+        method: "GET"
+    });
+}
+
+export async function Variable(key: string): Promise<string | null>
+export async function Variable(key: string, value: string): Promise<boolean>
+export async function Variable(key: string, value?: string): Promise<string | null | boolean> {
+    if(value){
+        await DoRequest({
+            url: `${API_USER_VARIABLE}/${key}`,
+            method: "POST",
+            data: value
+        });
+        return true;
+    } else {
+        return await DoRequest<string>({
+            url: `${API_USER_VARIABLE}/${key}`,
+            method: "GET"
+        });
+    }
+}
+
+export async function DeleteVariable(key: string): Promise<boolean> {
+    await DoRequest({
+        url: `${API_USER_VARIABLE}/${key}`,
+        method: "DELETE"
+    });
+    return true;
+}
+
+export function useSettings(): [any, Dictionary<string | number | boolean> | undefined, () => void] {
+    const [errors, data, mutate] = useRequest<Dictionary<string | number | boolean>> ({
+        url: `${API_USER_VARIABLE}/user_settings`,
+        method: "GET"
+    }, async (data: any) => JSON.parse(data));
+
+    return [ errors, data ?? {}, mutate];
 }

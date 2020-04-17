@@ -5,29 +5,73 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import "normalize.css";
 import { useState, useEffect, useRef } from "react";
+
 import "../styles/global.css";
 import "../styles/dark.css";
-import { Logout, useUser } from "../utils/User";
+import "../styles/light.css";
 
-export default (({
+import { Logout, useUser, useSettings, Variable } from "../utils/User";
+
+const App = (({
     Component,
     pageProps
 }) => {
-    const userInfo = useRef<HTMLDivElement>(null)
+    const userInfo = useRef<HTMLDivElement>(null);
+
+    const user = useUser();
+    const [, settings, mutateSettings] = useSettings();
 
     const [title, setTitle] = useState("");
     const [sidebar, setSidebar] = useState(false);
     const [selected, setSelected] = useState([0]);
-    const user = useUser();
+    const [loaded, setLoaded] = useState(false);
+
+
     const router = useRouter();
+
+    async function SwitchTheme() {
+        console.log("Changing theme");
+        if (user)
+            await Variable("user_settings", JSON.stringify(Object.assign({}, settings, {
+                theme: localStorage.getItem("sbs-theme") === "dark" ? "light" : "dark"
+            })));
+
+        localStorage.setItem("sbs-theme", localStorage.getItem("sbs-theme") === "dark" ? "light" : "dark");
+        mutateSettings();
+    }
+
+    useEffect(() => {
+        if (user !== null && user !== false && settings != null)
+            localStorage.setItem("sbs-theme", ((settings?.["theme"] as string) || "light"));
+        else if (user === null && localStorage.getItem("sbs-theme") == null)
+            localStorage.setItem("sbs-theme", "light");
+
+        document.documentElement.dataset.theme = localStorage.getItem("sbs-theme") as string;
+        if (settings) setLoaded(true);
+
+        let siteJS = document.createElement("script");
+        siteJS.async = true;
+        if (settings && settings["SiteJS"]) {
+            siteJS.innerHTML = settings["SiteJS"] as string;
+            document.head.appendChild(siteJS);
+
+            return () => { document.head.removeChild(siteJS); }
+        }
+    }, [settings, user]);
 
     useEffect(() => {
         router.events.on("routeChangeStart", () => {
             setSidebar(false);
             if (userInfo.current)
                 userInfo.current!.dataset.open = "false";
-        })
-    });
+
+            setLoaded(false);
+        });
+
+        router.events.on("routeChangeComplete", () => {
+            if (settings) setLoaded(true);
+        });
+    }, []);
 
     const setInfo = (title: string, selected: number[]) => {
         setTitle(title);
@@ -125,8 +169,23 @@ export default (({
         <div id="content">
             <Component {...pageProps} setInfo={setInfo} user={user ? user : undefined} />
         </div>
+        {!loaded && <div id="loading">
+            <div className="spinner circles">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>}
         <footer>
             (c) 2020 SmileBASIC Source community
+            <button onClick={SwitchTheme} data-theme={settings?.theme}>Switch</button>
         </footer>
     </>;
 }) as NextPage<AppProps>;
+
+export default App;

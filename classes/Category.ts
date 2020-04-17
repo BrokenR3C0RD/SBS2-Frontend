@@ -1,11 +1,11 @@
 import {IsInt,  IsString,  IsOptional, IsObject} from "class-validator";
-import { Entity } from "./Entity";
+import { Entity, AccessControlledEntity } from "./Entity";
 import { Dictionary } from "../interfaces";
 import { plainToClass } from "class-transformer";
 import { DoRequest } from "../utils/Request";
 import { API_ENTITY } from "../utils/Constants";
 
-export class Category extends Entity {
+export class Category extends AccessControlledEntity {
     @IsString()
     name: string = "";
 
@@ -33,12 +33,12 @@ export class Category extends Entity {
     }
 
     public static async Update(category: Partial<Category>): Promise<Category> {
-        return await DoRequest({
-            url: API_ENTITY("Category"),
-            method: "POST",
+        return (await DoRequest({
+            url: `${API_ENTITY("Category")}${typeof category.id == "number" ? `/${category.id}` : ""}`,
+            method: typeof category.id == "number" ? "PUT" : "POST",
             data: category,
             return: Category
-        });
+        }))!;
     }
     public static async Delete(category: Category): Promise<boolean> {
         await DoRequest({

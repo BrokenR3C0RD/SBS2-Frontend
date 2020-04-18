@@ -1,7 +1,6 @@
 import { Dictionary } from "../interfaces";
 import { Content } from "./Content";
 import { plainToClass } from "class-transformer";
-import { Equals } from "class-validator";
 
 export class Discussion extends Content {
     type: string = "@discussion";

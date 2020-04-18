@@ -5,6 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import "normalize.css";
 import { useState, useEffect, useRef } from "react";
+import { Page } from "../classes";
+import { useRequestPage } from "../utils/Request";
+
+import { API_ENTITY } from "../utils/Constants";
 
 import "../styles/global.css";
 import "../styles/dark.css";
@@ -26,8 +30,28 @@ const App = (({
     const [selected, setSelected] = useState([0]);
     const [loaded, setLoaded] = useState(false);
 
-
     const router = useRouter();
+
+    const { data: pages, loading: loadingPages, end, loadMore: loadMorePages } = useRequestPage({
+        url: API_ENTITY("Content"),
+        method: "GET",
+        data: {
+            reverse: true,
+            type: "@page%"
+        },
+        offset: 0,
+        limit: 10,
+        return: Page
+    }, (pages) => {
+        if(pages == null){
+            return [<p>Loading...</p>];
+        } else {
+            return pages
+                .map(page => <li key={page.id}>
+                    <Link href="/pages/[pid]" as={`/pages/${page.id}`}><a>{page.title}</a></Link>
+                </li>);
+        }
+    }, []);
 
     async function SwitchTheme() {
         console.log("Changing theme");
@@ -52,7 +76,7 @@ const App = (({
         let siteJS = document.createElement("script");
         siteJS.async = true;
         if (settings && settings["SiteJS"]) {
-            siteJS.innerHTML = settings["SiteJS"] as string;
+            siteJS.innerHTML = `try { ${settings["SiteJS"] as string} } catch(e){console.error("Error in SiteJS:" + e.stack)};`;
             document.head.appendChild(siteJS);
 
             return () => { document.head.removeChild(siteJS); }
@@ -133,10 +157,10 @@ const App = (({
                 <li onClick={toggle} data-open="false">
                     <Link href="/pages"><a>Pages</a></Link>
                     <ul>
-                        <li><Link href="/pages/category/[cid]" as="/pages/category/1"><a>Programs</a></Link></li>
-                        <li>Libraries</li>
-                        <li>Documentation</li>
-                        <li>Random</li>
+                        <li key={-1}><Link href="/pages/edit"><a>Create a new page!</a></Link></li>
+                        {loadingPages && <p key={-3}>Loading pages...</p>}
+                        {pages}
+                        {!end && <button type="button" key={-2} onClick={loadMorePages}>Load more</button>}
                     </ul>
                 </li>
                 <li onClick={toggle} data-open="false">

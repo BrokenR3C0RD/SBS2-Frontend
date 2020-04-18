@@ -25,7 +25,7 @@ export default (({
 
     const { pid } = Router.query;
     const [, pages] = Page.usePage([+pid]);
-    const page = (pages?.[0] as ProgramPage | Page | undefined);
+    const page = pages?.[0] as ProgramPage | undefined;
 
     useEffect(() => setInfo(page?.title || "", []), [pages]);
 
@@ -77,8 +77,6 @@ export default (({
         }
     }
 
-    const isPage = ("" +page?.type).indexOf("page") == 0 || ("" +page?.type).indexOf("page") == 1;
-
     return <>
         <Grid
             rows={["min-content", "min-content", "1fr", "min-content"]}
@@ -92,7 +90,7 @@ export default (({
             {(!pages || (pages!.length != 0 && !user)) && <Cell x={1} y={1} width={3}>
                 <h1>Loading...</h1>
             </Cell>}
-            {page && isPage && user &&
+            {page && user &&
                 <>
 
                     <Cell x={1} y={1} width={3}>
@@ -211,7 +209,7 @@ export default (({
                                 let user = commentUsers.find(user => user.id == comment.userId);
                                 if(user == null) return null;
                                 
-                                return <div className="comment" key={comment.id}>
+                                return <div className="comment">
                                     <span className="username">
                                         <Link href="/user/[uid]" as={`/user/${user.id}`}><a>{user.username}</a></Link>
                                     </span>
@@ -227,7 +225,7 @@ export default (({
                     </Cell>
                 </>
             }
-            {pages && (pages.length == 0 || !isPage) &&
+            {pages && pages.length == 0 &&
                 <Cell x={1} y={1} width={3}>
                     <h1>This page doesn't exist!</h1>
                 </Cell>

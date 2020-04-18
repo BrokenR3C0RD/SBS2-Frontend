@@ -7,6 +7,9 @@ import { API_ENTITY } from "../utils/Constants";
 
 export class Content extends AccessControlledEntity {
     @IsString()
+    type: string = "";
+
+    @IsString()
     title: string = "";
 
     @IsOptional()

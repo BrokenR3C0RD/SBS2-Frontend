@@ -1,6 +1,6 @@
 import {Dictionary} from "../interfaces"
 import {plainToClass} from "class-transformer";
-import useSWR, {mutate as swrMutate} from "swr";
+import useSWR, {mutate as swrMutate, useSWRPages} from "swr";
 
 export interface RequestOptions<T = any> {
     method?: "GET" | "POST" | "PUT" | "DELETE",
@@ -8,6 +8,11 @@ export interface RequestOptions<T = any> {
     data?: Dictionary<any> | string,
     headers?: Dictionary<string>,
     return?: new() => T
+}
+
+export interface RequestOptionsPages<T = any> extends RequestOptions<T> {
+    limit: number,
+    offset: number
 }
 
 export async function DoRequest<T>(options: RequestOptions<T>): Promise<T | null> {
@@ -45,12 +50,13 @@ export async function DoRequest<T>(options: RequestOptions<T>): Promise<T | null
     } else if(resp.status === 404){
         return null;
     }  else {
+        let errors: string[] = []
         try {
-            let errors: string[] = (resp.headers.get("content-type") === "application/json" ? Object.values((await resp.json()).errors).reduce<string[]>((acc, err) => acc = acc.concat(err as string[]), [] as string[]) : [await resp.json()]);
-            throw errors;
+            errors = (resp.headers.get("content-type") === "application/json" ? Object.values((await resp.json()).errors).reduce<string[]>((acc, err) => acc = acc.concat(err as string[]), [] as string[]) : [await resp.json()]);
         } catch(ee){
             throw new Error("An internal server error occurred.");
         }
+        throw errors;
     }
 }
 
@@ -63,4 +69,36 @@ export function useRequest<T>(options: RequestOptions<T>, mutate: (obj: T) => Pr
         return mutate(data);
     });
     return [error, data, () => swrMutate(JSON.stringify(options))];
+}
+
+export function useRequestPage<T>(options: RequestOptionsPages<T>, mutate: (obj: T[] | null) => React.ReactElement[], dependencies?: any[]){
+    const {
+        pages,
+        isLoadingMore,
+        isReachingEnd,
+        loadMore
+      } = useSWRPages(JSON.stringify(options), ({offset, withSWR}) => {
+          const {data} = withSWR(useSWR(JSON.stringify(Object.assign({}, options, {
+              data: Object.assign({}, options.data, {
+                  skip: offset || options.offset,
+                  limit: options.limit || 10
+              })
+          })), async (key) => {
+            const data = await DoRequest(JSON.parse(key) as RequestOptions<T[]>);
+            return data;
+        }));
+
+        return mutate(data);
+      },
+      (SWR, index) => {
+        if (SWR.data && SWR.data.length < (options.limit || 10)) return null;
+        return (index + 1) * (options.limit || 10);
+      }, dependencies || []);
+
+      return {
+          data: pages as React.ReactElement[],
+          loading: isLoadingMore,
+          end: isReachingEnd,
+          loadMore
+      };
 }

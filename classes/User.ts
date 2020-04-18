@@ -1,6 +1,8 @@
 import {IsString, Length, MinLength, IsEmail, IsOptional, IsBoolean} from "class-validator";
 import { plainToClass } from "class-transformer";
 import { Entity } from "./Entity";
+import { DoRequest } from "../utils/Request";
+import { API_ENTITY } from "../utils/Constants";
 
 export class BaseUser extends Entity {
     @IsString()
@@ -11,6 +13,18 @@ export class BaseUser extends Entity {
         return (await Entity
             .GetByIDs(ids, "User"))
             .map(entity => plainToClass(BaseUser, entity));
+    }
+
+    public static async GetByUsername(username: string): Promise<BaseUser[]> {
+        return (await DoRequest<BaseUser[]>({
+            url: API_ENTITY("User"),
+            method: "GET",
+            data: {
+                limit: 5,
+                reverse: true,
+                username: `%${username}%`
+            }
+        })) || [];
     }
 
     public static useUser(ids: number[]): [any, BaseUser[] | null, () => void] {

@@ -12,7 +12,7 @@ export default (({
         {children}
     </form>);
 }) as React.FunctionComponent<{
-    onSubmit: (data: Dictionary<string | boolean | number>) => void,
+    onSubmit: (data: Dictionary<string | boolean | number>) => Promise<void>,
     style?: React.CSSProperties,
     className?: string
 }>

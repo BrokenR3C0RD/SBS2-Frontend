@@ -1,6 +1,7 @@
 import { Content } from "./Content";
 import { Dictionary } from "../interfaces";
 import { plainToClass } from "class-transformer";
+// import { BaseUser } from "./User";
 
 export interface PageProperties extends Dictionary<string> {
     markupLang: string
@@ -37,6 +38,16 @@ export class Page extends Content {
         return (await Content.Delete(page));
     }
 }
+
+/*export class UserPage extends Page {
+    type: string = "@user.page"
+    // @ts-ignore
+    values: PageProperties = {};
+
+    public static GetUserPage(user: BaseUser): Promise<UserPage> {
+
+    }
+}*/
 
 export class ProgramPage extends Page {
     type: string = "@page.program"

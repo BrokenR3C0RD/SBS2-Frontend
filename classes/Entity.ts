@@ -42,7 +42,6 @@ export class Entity {
                 ids: ids
             }
         }, async (entities) => {
-            console.log(entities);
             if(entities.length == 0){
                 return [];
             } else {

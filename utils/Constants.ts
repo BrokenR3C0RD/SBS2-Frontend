@@ -11,3 +11,4 @@ export const API_USER_VARIABLE = `${APIRoot}/api/Variable`;
 
 
 export const PROGRAM_PAGE_CATEGORY = 5;
+export const USER_PAGE_CATEGORY = 5;

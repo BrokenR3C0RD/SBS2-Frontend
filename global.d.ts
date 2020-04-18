@@ -2,7 +2,7 @@ declare module '@bbob/html';
 declare module '@bbob/react';
 
 declare module '@bbob/preset' {
-    import {Element} from "react";
+    import { Element } from "react";
     export type Dictionary<T> = {
         [i: string]: T
     }
@@ -16,7 +16,16 @@ declare module '@bbob/preset' {
         attrs?: Dictionary<string | object>;
         length?: number;
     }
-    interface Preset {} 
+    interface Preset { }
 
     export default (nodes: (Dictionary<((node: TagNode) => TagNode)>)) => ((options?: any) => Preset);
+}
+
+declare module 'damerau-levenshtein' {
+    interface LevenshteinResponse {
+        steps: number;
+        relative: number;
+        similarity: number;
+    }
+    export = (string1: string, string2: string): LevenshteinResponse => LevenshteinResponse
 }

@@ -18,10 +18,10 @@ export class Discussion extends Content {
             .map(entity => plainToClass(Discussion, entity));
     }
 
-    public static async useDiscussionsCategory()
+    //public static async useDiscussionsCategory()
 
-    public static useDiscussion(ids: number[], mutate: ((e: Discussion) => Promise<Discussion>) = async (e) => e): [any, Content[] | null, () => void] {
-        return Discussion.useContent(ids, async (e) => mutate(plainToClass(Discussion, e))) as [any, Content[] | null, () => void];
+    public static useDiscussion(ids: number[], mutate: ((e: Discussion) => Promise<Discussion>) = async (e) => e): [any, Discussion[] | null, () => void] {
+        return Discussion.useContent(ids, async (e) => mutate(plainToClass(Discussion, e))) as [any, Discussion[] | null, () => void];
     }
 
     public static async Update(discussion: Partial<Discussion>): Promise<Discussion> {

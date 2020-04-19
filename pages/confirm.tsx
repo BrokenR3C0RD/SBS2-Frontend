@@ -22,7 +22,7 @@ export default (({
         setCerrors([]);
         try {
             await Confirm(confirmationKey as string);
-            await router.push("/login?confirm=1");
+            await router.push("/");
         } catch (e) {
             console.log(e.stack);
             let errors: string[] = [];

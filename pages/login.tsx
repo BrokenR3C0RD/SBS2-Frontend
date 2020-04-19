@@ -11,7 +11,6 @@ export default (({
     setInfo
 }) => {
     const router = useRouter();
-    const confirm = router?.query?.confirm;
     useEffect(() => setInfo("Login", [0]), []);
     const [lerrors, setLerrors] = useState<string[]>([]);
     const [rerrors, setRerrors] = useState<string[]>([]);
@@ -78,9 +77,6 @@ export default (({
                     width: "100%"
                 }}>
                     <h2>Login</h2>
-                    {confirm && <p style={{ color: "green" }}>
-                        Your account has successfully been confirmed! You can now log in!
-            </p>}
                     <input type="text" name="username" placeholder="Username" />
                     <input type="password" name="password" placeholder="Password" />
                     <label><input type="checkbox" name="rememberme" /> Remember me</label>

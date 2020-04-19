@@ -17,7 +17,7 @@ export class Content extends AccessControlledEntity {
     content: string = "";
 
     @IsInt()
-    userId: number = 0;
+    createUserId: number = 0;
 
     @IsInt()
     parentId: number = 0;

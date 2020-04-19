@@ -38,7 +38,7 @@ export default (({
 
     }, [inView])
 
-    const [, users] = BaseUser.useUser([page?.userId as number]);
+    const [, users] = BaseUser.useUser([page?.createUserId as number]);
     const user = users?.[0];
 
     async function DeletePage() {
@@ -199,7 +199,7 @@ export default (({
                                 <BBCodeView code={page.content} />
                             </Cell>
                             <Cell x={1} y={3} width={3}>
-                                <b>Author: <Link href="/users/[uid]" as={`/users/${user.id}`}><a>{user.username}</a></Link></b>
+                                <b>Author: <Link href="/users/[uid]" as={`/user/${user.id}`}><a>{user.username}</a></Link></b>
                                 <br />
                                 <b>Submitted: {Moment(page.createDate).fromNow()}</b>
                                 <br />
@@ -216,7 +216,7 @@ export default (({
                         </Form>}
                         {
                             comments.slice().reverse().map((comment, idx) => {
-                                let user = commentUsers.find(user => user.id == comment.userId);
+                                let user = commentUsers.find(user => user.id == comment.createUserId);
                                 if (user == null) return null;
 
                                 return <div className="comment" key={comment.id} ref={comments.length - 1 == idx && !fetching ? ref : undefined}>

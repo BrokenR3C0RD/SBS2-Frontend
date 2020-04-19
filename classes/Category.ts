@@ -36,7 +36,7 @@ export class Category extends AccessControlledEntity {
     description: string = "";
 
     @IsInt()
-    userId: number = 0;
+    createUserId: number = 0;
 
     @IsInt()
     parentId: number = 0;

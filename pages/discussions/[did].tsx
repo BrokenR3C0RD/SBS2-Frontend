@@ -31,7 +31,7 @@ export default (({
 
     const [comments, commentUsers] = Comment.useComments(pages);
 
-    const [, users] = BaseUser.useUser([page?.userId as number]);
+    const [, users] = BaseUser.useUser([page?.createUserId as number]);
     const user = users?.[0];
 
     async function DeletePage() {
@@ -206,7 +206,7 @@ export default (({
                         </Form>}
                         {
                             comments.map(comment => {
-                                let user = commentUsers.find(user => user.id == comment.userId);
+                                let user = commentUsers.find(user => user.id == comment.createUserId);
                                 if(user == null) return null;
                                 
                                 return <div className="comment">

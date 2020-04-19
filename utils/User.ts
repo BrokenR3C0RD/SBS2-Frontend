@@ -102,13 +102,19 @@ export async function Confirm(key: string) {
         throw ["Invalid confirmation key."];
     }
 
-    await DoRequest({
+    let result = await DoRequest<string>({
         url: API_USER_REGISTER_CONFIRM,
         method: "POST",
         data: {
             confirmationKey: key
         }
     });
+    if(result != null){
+        localStorage.removeItem("sbs-auth")
+        sessionStorage.setItem("sbs-auth", result);
+    }
+    
+    mutate(API_USER_ME, null, true);
 }
 
 export async function Logout() {

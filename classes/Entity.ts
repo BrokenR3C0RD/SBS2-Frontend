@@ -57,9 +57,12 @@ export abstract class AccessControlledEntity extends Entity {
     permissions: Dictionary<string> = {};
 
     @IsInt()
-    userId: number = 0;
+    createUserId: number = 0;
+
+    @IsInt()
+    editUserId: number = 0;
 
     public Permitted(user: BaseUser, permission: CRUD = CRUD.Read): boolean {
-        return ((this.permissions[user.id.toString()] || this.permissions["0"] || "").indexOf(permission) !== -1) || this.userId == user.id;
+        return ((this.permissions[user.id.toString()] || this.permissions["0"] || "").indexOf(permission) !== -1) || this.createUserId == user.id;
     }
 }

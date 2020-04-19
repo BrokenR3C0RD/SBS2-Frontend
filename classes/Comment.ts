@@ -23,7 +23,10 @@ export class Comment extends Entity {
     parentId: number = 0;
 
     @IsInt()
-    userId: number = 0;
+    createUserId: number = 0;
+
+    @IsInt()
+    editUserId: number = 0;
 
     public static async GetComments(parentId: number, reverse: boolean = true, skip: number = 0, limit: number = 20, createEnd?: Date): Promise<Comment[] | null> {
         return (await DoRequest<Comment[]>({
@@ -74,7 +77,7 @@ export class Comment extends Entity {
                     );
 
                     let newUsers = (newc as Comment[])
-                        .map(comment => comment.userId)
+                        .map(comment => comment.createUserId)
                         .filter(id => users.findIndex(user => user.id == id) == -1)
                         .reduce<number[]>((acc, id) => (acc.indexOf(id) == -1 && acc.push(id) && acc) || acc, []);
 
@@ -97,7 +100,7 @@ export class Comment extends Entity {
                     );
 
                     let newUsers = (newc as Comment[])
-                        .map(comment => comment.userId)
+                        .map(comment => comment.createUserId)
                         .filter(id => users.findIndex(user => user.id == id) == -1)
                         .reduce<number[]>((acc, id) => (acc.indexOf(id) == -1 && acc.push(id) && acc) || acc, []);
 
@@ -142,7 +145,7 @@ export class Comment extends Entity {
                                         )
                                     );
                                     let newUsers = (newc as Comment[])
-                                        .map(comment => comment.userId)
+                                        .map(comment => comment.createUserId)
                                         .filter(id => users.findIndex(user => user.id == id) == -1)
                                         .reduce<number[]>((acc, id) => (acc.indexOf(id) == -1 && acc.push(id) && acc) || acc, [])
 

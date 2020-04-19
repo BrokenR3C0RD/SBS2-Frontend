@@ -498,7 +498,7 @@ form input:not([type="checkbox"]), form button, form textarea {
         width: 1.5em;
         height: 1.5em;
         margin-right: .5em;
-        transition: transform .5s ease-out;
+        transition: transform .3s;
     }
     nav #show-sidebar[data-open="true"] {
         transform: rotate(90deg);
@@ -528,7 +528,7 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 @media only screen and (max-width: 1280px) and (min-width: 800px) {
     #sidebar {
-        transition: margin-right .5s;
+        transition: margin-right .3s;
     }
 }
 
@@ -542,7 +542,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     #sidebar {
         width: 120%;
         margin-right: -20%;
-        transition: margin-right .75s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transition: margin-right .3s ;
     }
     #sidebar:not([data-open="true"]) {
         margin-right: -120%;

@@ -165,7 +165,8 @@ const tags = {
                 } else {
                     return "/res/img/blocked.png";
                 }
-            })()
+            })(),
+            tabindex: "0"
         },
         content: []
     }),

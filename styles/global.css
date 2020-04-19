@@ -665,6 +665,17 @@ form input:not([type="checkbox"]), form button, form textarea {
     margin-bottom: 1em;
 }
 
+.bbcode-view img {
+    display: block;
+    max-width: 25%;
+    max-height: 800px;
+    transition: max-width .5s ease-in-out;
+}
+
+.bbcode-view img:focus, .bbcode-view img:hover {
+    max-width: 100%;
+}
+
 @font-face {
     font-family: "SMILEBASIC";
     src: url("/res/font/SMILEBASIC.ttf");

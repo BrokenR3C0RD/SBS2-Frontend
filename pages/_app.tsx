@@ -4,17 +4,14 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import "normalize.css";
-import { useState, useEffect, useRef } from "react";
-import { Page } from "../classes";
-import { useRequestPage } from "../utils/Request";
-
-import { API_ENTITY } from "../utils/Constants";
-
-import "../styles/global.css";
+import { useEffect, useRef, useState } from "react";
+import { Category, Page } from "../classes";
 import "../styles/dark.css";
+import "../styles/global.css";
 import "../styles/light.css";
-
-import { Logout, useUser, useSettings, Variable } from "../utils/User";
+import { API_ENTITY, PAGE_CATEGORY, USER_PAGE_CATEGORY } from "../utils/Constants";
+import { useRequestPage } from "../utils/Request";
+import { Logout, useSettings, useUser, Variable } from "../utils/User";
 
 const App = (({
     Component,
@@ -24,6 +21,8 @@ const App = (({
 
     const user = useUser();
     const [, settings, mutateSettings] = useSettings();
+
+    const [, tree ] = Category.useCategoryTree();
 
     const [title, setTitle] = useState("");
     const [sidebar, setSidebar] = useState(false);
@@ -43,7 +42,7 @@ const App = (({
         limit: 10,
         return: Page
     }, (pages) => {
-        if(pages == null){
+        if (pages == null) {
             return [<p>Loading...</p>];
         } else {
             return pages
@@ -104,7 +103,7 @@ const App = (({
 
     function updateSideBar() {
         setSidebar(!sidebar);
-        if(userInfo.current)
+        if (userInfo.current)
             userInfo.current.dataset.open = "false";
     }
 
@@ -125,6 +124,18 @@ const App = (({
             <title>{title ? `${title} | SmileBASIC Source` : "SmileBASIC Source"}</title>
             <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
             <script src="https://code.iconify.design/1/1.0.5/iconify.min.js"></script>
+
+            {/* SEO stuff */}
+            <meta name="rating" content="general" />
+            <meta name="description" content="A community for learning to program and sharing programs made with SmileBASIC for the Nintendo 3DS and Switch." />
+            <meta name="keywords" content="programming, programs, 3DS, Switch, Nintendo, SmileBASIC, BASIC, debugging, resources" />
+
+            {/* OpenGraph stuff */}
+            <meta property="og:description" content="A community for learning to program and sharing programs made with SmileBASIC for the Nintendo 3DS and Switch." />
+            <meta property="og:url" content={`https://smilebasicsource.com${router.asPath}`} />
+            <meta property="og:image" content={`https://smilebasicsource.com/favicon.svg`} />
+            <meta property="og:type" content="website" />
+            <meta property="og:site_name" content="SmileBASIC Source" />
         </Head>
         <nav>
             <span id="nav-brand">
@@ -167,11 +178,19 @@ const App = (({
                 </li>
                 <li onClick={toggle} data-open="false">
                     Discussions
-                        <ul>
-                        <li>Off-Topic</li>
-                        <li>Programming Questions</li>
-                        <li>Site Development</li>
-                        <li>Staff</li>
+                    <ul>
+                        {tree && tree.filter(c => [PAGE_CATEGORY, USER_PAGE_CATEGORY].indexOf(c.id)  == -1).map(function render(cat){
+                            if(cat.children && cat.children.filter(c => [PAGE_CATEGORY, USER_PAGE_CATEGORY].indexOf(c.id)  == -1).length == 0){
+                                return <li key={cat.id}><Link href="/categories/[cid]" as={`/categories/${cat.id}`}><a>{cat.name}</a></Link></li>;
+                            } else {
+                                return <li key={cat.id} data-open="false" onClick={toggle}>
+                                    <Link href="/categories/[cid]" as={`/categories/${cat.id}`}><a>{cat.name}</a></Link>
+                                    <ul>
+                                        {cat.children.filter(c => [PAGE_CATEGORY, USER_PAGE_CATEGORY].indexOf(c.id)  == -1).map(render)}
+                                    </ul>
+                                </li>;
+                            }
+                        })}
                     </ul>
                 </li>
                 {user && user.super &&

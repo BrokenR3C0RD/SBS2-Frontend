@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { GetSBAPIInfo, KeyInfo } from "../../utils/SBAPI";
 import Moment from "moment";
 import { Page, ProgramPage } from "../../classes";
-import { PROGRAM_PAGE_CATEGORY } from "../../utils/Constants";
+import { PAGE_CATEGORY } from "../../utils/Constants";
 import { CRUD } from "../../classes/Entity";
 
 function size(number: number): string {
@@ -53,6 +53,7 @@ export default (({
             setCode(page.content);
             setPerms(Object.keys(page.permissions).map(id => +id).filter(id => id !== 0));
             setProgramPage(page.type === "@page.program");
+            setMarkup(page.values.markupLang);
         }
     }, [origPages])
 
@@ -60,6 +61,7 @@ export default (({
     const [key, setKey] = useState<string>();
     const [title, setTitle] = useState<string>();
     const [code, setCode] = useState<string>("");
+    const [markup, setMarkup] = useState<string>("bbcode")
     const [compat, setCompat] = useState<Dictionary<boolean>>({
         o3ds: false,
         n3ds: false,
@@ -110,7 +112,7 @@ export default (({
                 "0": "cr",
                 ...perms.reduce<Dictionary<string>>((acc, id) => (acc[id.toString()] = "cru") && acc, {})
             },
-            parentId: PROGRAM_PAGE_CATEGORY,
+            parentId: PAGE_CATEGORY,
             id: origPages && origPages.length !== 0 ? origPages[0].id : undefined,
             type: programPage ? "@page.program" : "@page.resource"
         }
@@ -193,7 +195,7 @@ export default (({
                         <input type="text" autoComplete="off" name="publickey" placeholder="KEY" style={{ width: "80%", float: "left", fontSize: "32px", fontFamily: "SMILEBASIC" }} value={key} onChange={(evt) => setKey(evt.currentTarget.value)} pattern="^4?[A-HJ-NP-TV-Z1-9]{1,8}$" required />
                         <button onClick={FetchSBAPIInformation} style={{ width: "20%", float: "right", fontSize: "32px", fontFamily: "SMILEBASIC" }} type="button">GET!</button>
                         {keyInfo &&
-                            <input type="text" name="title" placeholder="Title" autoComplete="off" required defaultValue={keyInfo.extInfo.project_name || keyInfo.filename.substr(1)} value={title} onChange={(evt) => setTitle(evt.currentTarget.value)} style={{ fontSize: "1.5em" }} />
+                            <input type="text" name="title" placeholder="Title" autoComplete="off" required  value={title} onChange={(evt) => setTitle(evt.currentTarget.value)} style={{ fontSize: "1.5em" }} />
                         }
                         {keyInfo && keyInfo.extInfo.console === "3DS" && <>
                             <h3>Supported devices</h3>
@@ -290,7 +292,7 @@ export default (({
                 }
                 <Cell x={1} y={3} width={2}>
                     <h2>Content:</h2>
-                    <Composer code={code} onChange={setCode} />
+                    <Composer code={code} onChange={(newcode, newmarkup) => {setCode(newcode); setMarkup(newmarkup)}} markup={markup} />
                 </Cell>
                 <Cell x={1} y={4} width={2}>
                     <h2>Ready to post?</h2>

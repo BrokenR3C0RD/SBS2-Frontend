@@ -3,16 +3,19 @@ import BBCodeView from "./BBCode";
 
 export default (({
     code = "",
+    markup = "",
     onChange = () => { },
     hidePreview = false
 }) => {
     const [ccode, setCode] = useState("");
+    const [cmarkup, setMarkup] = useState("bbcode")
     const areaRef = useRef<HTMLTextAreaElement>(null);
     const [preview, setPreview] = useState(!hidePreview);
 
     useEffect(() => {
         setCode(code);
-    }, [code]);
+        setMarkup(markup);
+    }, [code, markup]);
 
     function updatePreview(evt: React.FormEvent<HTMLTextAreaElement>) {
         setCode(evt.currentTarget.value);
@@ -57,7 +60,7 @@ export default (({
 
             setCode(area.value);
             if (onChange)
-                onChange(area.value);
+                onChange(area.value, cmarkup);
         }
     }
 
@@ -65,7 +68,7 @@ export default (({
     return (
         <div className="composer" data-previewhidden={!preview}>
             <div className="composer-editorwrapper">
-                <textarea ref={areaRef} value={ccode} className="composer-editor" onInput={updatePreview} onKeyDown={handleKeys} autoCapitalize="off" autoComplete="off" autoCorrect="off" autoSave="off" data-enable-grammarly="false" name="composer-code" onChange={(evt) => onChange(evt.currentTarget.value)}></textarea>
+                <textarea ref={areaRef} value={ccode} className="composer-editor" onInput={updatePreview} onKeyDown={handleKeys} autoCapitalize="off" autoComplete="off" autoCorrect="off" autoSave="off" data-enable-grammarly="false" name="composer-code" onChange={(evt) => onChange(evt.currentTarget.value, markup)}></textarea>
                 <ul className="composer-commands">
                     <li><button onClick={insertTag("b")} type="button" title="Bold"><b>B</b></button></li>
                     <li><button onClick={insertTag("i")} type="button" title="Italics"><i>I</i></button></li>
@@ -89,9 +92,9 @@ export default (({
                     <li><button onClick={insertTag("youtube")} type="button" title="YouTube"><span className="iconify" data-icon="ant-design:youtube-filled" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("quote")} type="button" title="Quote"><span className="iconify" data-icon="oi:double-quote-serif-left" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("table", "\n [tr]\n  [th]Table Heading 1[/th]\n  [th]Table Heading 2[/th]\n [/tr]\n[tr]\n  [td]Data1[/td]\n  [td]Data2[/td]\n [/tr]\n")} type="button" title="Table"><span className="iconify" data-icon="mdi:table" data-inline="true"></span></button></li>
-                    <li><select name="markup-lang" defaultValue={1} title="Markup language">
-                        <option>BBCode</option>
-                        <option disabled>Markdown</option>
+                    <li><select name="markup-lang" value={cmarkup} onChange={(evt) => {setMarkup(evt.currentTarget.value); onChange(ccode, markup)}} title="Markup language">
+                        <option value="12y" disabled>12-Y-Markup</option>
+                        <option value="bbcode">BBCode</option>
                     </select></li>
                     {hidePreview && <li><button onClick={() => {setPreview(!preview); areaRef.current!.focus()}} type="button" title="Show Preview">{preview ? "<" : ">"}</button></li>}
                 </ul>
@@ -104,7 +107,8 @@ export default (({
         </div>
     );
 }) as React.FunctionComponent<{
-    onChange?: (value: string) => any,
+    onChange?: (value: string, markup: string) => any,
     code?: string,
+    markup?: string,
     hidePreview?: boolean
 }>;

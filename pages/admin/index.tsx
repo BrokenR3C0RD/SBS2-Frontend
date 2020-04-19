@@ -5,30 +5,8 @@ import { Grid, Cell } from "../../components/Layout";
 import Form from "../../components/Form";
 import { useRouter } from "next/router";
 import { Category } from "../../classes";
-import { ParentCategory } from "../../classes/Category";
 import { Dictionary } from "../../interfaces";
 import React from "react";
-
-function treeify<T>(list: T[], idAttr: string, parentAttr: string, childrenAttr: string): T[] {
-    if (!idAttr) idAttr = 'id';
-    if (!parentAttr) parentAttr = 'parent';
-    if (!childrenAttr) childrenAttr = 'children';
-
-    let treeList: T[] = [];
-    let lookup: Dictionary<T> = {};
-    list.forEach(function (obj) {
-        lookup[(obj as any)[idAttr] as string] = obj;
-        (obj as any)[childrenAttr] = [];
-    });
-    list.forEach(function (obj) {
-        if ((obj as any)[parentAttr] != 0 && (lookup as any)[(obj as any)[parentAttr]] != null) {
-            (lookup[(obj as any)[parentAttr]] as any)[childrenAttr].push(obj);
-        } else {
-            treeList.push(obj);
-        }
-    });
-    return treeList;
-};
 
 export default (({
     setInfo,
@@ -37,6 +15,7 @@ export default (({
     const router = useRouter();
     const [errors, setErrors] = useState<string[]>([]);
     const [, categories, mutate] = Category.useCategory([]); // This will load all categories
+    const [, categoryTree] = Category.useCategoryTree();
     const [selected, setSelected] = useState<number>();
     const [newPerms, setNewPerms] = useState<Dictionary<Dictionary<string>>>({});
 
@@ -47,10 +26,7 @@ export default (({
         (user == null || (user != null && !user.super)) && router.push("/")
     }, [user]);
 
-    let categoryTree: ParentCategory[] = [];
-    if (categories) {
-        categoryTree = treeify<ParentCategory>(categories as ParentCategory[], "id", "parentId", "children");
-    }
+
 
     let selectedCategory: Category | undefined;
     if (categories && selected != null) {

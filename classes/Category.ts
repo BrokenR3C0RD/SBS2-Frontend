@@ -4,6 +4,28 @@ import { Dictionary } from "../interfaces";
 import { plainToClass } from "class-transformer";
 import { DoRequest } from "../utils/Request";
 import { API_ENTITY } from "../utils/Constants";
+import { useEffect, useState } from "react";
+
+function treeify<T>(list: T[], idAttr: string, parentAttr: string, childrenAttr: string): T[] {
+    if (!idAttr) idAttr = 'id';
+    if (!parentAttr) parentAttr = 'parent';
+    if (!childrenAttr) childrenAttr = 'children';
+
+    let treeList: T[] = [];
+    let lookup: Dictionary<T> = {};
+    list.forEach(function (obj) {
+        lookup[(obj as any)[idAttr] as string] = obj;
+        (obj as any)[childrenAttr] = [];
+    });
+    list.forEach(function (obj) {
+        if ((obj as any)[parentAttr] != 0 && (lookup as any)[(obj as any)[parentAttr]] != null) {
+            (lookup[(obj as any)[parentAttr]] as any)[childrenAttr].push(obj);
+        } else {
+            treeList.push(obj);
+        }
+    });
+    return treeList;
+};
 
 export class Category extends AccessControlledEntity {
     @IsString()
@@ -32,6 +54,18 @@ export class Category extends AccessControlledEntity {
         return Entity.useEntity(ids, "Category", async (e) => plainToClass(Category, e)) as [any, Category[] | null, () => void];
     }
 
+    public static useCategoryTree(): [any, ParentCategory[] | null, () => void] {
+        const [err, categories, mutate] = Entity.useEntity([], "Category", async (e) => plainToClass(ParentCategory, e))
+        const [categoryTree, setCategoryTree] = useState<ParentCategory[]>();
+
+        useEffect(() => {
+            if(categories)
+                setCategoryTree(treeify<ParentCategory>(categories as ParentCategory[], "id", "parentId", "children"));
+        }, [categories]);
+
+        return [err, categoryTree || null, mutate];
+    }
+
     public static async Update(category: Partial<Category>): Promise<Category> {
         return (await DoRequest({
             url: `${API_ENTITY("Category")}${typeof category.id == "number" ? `/${category.id}` : ""}`,
@@ -51,4 +85,17 @@ export class Category extends AccessControlledEntity {
 
 export class ParentCategory extends Category {
     public children: ParentCategory[] = [];
+
+    public GetTreeLocation(cid: number): ParentCategory[] | null {
+        let idx = this.children.find(cat => cat.id == cid);
+        if(idx != null)
+            return [idx];
+        
+        for(let i = 0; i < this.children.length; i++){
+            let res = this.children[i].GetTreeLocation(cid);
+            if(res != null)
+                return [this.children[i]].concat(res);
+        }
+        return null;
+    }
 }

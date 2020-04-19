@@ -470,6 +470,7 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 .cell {
     min-height: max-content;
+    max-width: 100vw;
     background-color: var(--cell-background);
     box-shadow: 2px 2px 5px rgba(0, 0, 0, .7);
     padding: 1em;

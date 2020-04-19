@@ -193,18 +193,19 @@ export default (({
                             <BBCodeView code={page.content} />
                         </Cell>
                     </>}
-                    {page.type === "@page.resource" && <>
-                        <Cell x={1} y={2} width={3} height={1}>
-                            <BBCodeView code={page.content} />
-                        </Cell>
-                        <Cell x={1} y={3} width={3}>
-                            <b>Author: <Link href="/users/[uid]" as={`/users/${user.id}`}><a>{user.username}</a></Link></b>
-                            <br />
-                            <b>Submitted: {Moment(page.createDate).fromNow()}</b>
-                            <br />
-                            <b>Updated: {Moment(page.editDate).fromNow()}</b>
-                        </Cell>
-                    </>
+                    {page.type === "@page.resource" &&
+                        <>
+                            <Cell x={1} y={2} width={3} height={1}>
+                                <BBCodeView code={page.content} />
+                            </Cell>
+                            <Cell x={1} y={3} width={3}>
+                                <b>Author: <Link href="/users/[uid]" as={`/users/${user.id}`}><a>{user.username}</a></Link></b>
+                                <br />
+                                <b>Submitted: {Moment(page.createDate).fromNow()}</b>
+                                <br />
+                                <b>Updated: {Moment(page.editDate).fromNow()}</b>
+                            </Cell>
+                        </>
                     }
 
                     <Cell x={1} y={4} width={3}>

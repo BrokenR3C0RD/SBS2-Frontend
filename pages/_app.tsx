@@ -104,6 +104,8 @@ const App = (({
 
     function updateSideBar() {
         setSidebar(!sidebar);
+        if(userInfo.current)
+            userInfo.current.dataset.open = "false";
     }
 
     function toggle(evt: any) {
@@ -155,7 +157,7 @@ const App = (({
                     <Link href="/"><a>Home</a></Link>
                 </li>
                 <li onClick={toggle} data-open="false">
-                    <Link href="/pages"><a>Pages</a></Link>
+                    Pages
                     <ul>
                         <li key={-1}><Link href="/pages/edit"><a>Create a new page!</a></Link></li>
                         {loadingPages && <p key={-3}>Loading pages...</p>}

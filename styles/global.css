@@ -25,8 +25,12 @@ input {
     color: var(--input-color);
 }
 
-a {
+
+nav a {
     color: #99b;
+}
+a {
+    color: var(--link-color);
     text-decoration: none;
     transition: color .25s;
 }
@@ -237,7 +241,6 @@ form input:not([type="checkbox"]), form button, form textarea {
 #content input:not([type="checkbox"]), button, textarea {
     display: block;
     background-color: var(--secondary-accent);
-    color: var(--primary-accent);
     border: 1px solid var(--primary-accent);
     margin-bottom: 1em;
     padding: .25em;
@@ -583,6 +586,7 @@ form input:not([type="checkbox"]), form button, form textarea {
 .bbcode-view {
     color: var(--primary-text);
     white-space: pre-line;
+    word-break: break-all;
     padding: .5em 1em;
 }
 
@@ -718,6 +722,16 @@ form input:not([type="checkbox"]), form button, form textarea {
     background-color: var(--primary-accent);
 }
 
+.comment {
+    width: 100%;
+}
+
+.comment .editdate {
+    margin-left: 1em;
+    color: var(--primary-accent);
+}
+
+
 #loading {
     display: block;
     width: 100vw;
@@ -728,6 +742,12 @@ form input:not([type="checkbox"]), form button, form textarea {
     transition: background-color 1s;
     background-color: rgba(0, 0, 0, .7);
 }
+#loading .spinner {
+    position: absolute;
+    top: calc(50% - 50px);
+    left: calc(50% - 50px);
+}
+
 
 /* ==========================================================
  * Spinner
@@ -736,9 +756,7 @@ form input:not([type="checkbox"]), form button, form textarea {
 .spinner {
     width: 100px;
     height: 100px;
-    position: absolute;
-    top: calc(50% - 50px);
-    left: calc(50% - 50px);
+    position: relative;
     -webkit-animation: rotateit 1.3s linear infinite;
     -moz-animation: rotateit 1.3s linear infinite;
     animation: rotateit .5s linear infinite;

@@ -13,7 +13,7 @@ import { isURL } from "validator";
 import { GetSBAPIInfo, KeyInfo } from "../../utils/SBAPI";
 import Composer from "../../components/Composer";
 import moment from "moment";
-
+import { useInView } from "react-intersection-observer";
 
 export default (({
     setInfo,
@@ -29,7 +29,14 @@ export default (({
 
     useEffect(() => setInfo(page?.title || "", []), [pages]);
 
-    const [comments, commentUsers] = Comment.useComments(pages);
+    const [comments, commentUsers, fetching, fetchMoreComments] = Comment.useComments(pages);
+    const [ref, inView] = useInView();
+
+    useEffect(() => {
+        if (inView)
+            fetchMoreComments();
+
+    }, [inView])
 
     const [, users] = BaseUser.useUser([page?.userId as number]);
     const user = users?.[0];
@@ -42,10 +49,10 @@ export default (({
         Router.push("/");
     }
 
-    async function PostComment(data: Dictionary<string | boolean | number>){
+    async function PostComment(data: Dictionary<string | boolean | number>) {
         let commentText = data["composer-code"] as string;
         let markup = data["markup-lang"] as string;
-        
+
         await Comment.Update({
             parentId: page!.id,
             content: {
@@ -77,7 +84,7 @@ export default (({
         }
     }
 
-    const isPage = ("" +page?.type).indexOf("page") == 0 || ("" +page?.type).indexOf("page") == 1;
+    const isPage = ("" + page?.type).indexOf("page") == 0 || ("" + page?.type).indexOf("page") == 1;
 
     return <>
         <Grid
@@ -207,16 +214,16 @@ export default (({
                             <input type="submit" value="Post Comment!" />
                         </Form>}
                         {
-                            comments.map(comment => {
+                            comments.slice().reverse().map((comment, idx) => {
                                 let user = commentUsers.find(user => user.id == comment.userId);
-                                if(user == null) return null;
-                                
-                                return <div className="comment" key={comment.id}>
+                                if (user == null) return null;
+
+                                return <div className="comment" key={comment.id} ref={comments.length - 1 == idx && !fetching ? ref : undefined}>
                                     <span className="username">
                                         <Link href="/user/[uid]" as={`/user/${user.id}`}><a>{user.username}</a></Link>
                                     </span>
                                     <span className="editdate">
-                                        {comment.createDate !== comment.editDate ? "Edited " : "Posted "} {moment(comment.createDate).fromNow()}
+                                        {((comment.editDate.valueOf() - comment.createDate.valueOf()) >= 2000) ? "Edited " : "Posted "} {moment(comment.editDate).fromNow()}
                                     </span>
                                     <div className="comment-content">
                                         <BBCodeView code={comment.content["t"]} />
@@ -224,6 +231,16 @@ export default (({
                                 </div>
                             })
                         }
+                        {fetching && <div className="spinner circles">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>}
                     </Cell>
                 </>
             }

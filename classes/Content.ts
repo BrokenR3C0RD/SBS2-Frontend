@@ -30,7 +30,7 @@ export class Content extends AccessControlledEntity {
 
     @IsArray()
     @IsString({each: true})
-    tags: string[] = [];
+    keywords: string[] = [];
 
 
     public static async GetByIDs(ids: number[]): Promise<Content[]> {

@@ -22,7 +22,7 @@ const App = (({
     const user = useUser();
     const [, settings, mutateSettings] = useSettings();
 
-    const [, tree ] = Category.useCategoryTree();
+    const [, tree] = Category.useCategoryTree();
 
     const [title, setTitle] = useState("");
     const [sidebar, setSidebar] = useState(false);
@@ -179,14 +179,14 @@ const App = (({
                 <li onClick={toggle} data-open="false">
                     Discussions
                     <ul>
-                        {tree && tree.filter(c => [PAGE_CATEGORY, USER_PAGE_CATEGORY].indexOf(c.id)  == -1).map(function render(cat){
-                            if(cat.children && cat.children.filter(c => [PAGE_CATEGORY, USER_PAGE_CATEGORY].indexOf(c.id)  == -1).length == 0){
+                        {tree && tree.filter(c => [PAGE_CATEGORY, USER_PAGE_CATEGORY].indexOf(c.id) == -1).map(function render(cat) {
+                            if (cat.children && cat.children.filter(c => [PAGE_CATEGORY, USER_PAGE_CATEGORY].indexOf(c.id) == -1).length == 0) {
                                 return <li key={cat.id}><Link href="/categories/[cid]" as={`/categories/${cat.id}`}><a>{cat.name}</a></Link></li>;
                             } else {
                                 return <li key={cat.id} data-open="false" onClick={toggle}>
                                     <Link href="/categories/[cid]" as={`/categories/${cat.id}`}><a>{cat.name}</a></Link>
                                     <ul>
-                                        {cat.children.filter(c => [PAGE_CATEGORY, USER_PAGE_CATEGORY].indexOf(c.id)  == -1).map(render)}
+                                        {cat.children.filter(c => [PAGE_CATEGORY, USER_PAGE_CATEGORY].indexOf(c.id) == -1).map(render)}
                                     </ul>
                                 </li>;
                             }
@@ -227,8 +227,10 @@ const App = (({
             </div>
         </div>}
         <footer>
-            (c) 2020 SmileBASIC Source community
-            <button onClick={SwitchTheme} data-theme={settings?.theme}>Switch</button>
+            <div style={{ float: "left", height: "2em" }}>
+                (c) 2020 SmileBASIC Source community
+            </div>
+            <button onClick={SwitchTheme} data-theme={typeof document !== "undefined" && document.documentElement.dataset.theme} style={{ float: "right", height: "2em", verticalAlign: "top", padding: "0" }}><span className="iconify" data-icon={"mdi:electric-switch" + ((typeof document !== "undefined" && document.documentElement.dataset.theme) === "dark" ? "-closed" : "")} data-inline="false"></span></button>
         </footer>
     </>;
 }) as NextPage<AppProps>;

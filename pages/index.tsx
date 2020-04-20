@@ -12,8 +12,8 @@ export default (({
         <Grid 
             rows={["1fr", "1fr", "1fr"]}
             cols={["1fr", "1fr", "1fr"]}
-            gapX="2em"
-            gapY="2em"
+            gapX="1em"
+            gapY="1em"
             style={{
                 width: "100%",
                 height: "100%",

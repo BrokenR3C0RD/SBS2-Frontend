@@ -2,22 +2,29 @@
     --primary-bg: white;
     --scroll-thumb: #878787;
     --secondary-bg: white;
-
     --primary-text: black;
     --primary-accent: #999;
     --secondary-accent: #ddd;
-
     --input-color: #333;
-
+    --sidebar-background: rgba(255, 255, 255, 0.98);
     --sidebar-selected: #777;
     --sidebar-selected-hover: #bbb;
-
-    --cell-background: rgba(255, 255, 255, 0.7);
-
+    --cell-background: rgba(255, 255, 255, 0.8);
     --pubkey-color: crimson;
-
     --background-tile: url("/res/img/tiles_light.png");
-
     --link-color: #66c;
 }
 
+/* @supports (backdrop-filter: none) or (-webkit-backdrop-filter: none) {
+    @media only screen and (min-width: 800px) {
+        :root {
+            --sidebar-background: rgba(255, 255, 255, 0.65);
+        }
+    }
+} */
+
+@media only screen and (max-width: 800px) {
+    :root {
+        --sidebar-background: rgb(255, 255, 255);
+    }
+}

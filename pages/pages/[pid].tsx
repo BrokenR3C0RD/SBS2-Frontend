@@ -15,6 +15,19 @@ import Composer from "../../components/Composer";
 import moment from "moment";
 import { useInView } from "react-intersection-observer";
 
+function size(number: number): string {
+    const suffixes = ["KB", "MB", "GB"];
+    let suffix = "B";
+    let res = number;
+
+    while (res >= 1024) {
+        res /= 1024;
+        suffix = suffixes.shift() as string;
+    }
+
+    return `${res.toPrecision(3)} ${suffix}`
+}
+
 export default (({
     setInfo,
     user: self
@@ -38,8 +51,9 @@ export default (({
 
     }, [inView])
 
-    const [, users] = BaseUser.useUser([page?.createUserId as number]);
+    const [, users] = BaseUser.useUser([page?.createUserId as number, page?.editUserId as number]);
     const user = users?.[0];
+    const editUser = users?.[1] || user;
 
     async function DeletePage() {
         if (!confirm("Are you sure you want to delete this page?"))
@@ -89,9 +103,9 @@ export default (({
     return <>
         <Grid
             rows={["min-content", "min-content", "1fr", "min-content"]}
-            cols={["max-content", "1fr", "1fr"]}
-            gapX="2em"
-            gapY="2em"
+            cols={["fit-content(30%)", "1fr"]}
+            gapX="1em"
+            gapY="1em"
             style={{
                 width: "100%"
             }}
@@ -99,14 +113,25 @@ export default (({
             {(!pages || (pages!.length != 0 && !user)) && <Cell x={1} y={1} width={3}>
                 <h1>Loading...</h1>
             </Cell>}
-            {page && isPage && user &&
+            {page && isPage && user && editUser &&
                 <>
 
                     <Cell x={1} y={1} width={3}>
-                        <h1>{page.title}
-                            {self && page.Permitted(self, CRUD.Delete) && <button type="button" style={{ float: "right", fontSize: "1rem", height: "2em" }} onClick={DeletePage}>Delete</button>}
-                            {self && page.Permitted(self, CRUD.Update) && <button type="button" style={{ float: "right", fontSize: "1rem", height: "2em" }} onClick={() => Router.push(`/pages/edit?pid=${page.id}`)}>Edit</button>}
-                        </h1>
+                        <h1>
+                            {page.title}
+                            {self && page.Permitted(self, CRUD.Update) && <button type="button" style={{ float: "right", fontSize: "1rem", height: "2em", width: "2em", color: "lightcoral", marginLeft: "5px", textAlign: "center" }} onClick={DeletePage}><span className="iconify" data-icon="ic:baseline-delete" data-inline="true"></span></button>}
+                            {self && page.Permitted(self, CRUD.Delete) && <button type="button" style={{ float: "right", fontSize: "1rem", height: "2em", width: "2em", textAlign: "center" }} onClick={() => Router.push(`/pages/edit?pid=${page.id}`)}><span className="iconify" data-icon="fe:pencil" data-inline="true"></span></button>}
+
+                            </h1>
+                        <div id="page-info">
+                            <b>Author: </b><Link href="/user/[uid]" as={`/user/${user.id}`}><a>{user.username}</a></Link>
+                            {` • `}
+                            <b>Created: </b>{Moment(page.createDate).fromNow()}
+                            {(page.editDate.valueOf() - page.createDate.valueOf()) >= 2000 && <>
+                                {` • `}
+                                <b>Last edited: </b>{Moment(page.editDate).fromNow()} by <Link href="/user/[uid]" as={`/user/${editUser.id}`}><a>{editUser.username}</a></Link>
+                            </>}
+                        </div>
                     </Cell>
                     {page.type === "@page.program" && <>
                         <Cell x={1} y={2} className="program-infobox">
@@ -142,26 +167,27 @@ export default (({
                             }
                             <table cellSpacing={5}>
                                 <tbody>
-                                    <tr>
-
-                                    </tr>
-                                    <tr>
-                                        <td>Submitted</td>
-                                        <td>{Moment(page.createDate).fromNow()}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Last updated</td>
-                                        <td>{Moment.utc(page.editDate).fromNow()}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Author</td>
-                                        <td><Link href="/user/[uid]" as={`/user/${user.id}`}><a>{user.username}</a></Link></td>
-                                    </tr>
                                     <tr id="pubkey">
                                         <td>Public key</td>
                                         <td style={{
-                                            textDecoration: keyInfo && !keyInfo.available ? "line-through" : undefined
+                                            textDecoration: (!keyInfo || !keyInfo.available) ? "line-through" : undefined
                                         }}>{page.values.key}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Download size</td>
+                                        <td>{keyInfo && size(keyInfo.size) + (keyInfo.extInfo.console === "3DS" ? ` (${keyInfo.size / 128000} blocks)` : "")}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Submitted</td>
+                                        <td>{keyInfo && Moment(keyInfo.uploaded).fromNow()}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Last updated</td>
+                                        <td>{keyInfo && Moment(keyInfo.version * 1000).fromNow()}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Downloads</td>
+                                        <td>{keyInfo && keyInfo.downloads.toString()}</td>
                                     </tr>
                                     <tr>
                                         <td>Compatible devices</td>
@@ -188,32 +214,25 @@ export default (({
                                 </tbody>
                             </table>
                         </Cell>
-                        <Cell x={2} y={2} width={2} className="program-description">
+                        <Cell x={2} y={2} width={2} height={2} className="program-description">
                             <h2>Description</h2>
                             <BBCodeView code={page.content} />
                         </Cell>
                     </>}
                     {page.type === "@page.resource" &&
                         <>
-                            <Cell x={1} y={2} width={3} height={1}>
+                            <Cell x={1} y={2} width={3} height={2}>
                                 <BBCodeView code={page.content} />
-                            </Cell>
-                            <Cell x={1} y={3} width={3}>
-                                <b>Author: <Link href="/users/[uid]" as={`/user/${user.id}`}><a>{user.username}</a></Link></b>
-                                <br />
-                                <b>Submitted: {Moment(page.createDate).fromNow()}</b>
-                                <br />
-                                <b>Updated: {Moment(page.editDate).fromNow()}</b>
                             </Cell>
                         </>
                     }
 
                     <Cell x={1} y={4} width={3}>
-                        <h1>Comments</h1>
+                        <h2>Comments</h2>
                         {self && <Form onSubmit={PostComment}>
                             <Composer hidePreview />
                             <input type="submit" value="Post Comment!" />
-                        </Form>}
+                        </Form> || <h3>Sign in to comment!</h3>}
                         {
                             comments.slice().reverse().map((comment, idx) => {
                                 let user = commentUsers.find(user => user.id == comment.createUserId);

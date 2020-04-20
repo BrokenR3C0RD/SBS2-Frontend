@@ -10,6 +10,7 @@
 
     --secondary-accent: #333;
 
+    --sidebar-background: rgba(16, 16, 16, 0.8);
     --sidebar-selected: #999;
     --sidebar-hover: #555;
 
@@ -22,3 +23,16 @@
     --link-color: #99b;
 }
 
+/* @supports (backdrop-filter: none) or (-webkit-backdrop-filter: none) {
+    @media only screen and (min-width: 800px) {
+        :root[data-theme="dark"] {
+            --sidebar-background: rgba(16, 16, 16, 0.85);
+        }
+    }
+} */
+
+@media only screen and (max-width: 800px) {
+    :root[data-theme="dark"] {
+        --sidebar-background: rgb(16, 16, 16);
+    }
+}

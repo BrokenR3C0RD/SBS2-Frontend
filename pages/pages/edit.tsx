@@ -41,6 +41,16 @@ export default (({
     const [, origPages] = ProgramPage.usePage([+pid]);
 
     useEffect(() => {
+        if(pid == null){
+            setTitle("");
+            setCode("");
+            setPerms([]);
+            setProgramPage(false);
+            setMarkup("bbcode");
+            setKeywords([]);
+        }
+    }, [pid]);
+    useEffect(() => {
         if (origPages && origPages.length > 0) {
             const page = origPages[0] as Page | ProgramPage;
             if (page.type == "@page.program") {
@@ -54,6 +64,7 @@ export default (({
             setPerms(Object.keys(page.permissions).map(id => +id).filter(id => id !== 0));
             setProgramPage(page.type === "@page.program");
             setMarkup(page.values.markupLang);
+            setKeywords(page.keywords);
         }
     }, [origPages])
 
@@ -71,9 +82,12 @@ export default (({
         "o3ds", "n3ds", "wiiu"
     ]);
 
+
     const [perms, setPerms] = useState<number[]>([]);
 
     const [keyInfo, setKeyInfo] = useState<KeyInfo>();
+    const [keywords, setKeywords] = useState<string[]>([]);
+
     const [errors, setErrors] = useState<string[]>([]);
 
     async function SubmitPage(data: Dictionary<string | boolean | number>) {
@@ -100,14 +114,7 @@ export default (({
             } : {
                     markupLang: info["markup_lang"] as string
                 },
-            tags: [
-                programPage && keyInfo!.extInfo.console !== "Switch" && supported.indexOf("o3ds") !== -1 && "Old3DS Supported",
-                programPage && keyInfo!.extInfo.console !== "Switch" && data["supports_o3ds"] == "on" && compat["o3ds"] && "Old3DS Requires DLC",
-                programPage && keyInfo!.extInfo.console !== "Switch" && supported.indexOf("n3ds") !== -1 && "New3DS Supported",
-                programPage && keyInfo!.extInfo.console !== "Switch" && data["supports_n3ds"] == "on" && compat["n3ds"] && "New3DS Requires DLC",
-                programPage && keyInfo!.extInfo.console === "3DS" && "SmileBASIC 3",
-                programPage && keyInfo!.extInfo.console === "Switch" && "SmileBASIC 4"
-            ].filter(tag => tag !== false) as string[],
+            keywords: keywords.map(tag => tag.trim()),
             permissions: {
                 "0": "cr",
                 ...perms.reduce<Dictionary<string>>((acc, id) => (acc[id.toString()] = "cru") && acc, {})
@@ -150,6 +157,12 @@ export default (({
                 if (code.length == 0 && info.extInfo.console === "Switch" && info.type == "PRJ" && info.extInfo.project_description) {
                     setCode(`[code lang=none]${info.extInfo.project_description}[/code]`);
                 }
+                if (keywords.length == 0)
+                    setKeywords(([
+                        info.extInfo.console === "3DS" && "SB3",
+                        info.extInfo.console === "Switch" && "SB4",
+                        ...(info.extInfo.tags || [])
+                    ].filter(tag => tag !== false) as string[]));
             }
         } catch (e) {
             console.log(e.stack);
@@ -195,7 +208,7 @@ export default (({
                         <input type="text" autoComplete="off" name="publickey" placeholder="KEY" style={{ width: "80%", float: "left", fontSize: "32px", fontFamily: "SMILEBASIC" }} value={key} onChange={(evt) => setKey(evt.currentTarget.value)} pattern="^4?[A-HJ-NP-TV-Z1-9]{1,8}$" required />
                         <button onClick={FetchSBAPIInformation} style={{ width: "20%", float: "right", fontSize: "32px", fontFamily: "SMILEBASIC" }} type="button">GET!</button>
                         {keyInfo &&
-                            <input type="text" name="title" placeholder="Title" autoComplete="off" required  value={title} onChange={(evt) => setTitle(evt.currentTarget.value)} style={{ fontSize: "1.5em" }} />
+                            <input type="text" name="title" placeholder="Title" autoComplete="off" required value={title} onChange={(evt) => setTitle(evt.currentTarget.value)} style={{ fontSize: "1.5em" }} />
                         }
                         {keyInfo && keyInfo.extInfo.console === "3DS" && <>
                             <h3>Supported devices</h3>
@@ -247,10 +260,6 @@ export default (({
                             </b></p>
                             <UserPicker values={perms} onChange={setPerms} />
                         </>}
-
-                        <div className="errors">
-                            {errors.join(", ")}
-                        </div>
                     </Cell>
 
                     <Cell x={2} y={2}>
@@ -292,15 +301,21 @@ export default (({
                 }
                 <Cell x={1} y={3} width={2}>
                     <h2>Content:</h2>
-                    <Composer code={code} onChange={(newcode, newmarkup) => {setCode(newcode); setMarkup(newmarkup)}} markup={markup} />
+                    <Composer code={code} onChange={(newcode, newmarkup) => { setCode(newcode); setMarkup(newmarkup) }} markup={markup} />
                 </Cell>
                 <Cell x={1} y={4} width={2}>
                     <h2>Ready to post?</h2>
+                    <div className="errors">
+                        {errors.join(", ")}
+                    </div>
                     {programPage && keyInfo == null && <p>You need to provide a valid key before submitting your page!</p>}
                     {user == null && <p>You can't create a page unless you log in!</p>}
                     {user != null && (origPages && !origPages[0].Permitted(user, CRUD.Update)) && <p>You don't have permission to edit this page!</p>}
                     {code.length < 2 && <p>You must provide a description!</p>}
                     <input type="submit" value="Post!" disabled={(programPage && keyInfo == null) || user == null || (origPages && !origPages[0].Permitted(user, CRUD.Update)) || code.length < 2 || false} />
+                    <br />
+                    <h3>Advanced</h3>
+                    <input type="text" name="keywords" value={keywords.join(",")} onChange={(evt) => setKeywords(evt.currentTarget.value.split(","))} placeholder="Keywords" />
                 </Cell>
             </Grid>
         </Form>

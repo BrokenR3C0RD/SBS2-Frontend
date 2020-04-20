@@ -25,10 +25,10 @@ input {
     color: var(--input-color);
 }
 
-
 nav a {
     color: #99b;
 }
+
 a {
     color: var(--link-color);
     text-decoration: none;
@@ -45,6 +45,14 @@ footer {
     width: 80%;
     padding: 6px;
     margin-right: 20%;
+    height: 2.3em;
+    font-size: 1em;
+    line-height: 2em;
+}
+
+footer button {
+    vertical-align: top;
+    margin-top: -3px;
 }
 
 nav {
@@ -156,7 +164,9 @@ nav #user-info[data-open="true"] ul li a:hover {
     z-index: 10000;
     right: 0;
     top: 1.5em;
-    background-color: var(--secondary-bg);
+    background-color: var(--sidebar-background);
+    /* backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px); */
     float: left;
     height: 100vh;
     width: 20%;
@@ -240,8 +250,9 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 #content input:not([type="checkbox"]), button, textarea {
     display: block;
+    color: var(--input-color);
     background-color: var(--secondary-accent);
-    border: 1px solid var(--primary-accent);
+    border: 0px solid var(--primary-accent);
     margin-bottom: 1em;
     padding: .25em;
     resize: vertical;
@@ -314,13 +325,27 @@ form input:not([type="checkbox"]), form button, form textarea {
     cursor: pointer;
 }
 
+.program-infobox {
+    max-width: 100%;
+}
+
+.program-infobox * {
+    word-break: break-all;
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+ 
 .program-infobox>table {
-    width: 100%;
+    overflow: hidden;
+    table-layout: fixed;
     background-color: var(--primary-bg);
     margin-top: 2em;
     box-shadow: 3px 3px 5px rgba(0, 0, 0, .7);
     margin-left: auto;
     margin-right: auto;
+    width: 90%;
     padding: 1em;
 }
 
@@ -354,12 +379,13 @@ form input:not([type="checkbox"]), form button, form textarea {
     padding: 2em;
     display: flex;
 }
+
 .composer[data-previewhidden="true"] .composer-commands {
     opacity: 0;
     transition: opacity .25s linear;
 }
 
-.composer .composer-editor:focus + .composer-commands, .composer[data-previewhidden="true"] .composer-commands:hover {
+.composer .composer-editor:focus+.composer-commands, .composer[data-previewhidden="true"] .composer-commands:hover {
     opacity: 1;
 }
 
@@ -380,8 +406,6 @@ form input:not([type="checkbox"]), form button, form textarea {
     min-width: 1em;
     line-height: 1.25em;
 }
-
-
 
 .composer .composer-commands li button {
     background-color: var(--secondary-bg);
@@ -470,7 +494,8 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 .cell {
     min-height: max-content;
-    max-width: 100vw;
+    min-width: 0;
+    width: 100%;
     background-color: var(--cell-background);
     box-shadow: 2px 2px 5px rgba(0, 0, 0, .7);
     padding: 1em;
@@ -480,14 +505,24 @@ form input:not([type="checkbox"]), form button, form textarea {
     margin-top: -.25em;
 }
 
-.cell>h1:first-child:last-child {
-    margin: 0;
+.cell>h1:first-child {
+    margin-top: 0;
+}
+
+.cell>h1:last-child {
+    margin-bottom: 0;
+}
+
+#page-info {
+    color: var(--primary-accent);
+    padding-top: 1em;
+    border-top: 2px solid var(--secondary-accent);
 }
 
 @media only screen and (max-width: 1280px) {
     #content {
-        margin: 6em 0.5em;
-        width: calc(100% - 1em);
+        margin: 6em 1em;
+        width: calc(100% - 2em);
     }
     nav #user-info {
         max-width: calc(50% - 6em);
@@ -542,7 +577,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     #sidebar {
         width: 120%;
         margin-right: -20%;
-        transition: margin-right .3s ;
+        transition: margin-right .3s;
     }
     #sidebar:not([data-open="true"]) {
         margin-right: -120%;
@@ -743,7 +778,6 @@ form input:not([type="checkbox"]), form button, form textarea {
     color: var(--primary-accent);
 }
 
-
 #loading {
     display: block;
     width: 100vw;
@@ -754,12 +788,12 @@ form input:not([type="checkbox"]), form button, form textarea {
     transition: background-color 1s;
     background-color: rgba(0, 0, 0, .7);
 }
+
 #loading .spinner {
     position: absolute;
     top: calc(50% - 50px);
     left: calc(50% - 50px);
 }
-
 
 /* ==========================================================
  * Spinner

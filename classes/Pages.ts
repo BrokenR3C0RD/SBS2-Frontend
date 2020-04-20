@@ -39,15 +39,20 @@ export class Page extends Content {
     }
 }
 
-/*export class UserPage extends Page {
+export class UserPage extends Page {
     type: string = "@user.page"
     // @ts-ignore
     values: PageProperties = {};
 
     public static GetUserPage(user: BaseUser): Promise<UserPage> {
-
+        
     }
-}*/
+
+    public static async Update(page: Partial<UserPage>): Promise<Page> {
+        // @ts-ignore
+        return (await Content.Update(page));
+    }
+}
 
 export class ProgramPage extends Page {
     type: string = "@page.program"

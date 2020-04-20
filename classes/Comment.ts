@@ -160,7 +160,8 @@ export class Comment extends Entity {
                                 throw await resp.text();
                             }
                         } catch (e) {
-                            console.error("An error occurred doing all that fun stuff: " + "stack" in e ? e.stack : e);
+                            if(!aborter.signal.aborted)
+                                console.error("An error occurred doing all that fun stuff: " + ("stack" in e ? e.stack : e));
                         }
                     }
                 })();

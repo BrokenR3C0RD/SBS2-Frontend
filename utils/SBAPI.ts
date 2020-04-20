@@ -31,7 +31,8 @@ export async function GetSBAPIInfo(key: string, filename?: string): Promise<KeyI
     let info = await DoRequest<KeyInfo>({
         url: `https://sbapi.me/get/${key}${filename ? `/${filename}` : ""}/info`,
         data: {
-            json: "1"
+            json: "1",
+            en: "1"
         },
         method: "GET",
         headers: {

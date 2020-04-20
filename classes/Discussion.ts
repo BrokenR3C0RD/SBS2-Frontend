@@ -21,7 +21,9 @@ export class Discussion extends Content {
     //public static async useDiscussionsCategory()
 
     public static useDiscussion(ids: number[], mutate: ((e: Discussion) => Promise<Discussion>) = async (e) => e): [any, Discussion[] | null, () => void] {
-        return Discussion.useContent(ids, async (e) => mutate(plainToClass(Discussion, e))) as [any, Discussion[] | null, () => void];
+        return Discussion.useContent({
+            ids
+        }, async (e) => mutate(plainToClass(Discussion, e))) as [any, Discussion[] | null, () => void];
     }
 
     public static async Update(discussion: Partial<Discussion>): Promise<Discussion> {

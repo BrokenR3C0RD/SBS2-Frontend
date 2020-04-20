@@ -162,7 +162,7 @@ export class Comment extends Entity {
                             }
                         } catch (e) {
                             if(!aborter.signal.aborted)
-                                console.error("An error occurred while polling for comments:" + ("stack" in e ? e.stack : e));
+                                console.error("An error occurred while polling for comments:" + (e && e.stack ? e.stack : e));
                         }
                     }
                 })();

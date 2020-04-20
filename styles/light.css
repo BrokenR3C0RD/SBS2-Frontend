@@ -13,6 +13,7 @@
     --pubkey-color: crimson;
     --background-tile: url("/res/img/tiles_light.png");
     --link-color: #66c;
+    --shadow: rgba(0, 0, 0, 0.5);
 }
 
 /* @supports (backdrop-filter: none) or (-webkit-backdrop-filter: none) {

@@ -69,7 +69,7 @@ export default (({
         <div className="composer" data-previewhidden={!preview}>
             <div className="composer-editorwrapper">
                 <textarea ref={areaRef} value={ccode} className="composer-editor" onInput={updatePreview} onKeyDown={handleKeys} autoCapitalize="off" autoComplete="off" autoCorrect="off" autoSave="off" data-enable-grammarly="false" name="composer-code" onChange={(evt) => onChange(evt.currentTarget.value, markup)}></textarea>
-                <ul className="composer-commands">
+                <ul className="composer-commands" onClick={(evt) => evt.currentTarget == evt.target && areaRef.current!.focus()}>
                     <li><button onClick={insertTag("b")} type="button" title="Bold"><b>B</b></button></li>
                     <li><button onClick={insertTag("i")} type="button" title="Italics"><i>I</i></button></li>
                     <li><button onClick={insertTag("u")} type="button" title="Underline"><u>U</u></button></li>

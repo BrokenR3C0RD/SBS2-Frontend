@@ -2,25 +2,22 @@
     --primary-bg: #111;
     --scroll-thumb: #666;
     --secondary-bg: #222;
-
     --primary-text: white;
     --primary-accent: #878787;
-
     --input-color: #878787;
-
     --secondary-accent: #333;
-
     --sidebar-background: rgba(16, 16, 16, 0.8);
     --sidebar-selected: #999;
     --sidebar-hover: #555;
-
     --cell-background: rgba(27, 27, 27, 0.7);
-
     --pubkey-color: #ccc;
-
     --background-tile: url("/res/img/tiles_dark.png");
-
     --link-color: #99b;
+    --shadow: rgba(0, 0, 0, 0.5);
+}
+
+:root[data-theme="dark"] #content input:not([type="checkbox"]):not([type="submit"]), :root[data-theme="dark"] textarea {
+    box-shadow: 1px 1px 5px var(--shadow);
 }
 
 /* @supports (backdrop-filter: none) or (-webkit-backdrop-filter: none) {

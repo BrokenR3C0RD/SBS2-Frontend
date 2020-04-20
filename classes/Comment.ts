@@ -42,7 +42,7 @@ export class Comment extends Entity {
         }))?.map(comment => plainToClass(Comment, comment)) || null;
     }
 
-    public static useComments(parent: Entity[] | null): [Comment[], BaseUser[], number[], boolean, () => void] {
+    public static useComments(parent: Entity[] | null, realtime: boolean = true): [Comment[], BaseUser[], number[], boolean, () => void] {
         // Since this is using long polling, which is a VERY special case, we're giving up on even TRYING to reuse useRequest
         const [comments, setComments] = useState<Comment[]>([]);
         const [users, setUsers] = useState<BaseUser[]>([]);
@@ -113,7 +113,7 @@ export class Comment extends Entity {
                     setFetchMore(false);
                     setNoMore((newc.length % 20) !== 0);
                 })();
-            } else {
+            } else if(realtime){
                 (async () => {
                     while (!aborter.signal.aborted) {
                         if (!didInit)

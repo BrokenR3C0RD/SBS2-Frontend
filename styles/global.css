@@ -69,7 +69,7 @@ nav {
     height: 1.5em;
     line-height: 1.5em;
     border-bottom: 1px solid #333;
-    box-shadow: 0 3px 5px rgba(0, 0, 0, .7);
+    box-shadow: 0 3px 5px var(--shadow);
     overflow: hidden;
     z-index: 1000000;
 }
@@ -156,7 +156,7 @@ nav #user-info[data-open="true"] ul {
     margin-top: 1.5em;
     width: 10em;
     list-style: none;
-    box-shadow: -3px 3px 10px rgba(0, 0, 0, .7);
+    box-shadow: -2px 2px 10px var(--shadow);
 }
 
 nav #user-info[data-open="true"] ul li a:hover {
@@ -175,7 +175,7 @@ nav #user-info[data-open="true"] ul li a:hover {
     height: 100vh;
     width: 20%;
     opacity: 1;
-    box-shadow: -3px 0 5px rgba(0, 0, 0, .7);
+    box-shadow: -3px 0 5px var(--shadow);
 }
 
 #sidebar ul {
@@ -258,8 +258,13 @@ form input:not([type="checkbox"]), form button, form textarea {
     background-color: var(--secondary-accent);
     border: 0px solid var(--primary-accent);
     margin-bottom: 1em;
-    padding: .25em;
+    padding: .3em;
     resize: vertical;
+}
+
+:root button, :root #content input[type="submit"], :root select {
+    padding: .5em .3em;
+    box-shadow: 1px 1px 4px var(--shadow);
 }
 
 #content label {
@@ -346,7 +351,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     table-layout: fixed;
     background-color: var(--primary-bg);
     margin-top: 2em;
-    box-shadow: 3px 3px 5px rgba(0, 0, 0, .7);
+    box-shadow: 3px 3px 5px var(--shadow);
     margin-left: auto;
     margin-right: auto;
     width: 90%;
@@ -379,72 +384,85 @@ form input:not([type="checkbox"]), form button, form textarea {
 .composer {
     width: 100%;
     background-color: var(--secondary-accent);
-    border: 2px solid var(--secondary-bg);
     padding: 2em;
     display: flex;
+    box-shadow: 2px 2px 5px var(--shadow);
 }
 
-.composer[data-previewhidden="true"] .composer-commands {
-    opacity: 0;
+.composer[data-previewhidden="true"] .composer-commands * {
     transition: opacity .25s linear;
+    opacity: 0
 }
 
-.composer .composer-editor:focus+.composer-commands, .composer[data-previewhidden="true"] .composer-commands:hover {
+.composer .composer-editor:focus+.composer-commands *, .composer[data-previewhidden="true"] .composer-commands:hover * {
     opacity: 1;
 }
 
 .composer .composer-commands {
     top: 1px;
-    position: absolute;
     list-style: none;
     margin: 0 auto;
     text-align: center;
     padding: 0;
     min-height: 3em;
     width: 100%;
-    vertical-align: top
+    vertical-align: top;
+    background-color: var(--primary-bg);
 }
 
 .composer .composer-commands li {
     display: inline-block;
     min-width: 1em;
-    line-height: 1.25em;
+    line-height: 2em;
 }
 
-.composer .composer-commands li button {
+.composer .composer-commands li button, .composer .composer-commands li select {
     background-color: var(--secondary-bg);
     color: var(--primary-text);
-    border: none;
     vertical-align: middle;
     text-align: center;
-    min-height: 1.25em;
-    max-height: 1.5em;
-    height: 100%;
-    padding: 0 auto;
-    margin-bottom: 0;
+    width: 2em;
+    height: 2em;
+    font-size: 1em;
+    margin-bottom: 0px;
+    padding: .3em;
+}
+
+.composer .composer-commands li select {
+    vertical-align: -.5px;
+    border-top: 2px solid transparent;
+    display: inline;
+    padding: .10em;
+    border: 0;
+    width: min-content;
 }
 
 .composer .composer-editor {
     background-color: var(--primary-bg);
-    border: 1px solid var(--primary-accent);
     color: var(--input-color);
     width: 100%;
     margin: 0;
     padding: 1em 1em;
-    padding-top: 3em;
     overflow: auto;
     resize: none;
     height: 100%;
     min-height: 15em;
+    outline: none;
+}
+
+.composer .composer-editorwrapper:focus-within {
+    border: 2px solid teal;
+    box-sizing: border-box;
 }
 
 .composer .composer-editorwrapper {
     min-width: 50%;
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     min-height: 100%;
     position: relative;
     flex-grow: 1;
+    box-shadow: 1px 1px 5px var(--shadow);
 }
 
 .composer .composer-editorwrapper:after {
@@ -459,7 +477,8 @@ form input:not([type="checkbox"]), form button, form textarea {
 .composer .composer-preview {
     width: 100%;
     height: 100%;
-    border: 1px solid var(--primary-accent);
+    border-left: 1px solid var(--primary-accent);
+    box-shadow: 1px 1px 5px var(--shadow);
     overflow-y: auto;
     overflow-x: hidden;
     white-space: pre-wrap;
@@ -501,7 +520,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     min-width: 0;
     width: 100%;
     background-color: var(--cell-background);
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, .7);
+    box-shadow: 2px 2px 5px var(--shadow);
     padding: 1em;
 }
 
@@ -618,9 +637,6 @@ form input:not([type="checkbox"]), form button, form textarea {
     .cell, .composer {
         padding: .5em;
     }
-    .composer .composer-editor {
-        padding-top: 5em;
-    }
 }
 
 .bbcode-view {
@@ -658,7 +674,7 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 .bbcode-view>.spoiler>.spoiler-open[data-open="true"]+.spoiler-content {
     padding: .5em;
-    box-shadow: 3px 3px 5px rgba(0, 0, 0, .7);
+    box-shadow: 2px 2px 5px var(--shadow);
 }
 
 .bbcode-view blockquote {
@@ -686,7 +702,7 @@ form input:not([type="checkbox"]), form button, form textarea {
 .bbcode-view>blockquote {
     padding: 1em;
     padding-left: 1em;
-    box-shadow: 3px 3px 5px rgba(0, 0, 0, .7);
+    box-shadow: 2px 2px 5px var(--shadow);
 }
 
 .bbcode-view code {
@@ -701,7 +717,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     background: black;
     color: white;
     padding: .5em;
-    box-shadow: 3px 3px 5px rgba(0, 0, 0, .7);
+    box-shadow: 2px 2px 5px var(--shadow);
     margin-bottom: 1em;
 }
 
@@ -760,7 +776,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     min-width: 100%;
     padding: 1em;
     list-style: none;
-    box-shadow: 3px 3px 5px rgba(0, 0, 0, .7);
+    box-shadow: 2px 2px 5px var(--shadow);
     font-weight: bold;
     height: min-content;
 }
@@ -790,7 +806,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     top: 0;
     left: 0;
     transition: background-color 1s;
-    background-color: rgba(0, 0, 0, .7);
+    background-color: var(--shadow);
 }
 
 #loading .spinner {

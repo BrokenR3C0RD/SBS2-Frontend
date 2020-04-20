@@ -44,7 +44,7 @@ export default (({
 
     useEffect(() => setInfo(page?.title || "", []), [pages]);
 
-    const [comments, commentUsers, listeners, fetching, fetchMoreComments] = Comment.useComments(pages);
+    const [comments, commentUsers, listeners, fetching, fetchMoreComments] = Comment.useComments(pages, self != null);
     const [ref, inView] = useInView();
 
     useEffect(() => {

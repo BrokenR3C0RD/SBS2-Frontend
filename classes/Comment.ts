@@ -193,8 +193,9 @@ export class Comment extends Entity {
                                 let newc = (await resp.json());
                                 if (newc.length > 0) {
                                     setListeners(newc.filter((info: any) => info.contentListenId == lastParent.id).map((info: any) => info.userId));
-                                    let newUsers = (newc as number[])
-                                        .filter(id => users.findIndex(user => user.id == id) == -1)
+                                    let newUsers = (newc as any[])
+                                        .map(listener => listener.userId as number)
+                                        .filter(listener => users.findIndex(user => user.id == listener) == -1)
                                         .reduce<number[]>((acc, id) => (acc.indexOf(id) == -1 && acc.push(id) && acc) || acc, [])
 
                                     if (newUsers.length > 0)
@@ -209,7 +210,7 @@ export class Comment extends Entity {
                             }
                         } catch (e) {
                             if(!aborter.signal.aborted)
-                                console.error("An error occurred while polling for listeners:" + ("stack" in e ? e.stack : e));
+                                console.error("An error occurred while polling for listeners:" + (e && e.stack ? e.stack : e));
                         }
                     }
                 })();
@@ -218,7 +219,7 @@ export class Comment extends Entity {
             return () => {
                 aborter.abort();
             }
-        }, [parent, didInit, comments, fetchMore]);
+        }, [parent, didInit, comments, fetchMore, listeners]);
 
         return [comments, users, listeners, (!didInit) || fetchMore, () => !noMore && setFetchMore(true)];
     }

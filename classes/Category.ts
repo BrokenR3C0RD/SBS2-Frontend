@@ -1,6 +1,6 @@
 import {IsInt,  IsString,  IsOptional, IsObject} from "class-validator";
 import { Entity, AccessControlledEntity } from "./Entity";
-import { Dictionary } from "../interfaces";
+import { Dictionary, SearchQuery } from "../interfaces";
 import { plainToClass } from "class-transformer";
 import { DoRequest } from "../utils/Request";
 import { API_ENTITY } from "../utils/Constants";
@@ -50,12 +50,12 @@ export class Category extends AccessControlledEntity {
             .map(entity => plainToClass(Category, entity));
     }
 
-    public static useCategory(ids: number[]): [any, Category[] | null, () => void] {
-        return Entity.useEntity(ids, "Category", async (e) => plainToClass(Category, e)) as [any, Category[] | null, () => void];
+    public static useCategory(query: SearchQuery): [any, Category[] | null, () => void] {
+        return Entity.useEntity(query, "Category", async (e) => plainToClass(Category, e)) as [any, Category[] | null, () => void];
     }
 
     public static useCategoryTree(): [any, ParentCategory[] | null, () => void] {
-        const [err, categories, mutate] = Entity.useEntity([], "Category", async (e) => plainToClass(ParentCategory, e))
+        const [err, categories, mutate] = Entity.useEntity({}, "Category", async (e) => plainToClass(ParentCategory, e))
         const [categoryTree, setCategoryTree] = useState<ParentCategory[]>();
 
         useEffect(() => {

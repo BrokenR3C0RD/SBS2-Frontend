@@ -1,5 +1,5 @@
 import { Content } from "./Content";
-import { Dictionary } from "../interfaces";
+import { Dictionary, SearchQuery } from "../interfaces";
 import { plainToClass } from "class-transformer";
 // import { BaseUser } from "./User";
 
@@ -26,8 +26,8 @@ export class Page extends Content {
             .map(entity => plainToClass(Page, entity));
     }
 
-    public static usePage(ids: number[], mutate: (p: Page) => Promise<Page> = async p => p): [any, Page[] | null, () => void] {
-        return Content.useContent(ids, p => mutate(plainToClass(Page, p))) as [any, Page[] | null, () => void];
+    public static usePage(query: SearchQuery, mutate: (p: Page) => Promise<Page> = async p => p): [any, Page[] | null, () => void] {
+        return Content.useContent(query, p => mutate(plainToClass(Page, p))) as [any, Page[] | null, () => void];
     }
 
     public static async Update(page: Partial<Page>): Promise<Page> {
@@ -44,9 +44,9 @@ export class UserPage extends Page {
     // @ts-ignore
     values: PageProperties = {};
 
-    public static GetUserPage(user: BaseUser): Promise<UserPage> {
+    /*public static GetUserPage(user: BaseUser): Promise<UserPage> {
         
-    }
+    }*/
 
     public static async Update(page: Partial<UserPage>): Promise<Page> {
         // @ts-ignore

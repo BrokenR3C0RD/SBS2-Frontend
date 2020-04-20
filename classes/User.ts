@@ -3,6 +3,7 @@ import { plainToClass } from "class-transformer";
 import { Entity } from "./Entity";
 import { DoRequest } from "../utils/Request";
 import { API_ENTITY } from "../utils/Constants";
+import { SearchQuery } from "../interfaces";
 
 export class BaseUser extends Entity {
     @IsString()
@@ -29,8 +30,8 @@ export class BaseUser extends Entity {
         })) || [];
     }
 
-    public static useUser(ids: number[]): [any, BaseUser[] | null, () => void] {
-        return Entity.useEntity(ids, "User", async (e) => plainToClass(BaseUser, e)) as [any, BaseUser[] | null, () => void];
+    public static useUser(query: SearchQuery): [any, BaseUser[] | null, () => void] {
+        return Entity.useEntity(query, "User", async (e) => plainToClass(BaseUser, e)) as [any, BaseUser[] | null, () => void];
     }
 }
 

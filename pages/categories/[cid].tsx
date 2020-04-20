@@ -14,7 +14,9 @@ export default (({
 
 
     const { cid } = Router.query;
-    const [, categories] = Category.useCategory([+cid]);
+    const [, categories] = Category.useCategory({
+        ids: [+cid]
+    });
     const [, tree] = Category.useCategoryTree();
 
     const category = (categories?.[0] as Category | undefined);

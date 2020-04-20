@@ -1,6 +1,6 @@
 import { IsDate, IsInt, IsObject } from "class-validator";
 import { Type } from "class-transformer";
-import { Dictionary } from "../interfaces";
+import { Dictionary, SearchQuery } from "../interfaces";
 import { DoRequest, useRequest } from "../utils/Request";
 import { API_ENTITY } from "../utils/Constants";
 import { BaseUser } from "./User";
@@ -34,12 +34,12 @@ export class Entity {
         }))!;
     }
 
-    public static useEntity(ids: number[], type: string, mutate: (e: Entity) => Promise<Entity> = (async (e) => e)): [any, Entity[] | null, () => void] {
+    public static useEntity(query: SearchQuery, type: string, mutate: (e: Entity) => Promise<Entity> = (async (e) => e)): [any, Entity[] | null, () => void] {
         const [errors, data, mut] = useRequest<Entity[]>({
             url: API_ENTITY(type),
             method: "GET",
             data: {
-                ids: ids
+                ...query
             }
         }, async (entities) => {
             if(entities.length == 0){

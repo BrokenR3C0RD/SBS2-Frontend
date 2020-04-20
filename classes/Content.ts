@@ -1,6 +1,6 @@
 import {IsInt,  IsString,  IsOptional, IsObject, IsArray} from "class-validator";
 import { AccessControlledEntity, Entity } from "./Entity";
-import { Dictionary } from "../interfaces";
+import { Dictionary, SearchQuery } from "../interfaces";
 import { plainToClass } from "class-transformer";
 import { DoRequest } from "../utils/Request";
 import { API_ENTITY } from "../utils/Constants";
@@ -39,8 +39,8 @@ export class Content extends AccessControlledEntity {
             .map(entity => plainToClass(Content, entity));
     }
 
-    public static useContent(ids: number[], mutate: ((e: Content) => Promise<Content>) = async (e) => e): [any, Content[] | null, () => void] {
-        return Entity.useEntity(ids, "Content", async (e) => mutate(plainToClass(Content, e))) as [any, Content[] | null, () => void];
+    public static useContent(query: SearchQuery, mutate: ((e: Content) => Promise<Content>) = async (e) => e): [any, Content[] | null, () => void] {
+        return Entity.useEntity(query, "Content", async (e) => mutate(plainToClass(Content, e))) as [any, Content[] | null, () => void];
     }
 
     public static async Update(content: Partial<Content>): Promise<Content> {

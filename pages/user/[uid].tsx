@@ -12,7 +12,9 @@ export default (({
 }) => {
     const { query: { uid } } = useRouter();
 
-    const [, user] = BaseUser.useUser([parseInt((uid ?? "").toString())]);
+    const [, user] = BaseUser.useUser({
+        ids: [parseInt((uid ?? "").toString())]
+    });
 
     useEffect(() => {
         setInfo(user && user[0] ? user[0].username : "", []);
@@ -36,7 +38,7 @@ export default (({
                 </Cell>
                 <Cell x={2} y={2}>
                     <h2>About me:</h2>
-                    
+
                 </Cell>
             </>}
 

@@ -14,7 +14,7 @@ export default (({
 }) => {
     const router = useRouter();
     const [errors, setErrors] = useState<string[]>([]);
-    const [, categories, mutate] = Category.useCategory([]); // This will load all categories
+    const [, categories, mutate] = Category.useCategory({}); // This will load all categories
     const [, categoryTree] = Category.useCategoryTree();
     const [selected, setSelected] = useState<number>();
     const [newPerms, setNewPerms] = useState<Dictionary<Dictionary<string>>>({});

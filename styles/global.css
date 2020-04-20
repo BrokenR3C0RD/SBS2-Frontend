@@ -21,6 +21,7 @@ body {
     color: var(--primary-text);
 }
 
+
 input {
     color: var(--input-color);
 }
@@ -53,6 +54,9 @@ footer {
 footer button {
     vertical-align: top;
     margin-top: -3px;
+    margin-bottom: 0;
+    width: 2em;
+    line-height: 2.3em;
 }
 
 nav {
@@ -234,7 +238,7 @@ nav #show-sidebar {
     margin-right: calc(20% + 2em);
     margin-bottom: 2em;
     width: calc(80% - 4em);
-    min-height: calc(100vh - 5em);
+    min-height: calc(100vh - 5.3em);
     height: 100%;
     position: relative;
     font-size: 1em;

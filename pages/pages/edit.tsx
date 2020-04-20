@@ -38,10 +38,12 @@ export default (({
             Router.push("/login");
     }, [user])
 
-    const [, origPages] = ProgramPage.usePage([+pid]);
+    const [, origPages] = ProgramPage.usePage({
+        ids: [+pid]
+    });
 
     useEffect(() => {
-        if(pid == null){
+        if (pid == null) {
             setTitle("");
             setCode("");
             setPerms([]);

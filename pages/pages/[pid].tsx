@@ -37,12 +37,14 @@ export default (({
     const [keyInfo, setKeyInfo] = useState<KeyInfo | null>();
 
     const { pid } = Router.query;
-    const [, pages] = Page.usePage([+pid]);
+    const [, pages] = Page.usePage({
+        ids: [+pid]
+    });
     const page = (pages?.[0] as ProgramPage | Page | undefined);
 
     useEffect(() => setInfo(page?.title || "", []), [pages]);
 
-    const [comments, commentUsers, fetching, fetchMoreComments] = Comment.useComments(pages);
+    const [comments, commentUsers, listeners, fetching, fetchMoreComments] = Comment.useComments(pages);
     const [ref, inView] = useInView();
 
     useEffect(() => {
@@ -51,7 +53,9 @@ export default (({
 
     }, [inView])
 
-    const [, users] = BaseUser.useUser([page?.createUserId as number, page?.editUserId as number]);
+    const [, users] = BaseUser.useUser({
+        ids: [page?.createUserId as number, page?.editUserId as number]
+    });
     const user = users?.[0];
     const editUser = users?.[1] || user;
 
@@ -122,7 +126,7 @@ export default (({
                             {self && page.Permitted(self, CRUD.Update) && <button type="button" style={{ float: "right", fontSize: "1rem", height: "2em", width: "2em", color: "lightcoral", marginLeft: "5px", textAlign: "center" }} onClick={DeletePage}><span className="iconify" data-icon="ic:baseline-delete" data-inline="true"></span></button>}
                             {self && page.Permitted(self, CRUD.Delete) && <button type="button" style={{ float: "right", fontSize: "1rem", height: "2em", width: "2em", textAlign: "center" }} onClick={() => Router.push(`/pages/edit?pid=${page.id}`)}><span className="iconify" data-icon="fe:pencil" data-inline="true"></span></button>}
 
-                            </h1>
+                        </h1>
                         <div id="page-info">
                             <b>Author: </b><Link href="/user/[uid]" as={`/user/${user.id}`}><a>{user.username}</a></Link>
                             {` • `}
@@ -233,6 +237,25 @@ export default (({
                             <Composer hidePreview />
                             <input type="submit" value="Post Comment!" />
                         </Form> || <h3>Sign in to comment!</h3>}
+                        {
+                            (() => {
+                                let listeningUsers = listeners.map(listener => {
+                                    let user = commentUsers.find(user => user.id == listener);
+                                    return user!;
+                                }).filter(user => user != null && user.id != self?.id);
+
+                                let message = `${listeningUsers.slice(0, 2).map(user => user.username).join(", ")} and ${listeningUsers.length - 3} other${listeningUsers.length != 1 ? "s" : ""} are`;
+                                if(listeningUsers.length == 0){
+                                    return null;
+                                } else if(listeningUsers.length == 1){
+                                    message = `${listeningUsers[0].username} is`;
+                                } else if(listeningUsers.length <= 3){
+                                    message = `${listeningUsers.slice(0, listeningUsers.length - 1).map(user => user.username).join(", ")} and ${listeningUsers[listeningUsers.length - 1].username} are`;
+                                }
+
+                                return <h4>{message} currently viewing!</h4>
+                            })()
+                        }
                         {
                             comments.slice().reverse().map((comment, idx) => {
                                 let user = commentUsers.find(user => user.id == comment.createUserId);

@@ -42,7 +42,7 @@ export class Comment extends Entity {
         }))?.map(comment => plainToClass(Comment, comment)) || null;
     }
 
-    public static useComments(parent: Entity[] | null): [Comment[], BaseUser[], boolean, () => void] {
+    public static useComments(parent: Entity[] | null): [Comment[], BaseUser[], number[], boolean, () => void] {
         // Since this is using long polling, which is a VERY special case, we're giving up on even TRYING to reuse useRequest
         const [comments, setComments] = useState<Comment[]>([]);
         const [users, setUsers] = useState<BaseUser[]>([]);
@@ -50,6 +50,7 @@ export class Comment extends Entity {
         const [lastParent, setLastParent] = useState<Entity>();
         const [fetchMore, setFetchMore] = useState<boolean>(false);
         const [noMore, setNoMore] = useState<boolean>(false);
+        const [listeners, setListeners] = useState<number[]>([]);
 
         useEffect(() => {
             if (parent == null || parent[0] == null)
@@ -161,7 +162,54 @@ export class Comment extends Entity {
                             }
                         } catch (e) {
                             if(!aborter.signal.aborted)
-                                console.error("An error occurred doing all that fun stuff: " + ("stack" in e ? e.stack : e));
+                                console.error("An error occurred while polling for comments:" + ("stack" in e ? e.stack : e));
+                        }
+                    }
+                })();
+                (async () => {
+                    while (!aborter.signal.aborted) {
+                        if (!didInit)
+                            continue;
+
+                        try {
+                            let token = sessionStorage.getItem("sbs-auth") || localStorage.getItem("sbs-auth") || null;
+                            let resp = await fetch(`${API_ENTITY("Comment")}/listen/${parent[0].id}/listeners?${listeners.map(id => `lastListeners=${id}`).join("&")}`, {
+                                method: "GET",
+                                headers: {
+                                    "Accept": "application/json",
+                                    ...(token ? {
+                                        "Authorization": `Bearer ${token}`
+                                    } : {})
+                                },
+                                signal: aborter.signal
+                            });
+                            if (aborter.signal.aborted)
+                                return;
+
+                            if (resp.status === 400)
+                                break;
+
+                            if (resp.status === 200) {
+                                let newc = (await resp.json());
+                                if (newc.length > 0) {
+                                    setListeners(newc.filter((info: any) => info.contentListenId == lastParent.id).map((info: any) => info.userId));
+                                    let newUsers = (newc as number[])
+                                        .filter(id => users.findIndex(user => user.id == id) == -1)
+                                        .reduce<number[]>((acc, id) => (acc.indexOf(id) == -1 && acc.push(id) && acc) || acc, [])
+
+                                    if (newUsers.length > 0)
+                                        setUsers(
+                                            users.concat(await BaseUser.GetByIDs(newUsers))
+                                        );
+
+                                    break;
+                                }
+                            } else {
+                                throw await resp.text();
+                            }
+                        } catch (e) {
+                            if(!aborter.signal.aborted)
+                                console.error("An error occurred while polling for listeners:" + ("stack" in e ? e.stack : e));
                         }
                     }
                 })();
@@ -172,7 +220,7 @@ export class Comment extends Entity {
             }
         }, [parent, didInit, comments, fetchMore]);
 
-        return [comments, users, (!didInit) || fetchMore, () => !noMore && setFetchMore(true)];
+        return [comments, users, listeners, (!didInit) || fetchMore, () => !noMore && setFetchMore(true)];
     }
 
     public static async Update(comment: Partial<Comment>): Promise<Comment> {
@@ -185,5 +233,13 @@ export class Comment extends Entity {
             },
             return: Comment
         }))!;
+    }
+
+    public static async Delete(comment: Comment): Promise<boolean> {
+        await DoRequest({
+            url: `${API_ENTITY("Content")}/${comment.id}`,
+            method: "DELETE"
+        });
+        return true;
     }
 }

@@ -10,7 +10,7 @@ export class BaseUser extends Entity {
     @Length(3, 20)
     username: string = "";
 
-    avatar: null = null;
+    avatar: number = 0;
 
     public static async GetByIDs(ids: number[]): Promise<BaseUser[]> {
         return (await Entity

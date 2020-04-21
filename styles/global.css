@@ -569,11 +569,11 @@ form input:not([type="checkbox"]), form button, form textarea {
     width: 100%;
     background-color: var(--cell-background);
     box-shadow: 2px 2px 5px var(--shadow);
-    padding: 1em;
+    padding: 1.25em;
 }
 
 .cell>h2, form>h2 {
-    margin-top: -.25em;
+    margin-top: 0em;
 }
 
 .cell>h1:first-child {

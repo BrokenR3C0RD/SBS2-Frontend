@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { BaseUser } from "../../classes";
 import Moment from "moment";
+import { API_ENTITY } from "../../utils/Constants";
 
 export default (({
     setInfo,
@@ -34,7 +35,15 @@ export default (({
                     <h1>{user[0].username}</h1>
                 </Cell>
                 <Cell x={1} y={2} width={1} >
-                    <p>Joined {Moment(user[0].createDate).fromNow()}</p>
+                    <img src={user[0].avatar !== 0 ? `${API_ENTITY("File")}/raw/${user[0].avatar}?size=256&square=true` : `https://www.tinygraphs.com/labs/isogrids/hexa/${user[0].username}?theme=seascape&size=256`} />
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Joined:</td>
+                                <td>{Moment(user[0].createDate).fromNow()}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </Cell>
                 <Cell x={2} y={2}>
                     <h2>About me:</h2>

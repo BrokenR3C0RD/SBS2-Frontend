@@ -6,6 +6,8 @@ import { useRouter } from "next/router";
 import Form from "../components/Form";
 import { useSettings, Variable } from "../utils/User";
 import {useDropzone} from "react-dropzone";
+import { UploadFile, DoRequest } from "../utils/Request";
+import { API_ENTITY } from "../utils/Constants";
 
 export default (({
     setInfo,
@@ -13,12 +15,26 @@ export default (({
 }) => {
     const Router = useRouter();
 
-    function onDrop(files: File[]){
-        console.log(files);
+    async function onDrop(files: File[]){
+        let file = files[0];
+        if(file){
+            try {
+                let id = await UploadFile(file);
+                await DoRequest({
+                    url: `${API_ENTITY("User")}/basic`,
+                    method: "PUT",
+                    data: {
+                        avatar: id
+                    }
+                });
+                mutateSettings();
+            } catch(e){
+                console.log("Updating user avatar failed: " + e.stack || e.toString());
+            }
+        }
     }
 
-    const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, multiple: false})
-
+    const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, multiple: false, accept: "image/png, image/jpeg, image/gif"})
 
     useEffect(() => {user == null && Router.replace("/")});
     useEffect(() => setInfo("User Settings", []), []);

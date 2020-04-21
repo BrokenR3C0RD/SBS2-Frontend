@@ -116,6 +116,10 @@ const App = (({
             evt.target.parentElement.dataset.open = ["true", "false"][(["true", "false"].indexOf(evt.target.parentElement.dataset.open) + 1) % 2];
     }
 
+    function handleSearch(evt: React.FormEvent<HTMLInputElement>) {
+        console.log(evt.currentTarget.value);
+    }
+
     return <>
         <Head>
             <meta charSet="utf8" />
@@ -141,7 +145,18 @@ const App = (({
             <span id="nav-brand">
                 <Link href="/"><a><img src="/res/img/logo.svg" /></a></Link>
             </span>
-            <input type="text" placeholder="Search..." />
+
+            <span className="search-container">
+                <input type="text" placeholder="Search..." onChange={handleSearch} />
+                <div id="hideout" />
+                <div id="results">
+                    <ul>
+                        <li>First result</li>
+                        <li>Second</li>
+                    </ul>
+                </div>
+            </span>
+
             <img src="/res/img/hamburger.png" id="show-sidebar" onClick={updateSideBar} data-open={sidebar} />
             <div id="user-info" ref={userInfo} data-open={false} onClick={toggle}>
                 {user && (

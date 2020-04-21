@@ -70,7 +70,7 @@ export default (({
             setProgramPage(page.type === "@page.program");
             setMarkup(page.values.markupLang);
             setKeywords(page.keywords);
-            setImages(page.values.photos.split(",").map(id => +id));
+            setImages((page.values.photos || "").split(",").map(id => +id));
         }
     }, [origPages])
 
@@ -118,7 +118,8 @@ export default (({
                 markupLang: info["markup_lang"] as string,
                 photos: images.join(",")
             } : {
-                    markupLang: info["markup_lang"] as string
+                    markupLang: info["markup_lang"] as string,
+                    photos: images.join(",")
                 },
             keywords: keywords.map(tag => tag.trim()),
             permissions: {

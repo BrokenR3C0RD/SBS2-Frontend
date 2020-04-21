@@ -590,6 +590,12 @@ form input:not([type="checkbox"]), form button, form textarea {
     border-top: 2px solid var(--secondary-accent);
 }
 
+.profile-avatar {
+    display: block;
+    margin: auto;
+    box-shadow: 1px 1px 5px var(--shadow);
+}
+
 @media only screen and (max-width: 1280px) {
     #content {
         margin: 6em 1em;

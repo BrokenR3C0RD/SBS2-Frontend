@@ -22,7 +22,7 @@ export default (({
     }, [user])
     return <>
         <Grid
-            rows={["min-content", "fit-content(30em)"]}
+            rows={["min-content", "max-content", "max-content"]}
             cols={["max-content", "1fr"]}
             gapX="2em"
             gapY="2em"
@@ -33,19 +33,14 @@ export default (({
             {user && user[0] && <>
                 <Cell x={1} y={1} width={2}>
                     <h1>{user[0].username}</h1>
+                    <div id="page-info">
+                        <b>Joined: </b>{Moment(user[0].createDate).fromNow()}
+                    </div>
                 </Cell>
                 <Cell x={1} y={2} width={1} >
-                    <img src={user[0].avatar !== 0 ? `${API_ENTITY("File")}/raw/${user[0].avatar}?size=256&square=true` : `https://www.tinygraphs.com/labs/isogrids/hexa/${user[0].username}?theme=seascape&size=256`} />
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>Joined:</td>
-                                <td>{Moment(user[0].createDate).fromNow()}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <img className="profile-avatar" src={user[0].avatar !== 0 ? `${API_ENTITY("File")}/raw/${user[0].avatar}?size=256&square=true` : `https://www.tinygraphs.com/labs/isogrids/hexa/${user[0].username}?theme=seascape&size=256`} />
                 </Cell>
-                <Cell x={2} y={2}>
+                <Cell x={2} y={2} height={2}>
                     <h2>About me:</h2>
 
                 </Cell>

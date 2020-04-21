@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { PageProps, Dictionary } from "../../interfaces";
 import { Grid, Cell } from "../../components/Layout";
 import Composer from "../../components/Composer";
@@ -9,8 +9,10 @@ import { useRouter } from "next/router";
 import { GetSBAPIInfo, KeyInfo } from "../../utils/SBAPI";
 import Moment from "moment";
 import { Page, ProgramPage } from "../../classes";
-import { PAGE_CATEGORY } from "../../utils/Constants";
+import { PAGE_CATEGORY, API_ENTITY } from "../../utils/Constants";
 import { CRUD } from "../../classes/Entity";
+import { useDropzone } from "react-dropzone";
+import { UploadFile } from "../../utils/Request";
 
 function size(number: number): string {
     const suffixes = ["KB", "MB", "GB"];
@@ -52,6 +54,7 @@ export default (({
             setKeywords([]);
         }
     }, [pid]);
+
     useEffect(() => {
         if (origPages && origPages.length > 0) {
             const page = origPages[0] as Page | ProgramPage;
@@ -67,6 +70,7 @@ export default (({
             setProgramPage(page.type === "@page.program");
             setMarkup(page.values.markupLang);
             setKeywords(page.keywords);
+            setImages(page.values.photos.split(",").map(id => +id));
         }
     }, [origPages])
 
@@ -112,7 +116,7 @@ export default (({
                     switch: keyInfo!.extInfo.console === "Switch" ? false : undefined
                 }),
                 markupLang: info["markup_lang"] as string,
-                photos: ""
+                photos: images.join(",")
             } : {
                     markupLang: info["markup_lang"] as string
                 },
@@ -176,10 +180,32 @@ export default (({
         }
     }
 
+    const [images, setImages] = useState<number[]>([]); 
+
+    let onDrop = useCallback(async (files: File[]) => {
+        let uploadedImages: number[] = [];
+        for(let i = 0; i < files.length; i++){
+            try {
+                let id = await UploadFile(files[i]);
+                images.push(id);
+            } catch(e){
+                console.error("Failed to upload file: " + e.stack);
+            }
+        }
+        setImages(images.concat(uploadedImages));
+    }, []);
+
+    function RemoveImage(id: number){
+        images.splice(images.indexOf(id), 1);
+        setImages(images);
+    }
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, multiple: true, accept: "image/*" })
+
     return <>
         <Form onSubmit={SubmitPage}>
             <Grid
-                rows={["min-content(1fr)", "1fr", "1fr", "min-content(1fr)"]}
+                rows={["min-content(1fr)", "fit-content(1fr)", "1fr", "1fr", "min-content(1fr)"]}
                 cols={["1fr", "1fr"]}
                 gapX="2em"
                 gapY="2em"
@@ -305,7 +331,16 @@ export default (({
                     <h2>Content:</h2>
                     <Composer code={code} onChange={(newcode, newmarkup) => { setCode(newcode); setMarkup(newmarkup) }} markup={markup} />
                 </Cell>
-                <Cell x={1} y={4} width={2}>
+                <Cell x={1} y={4} width={2} {...getRootProps()}>
+                    <h2>Images:</h2>
+                    <input {...getInputProps()} />
+                    <p>
+                        {isDragActive && "Drop here!"}
+                        {!isDragActive && "Drag and drop images here, or click to open the file explorer."}
+                    </p>
+                    {images.map((id) => <img className="page-image" src={`${API_ENTITY("File")}/raw/${id}?size=200`} key={id} onClick={(evt) => {evt.stopPropagation(); RemoveImage(id)}} /> )}
+                </Cell>
+                <Cell x={1} y={5} width={2}>
                     <h2>Ready to post?</h2>
                     <div className="errors">
                         {errors.join(", ")}

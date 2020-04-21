@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, HTMLAttributes } from "react";
 
 const Grid = (({
     children,
@@ -33,14 +33,15 @@ const Cell = (({
     width = 1,
     height = 1,
     style = {},
-    className = ""
+    className = "",
+    ...props
 }) => {
     return <div className={`cell ${className}`} style={Object.assign({}, {
         gridColumnStart: x,
         gridColumnEnd: x + width,
         gridRowStart: y,
         gridRowEnd: y + height
-    }, style)}>
+    }, style)} {...props}>
         {children}
     </div>
 }) as React.FunctionComponent<{
@@ -50,7 +51,7 @@ const Cell = (({
     height?: number,
     style?: React.CSSProperties,
     className?: string
-}>;
+} & HTMLAttributes<HTMLDivElement>>;
 
 const Gallery = (({
     children,
@@ -124,6 +125,6 @@ const Gallery = (({
     style?: React.CSSProperties,
     timer?: number,
     className?: string,
-}>;
+} & HTMLAttributes<HTMLDivElement>>;
 
 export { Grid, Cell, Gallery }

@@ -154,7 +154,7 @@ const tags = {
                 let url = "";
                 if(typeof node.content == "string"){
                     url = node.content;
-                } else if(typeof node.content == "object" && node.content.length > 0) {
+                } else if(typeof node.content == "object" && node.content.length > 0 && typeof node.content[0] === "string") {
                     url = node.content[0] as string;
                 } else {
                     return "";

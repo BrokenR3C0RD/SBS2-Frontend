@@ -9,11 +9,11 @@ import { useRouter } from "next/router";
 import BBCodeView from "../../components/BBCode";
 import Moment from "moment";
 import { CRUD } from "../../classes/Entity";
-import { isURL } from "validator";
 import { GetSBAPIInfo, KeyInfo } from "../../utils/SBAPI";
 import Composer from "../../components/Composer";
 import moment from "moment";
 import { useInView } from "react-intersection-observer";
+import { API_ENTITY } from "../../utils/Constants";
 
 function size(number: number): string {
     const suffixes = ["KB", "MB", "GB"];
@@ -153,19 +153,7 @@ export default (({
                                 <Gallery className="program-images" width="400px" height="240px" timer={0}>
                                     {
                                         page.values.photos.split(",")
-                                            .map((photo, i) => <img src={isURL(photo, {
-                                                protocols: ['http', 'https', 'ftp'],
-                                                require_tld: false,
-                                                require_protocol: false,
-                                                require_host: false,
-                                                require_valid_protocol: true,
-                                                allow_underscores: false,
-                                                host_whitelist: undefined,
-                                                host_blacklist: undefined,
-                                                allow_trailing_dot: false,
-                                                allow_protocol_relative_urls: true,
-                                                disallow_auth: false
-                                            }) ? photo : "/res/img/logo.svg"} key={i} data-chosen={i == 0} />)
+                                            .map((photo, i) => <img src={`${API_ENTITY("File")}/raw/${+photo}?size=400`} key={i} {...{"data-chosen": i == 0 ? "data-chosen" : undefined}} />)
                                     }
                                 </Gallery>
                             }

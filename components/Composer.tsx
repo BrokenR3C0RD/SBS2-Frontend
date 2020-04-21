@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import BBCodeView from "./BBCode";
-import {UploadFile} from "../utils/Request";
-import {useDropzone} from "react-dropzone";
+import { UploadFile } from "../utils/Request";
+import { useDropzone } from "react-dropzone";
 import { API_ENTITY } from "../utils/Constants";
 
 export default (({
@@ -22,14 +22,19 @@ export default (({
 
     let onDrop = useCallback(async (files: File[]) => {
         let file = files[0];
-        if(file){
-            let d = await UploadFile(file);
-            console.log(d);
-            return insertTag("img", `${API_ENTITY("File")}/raw/${d}`)();
+        if (file) {
+            try {
+                let d = await UploadFile(file);
+                console.log(d);
+                return insertTag("img", `${API_ENTITY("File")}/raw/${d}`)();
+            } catch(e){
+                console.error("Failed to upload file");
+                console.error(e);
+            }
         }
     }, []);
 
-    const {getRootProps, getInputProps, isDragActive, inputRef} = useDropzone({onDrop, noClick: true, multiple: false})
+    const { getRootProps, getInputProps, isDragActive, inputRef } = useDropzone({ onDrop, noClick: true, multiple: false, accept: "image/*" })
 
     function updatePreview(evt: React.FormEvent<HTMLTextAreaElement>) {
         setCode(evt.currentTarget.value);
@@ -66,7 +71,7 @@ export default (({
             let between = area.value.substring(selectionStart, selectionEnd);
             if (between.length == 0)
                 between = defaultContent || "";
-            
+
             console.log(area);
             area.selectionStart = selectionStart + tagName.length + 2;
             area.selectionEnd = selectionEnd + tagName.length + 2;
@@ -82,9 +87,9 @@ export default (({
     return (
         <div className="composer" data-previewhidden={!preview}>
             <div className="composer-editorwrapper" {...getRootProps()}>
-                <input {...getInputProps()} /> 
+                <input {...getInputProps()} />
                 {isDragActive && <div className="composer-dropping">
-                    <p>Drop here to upload</p>    
+                    <p>Drop here to upload</p>
                 </div>}
                 <textarea ref={areaRef} value={ccode} className="composer-editor" onInput={updatePreview} onKeyDown={handleKeys} autoCapitalize="off" autoComplete="off" autoCorrect="off" autoSave="off" data-enable-grammarly="false" name="composer-code" onChange={(evt) => onChange(evt.currentTarget.value, markup)}></textarea>
                 <ul className="composer-commands" onClick={(evt) => evt.currentTarget == evt.target && areaRef.current!.focus()}>
@@ -103,7 +108,7 @@ export default (({
                     <li><button onClick={insertTag("url=")} type="button" title="Link"><span className="iconify" data-icon="oi:link-intact" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("anchor=")} type="button" title="Anchor"><span className="iconify" data-icon="vaadin:anchor" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("img")} type="button" title="Image"><span className="iconify" data-icon="oi:image" data-inline="true"></span></button></li>
-                    <li><button onClick={() => {inputRef.current?.click()}} type="button"><span className="iconify" data-icon="mdi:cloud-upload-outline" data-inline="true"></span></button></li>
+                    <li><button onClick={() => { inputRef.current?.click() }} type="button"><span className="iconify" data-icon="mdi:cloud-upload-outline" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("list")} type="button" title="List"><span className="iconify" data-icon="oi:list" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("poll")} disabled type="button" title="Poll"><span className="iconify" data-icon="mdi-poll" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("code")} type="button" title="Code"><span className="iconify" data-icon="bx:bx-code" data-inline="true"></span></button></li>
@@ -111,11 +116,11 @@ export default (({
                     <li><button onClick={insertTag("youtube")} type="button" title="YouTube"><span className="iconify" data-icon="ant-design:youtube-filled" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("quote")} type="button" title="Quote"><span className="iconify" data-icon="oi:double-quote-serif-left" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("table", "\n [tr]\n  [th]Table Heading 1[/th]\n  [th]Table Heading 2[/th]\n [/tr]\n[tr]\n  [td]Data1[/td]\n  [td]Data2[/td]\n [/tr]\n")} type="button" title="Table"><span className="iconify" data-icon="mdi:table" data-inline="true"></span></button></li>
-                    <li><select name="markup-lang" value={cmarkup} onChange={(evt) => {setMarkup(evt.currentTarget.value); onChange(ccode, markup)}} title="Markup language">
+                    <li><select name="markup-lang" value={cmarkup} onChange={(evt) => { setMarkup(evt.currentTarget.value); onChange(ccode, markup) }} title="Markup language">
                         <option value="12y" disabled>12-Y-Markup</option>
                         <option value="bbcode">BBCode</option>
                     </select></li>
-                    {hidePreview && <li><button onClick={() => {setPreview(!preview); areaRef.current!.focus()}} type="button" title="Show Preview">{preview ? "<" : ">"}</button></li>}
+                    {hidePreview && <li><button onClick={() => { setPreview(!preview); areaRef.current!.focus() }} type="button" title="Show Preview">{preview ? "<" : ">"}</button></li>}
                 </ul>
             </div>
             {preview &&

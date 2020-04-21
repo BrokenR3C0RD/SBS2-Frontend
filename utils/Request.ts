@@ -117,6 +117,9 @@ export async function UploadFile(file: File): Promise<number> {
         },
         body: formData
     });
-
-    return (await res.json()).id;
+    if(res.status === 200){
+        return (await res.json()).id;
+    } else {
+        throw new Error(await res.text());
+    }
 }

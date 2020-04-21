@@ -6,7 +6,8 @@
     "build": "next build",
     "start": "next start",
     "type-check": "tsc",
-    "export": "next export"
+    "export": "next export",
+    "build-production": "API_ROOT=\"https://new.smilebasicsource.com\" yarn build"
   },
   "dependencies": {
     "@bbob/core": "^2.5.5",

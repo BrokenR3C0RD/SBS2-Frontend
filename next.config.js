@@ -1,3 +1,7 @@
 require("reflect-metadata");
 
-module.exports = {};
+module.exports = {
+    env: {
+        API_ROOT: process.env["API_ROOT"] && process.env["API_ROOT"].trim().length > 0 ? process.env["API_ROOT"].trim() : "https://newdev.smilebasicsource.com"
+    }
+};

@@ -30,6 +30,15 @@ export class BaseUser extends Entity {
         })) || [];
     }
 
+    public static async Search(query: SearchQuery): Promise<BaseUser[]> {
+        return (await Entity
+            .Search({
+                username: query.name,
+                ...query
+            }, "User"))
+            .map(entity => plainToClass(BaseUser, entity));
+    }
+
     public static useUser(query: SearchQuery): [any, BaseUser[] | null, () => void] {
         return Entity.useEntity(query, "User", async (e) => plainToClass(BaseUser, e)) as [any, BaseUser[] | null, () => void];
     }

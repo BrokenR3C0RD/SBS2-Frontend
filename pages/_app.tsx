@@ -5,13 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import "normalize.css";
 import { useEffect, useRef, useState } from "react";
-import { Category, Page } from "../classes";
+import { Category, Page, BaseUser } from "../classes";
 import "../styles/dark.css";
 import "../styles/global.css";
 import "../styles/light.css";
 import { API_ENTITY, PAGE_CATEGORY, USER_PAGE_CATEGORY } from "../utils/Constants";
 import { useRequestPage } from "../utils/Request";
 import { Logout, useSettings, useUser, Variable } from "../utils/User";
+import dl from "damerau-levenshtein";
 
 const App = (({
     Component,
@@ -28,6 +29,7 @@ const App = (({
     const [sidebar, setSidebar] = useState(false);
     const [selected, setSelected] = useState([0]);
     const [loaded, setLoaded] = useState(false);
+    const [results, setResults] = useState<any[]>([]);
 
     const router = useRouter();
 
@@ -116,8 +118,62 @@ const App = (({
             evt.target.parentElement.dataset.open = ["true", "false"][(["true", "false"].indexOf(evt.target.parentElement.dataset.open) + 1) % 2];
     }
 
-    function handleSearch(evt: React.FormEvent<HTMLInputElement>) {
-        console.log(evt.currentTarget.value);
+    async function handleSearch(evt: React.FormEvent<HTMLInputElement>) {
+        const query = evt.currentTarget.value;
+
+        if(query.length == 0)
+            return setResults([]);;
+
+        let usersThatMatch = await BaseUser.Search({
+            name: `%${query}%`,
+            limit: 10
+        });
+        let pagesThatMatch = (await Page.Search({
+            name: `%${query}%`,
+            limit: 10
+        })).concat((await Page.Search({
+            keyword: `%${query}%`,
+            limit: 10
+        }))).reduce<Page[]>((acc, val) => {
+            if(acc.findIndex(r => r.id == val.id) == -1)
+                acc.push(val)
+
+            return acc;
+        }, [])
+
+        let aggregate = (usersThatMatch.map<any>(user => ({
+            type: "user",
+            name: user.username,
+            link: `/user/${user.id}`,
+            keywords: []
+        })))
+            .concat(
+                (pagesThatMatch.map<any>(page => ({
+                    type: "page",
+                    name: page.title,
+                    link: `/pages/${page.id}`,
+                    keywords: page.keywords
+                }))
+                )
+            )
+            .sort((a: any, b: any) => {
+                return (
+                    dl(b.keywords.join(" "), query).similarity
+                    - dl(a.keywords.join(" "), query).similarity
+                ) * 10
+                + (
+                    dl(b.name, query).similarity
+                    - dl(a.name, query).similarity
+                ) *5
+            })
+            .slice(0, 10);
+        
+        setResults(aggregate);
+    }
+
+    const SearchTypeHref: {[i: string]: string} = {
+        page: "/pages/[pid]",
+        user: "/user/[uid]"
     }
 
     return <>
@@ -151,8 +207,9 @@ const App = (({
                 <div id="hideout" />
                 <div id="results">
                     <ul>
-                        <li>First result</li>
-                        <li>Second</li>
+                        {results.map((result, i) => <li key={i}>
+                            <Link href={SearchTypeHref[result.type as string] as string} as={result.link}><a>{result.name}</a></Link>
+                        </li>)}
                     </ul>
                 </div>
             </span>

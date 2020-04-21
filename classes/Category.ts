@@ -50,6 +50,14 @@ export class Category extends AccessControlledEntity {
             .map(entity => plainToClass(Category, entity));
     }
 
+    public static async Search(query: SearchQuery): Promise<Category[]> {
+        return (await Entity
+            .Search({
+                ...query
+            }, "User"))
+            .map(entity => plainToClass(Category, entity));
+    }
+
     public static useCategory(query: SearchQuery): [any, Category[] | null, () => void] {
         return Entity.useEntity(query, "Category", async (e) => plainToClass(Category, e)) as [any, Category[] | null, () => void];
     }

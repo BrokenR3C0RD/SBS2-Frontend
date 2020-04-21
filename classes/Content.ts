@@ -1,4 +1,4 @@
-import {IsInt,  IsString,  IsOptional, IsObject, IsArray} from "class-validator";
+import { IsInt, IsString, IsOptional, IsObject, IsArray } from "class-validator";
 import { AccessControlledEntity, Entity } from "./Entity";
 import { Dictionary, SearchQuery } from "../interfaces";
 import { plainToClass } from "class-transformer";
@@ -29,7 +29,7 @@ export class Content extends AccessControlledEntity {
     values: Dictionary<string> = {};
 
     @IsArray()
-    @IsString({each: true})
+    @IsString({ each: true })
     keywords: string[] = [];
 
 
@@ -41,6 +41,15 @@ export class Content extends AccessControlledEntity {
 
     public static useContent(query: SearchQuery, mutate: ((e: Content) => Promise<Content>) = async (e) => e): [any, Content[] | null, () => void] {
         return Entity.useEntity(query, "Content", async (e) => mutate(plainToClass(Content, e))) as [any, Content[] | null, () => void];
+    }
+
+    public static async Search(query: SearchQuery): Promise<Content[]> {
+        return (await Entity
+            .Search({
+                title: query.name,
+                ...query
+            }, "Content"))
+            .map(entity => plainToClass(Content, entity));
     }
 
     public static async Update(content: Partial<Content>): Promise<Content> {

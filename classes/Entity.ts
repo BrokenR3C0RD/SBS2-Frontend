@@ -34,6 +34,16 @@ export class Entity {
         }))!;
     }
 
+    public static async Search(query: SearchQuery | Dictionary<string | number | boolean | (string | number | boolean)[]>, type: string): Promise<Entity[]> {
+        return (await DoRequest<Entity[]>({
+            url: API_ENTITY(type),
+            method: "GET",
+            data: {
+                ...query
+            }
+        }))!;
+    }
+
     public static useEntity(query: SearchQuery, type: string, mutate: (e: Entity) => Promise<Entity> = (async (e) => e)): [any, Entity[] | null, () => void] {
         const [errors, data, mut] = useRequest<Entity[]>({
             url: API_ENTITY(type),

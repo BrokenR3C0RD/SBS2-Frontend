@@ -126,7 +126,7 @@ nav .search-container #results ul li {
     max-height: 4em;
 }
 
-nav .search-container input:focus + #hideout + #results {
+nav .search-container input:focus + #hideout + #results, nav .search-container #results:active {
     display: block;
 }
 

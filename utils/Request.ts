@@ -1,6 +1,7 @@
 import {Dictionary} from "../interfaces"
 import {plainToClass} from "class-transformer";
 import useSWR, {mutate as swrMutate, useSWRPages} from "swr";
+import { isNullOrUndefined } from "util";
 
 export interface RequestOptions<T = any> {
     method?: "GET" | "POST" | "PUT" | "DELETE",
@@ -25,7 +26,7 @@ export async function DoRequest<T>(options: RequestOptions<T>): Promise<T | null
             let data = options.data[key];
             if(data instanceof Array){
                 data.forEach(val => url.searchParams.append(key, val.toString()));
-            } else {
+            } else if(!isNullOrUndefined(data)) {
                 url.searchParams.append(key, options.data[key].toString());
             }
         }

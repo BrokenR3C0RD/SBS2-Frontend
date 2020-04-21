@@ -288,7 +288,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     width: 100%;
 }
 
-#content input:not([type="checkbox"]), button, textarea {
+#content input:not([type="checkbox"]), button, textarea, select  {
     display: block;
     color: var(--input-color);
     background-color: var(--secondary-accent);

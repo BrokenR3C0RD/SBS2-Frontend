@@ -118,7 +118,7 @@ export default (({
             </Cell>
             {selected != null &&
                 <Cell x={2} y={1} width={3} height={2}>
-                    <Form onSubmit={UpdateCategory} key={selectedCategory!.id}>
+                    <Form onSubmit={UpdateCategory} key={selected}>
                         <label>
                             Name:
                             <input name="name" defaultValue={selectedCategory!.name} placeholder="Category name" />

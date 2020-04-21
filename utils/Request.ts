@@ -2,6 +2,7 @@ import {Dictionary} from "../interfaces"
 import {plainToClass} from "class-transformer";
 import useSWR, {mutate as swrMutate, useSWRPages} from "swr";
 import { isNullOrUndefined } from "util";
+import { API_ENTITY } from "./Constants";
 
 export interface RequestOptions<T = any> {
     method?: "GET" | "POST" | "PUT" | "DELETE",
@@ -102,4 +103,20 @@ export function useRequestPage<T>(options: RequestOptionsPages<T>, mutate: (obj:
           end: isReachingEnd,
           loadMore
       };
+}
+
+export async function UploadFile(file: File): Promise<number> {
+    let token = window.localStorage.getItem("sbs-auth") || window.sessionStorage.getItem("sbs-auth");
+    let formData = new FormData;
+    formData.set("file", file);
+
+    let res = await fetch(API_ENTITY("File"), {
+        method: "POST",
+        headers: {
+            "Authorization": token ? `Bearer ${token}` : ""
+        },
+        body: formData
+    });
+
+    return (await res.json()).id;
 }

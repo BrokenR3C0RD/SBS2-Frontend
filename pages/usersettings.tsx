@@ -5,12 +5,20 @@ import { Grid, Cell } from "../components/Layout";
 import { useRouter } from "next/router";
 import Form from "../components/Form";
 import { useSettings, Variable } from "../utils/User";
+import {useDropzone} from "react-dropzone";
 
 export default (({
     setInfo,
     user
 }) => {
     const Router = useRouter();
+
+    function onDrop(files: File[]){
+        console.log(files);
+    }
+
+    const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, multiple: false})
+
 
     useEffect(() => {user == null && Router.replace("/")});
     useEffect(() => setInfo("User Settings", []), []);
@@ -49,6 +57,12 @@ export default (({
                         SiteJS:
                         <textarea name="SiteJS" defaultValue={(settings?.["SiteJS"] as string) || ""} />
                     </label>
+                    Avatar:
+                    <div {...getRootProps()}>
+                        {isDragActive && <h1>Drop here!</h1>}
+                        {!isDragActive && <h1>Drag your new avatar here or click to open files dialog</h1>}
+                    </div>
+                    <input {...getInputProps()} />
                     <input type="submit" value="Save Settings!" />
                 </Form>
             </Cell>

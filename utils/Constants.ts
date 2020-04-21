@@ -10,5 +10,5 @@ export const API_USER_REGISTER_CONFIRM = `${APIRoot}/api/User/register/confirm`;
 export const API_USER_VARIABLE = `${APIRoot}/api/Variable`;
 
 
-export const PAGE_CATEGORY = 2;
-export const USER_PAGE_CATEGORY = 2;
+export const PAGE_CATEGORY = 3;
+export const USER_PAGE_CATEGORY = 3;

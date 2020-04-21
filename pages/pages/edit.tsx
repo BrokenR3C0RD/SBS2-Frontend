@@ -207,7 +207,7 @@ export default (({
                 {programPage && <>
                     <Cell x={1} y={2}>
                         <h2>Details about your program:</h2>
-                        <input type="text" autoComplete="off" name="publickey" placeholder="KEY" style={{ width: "80%", float: "left", fontSize: "32px", fontFamily: "SMILEBASIC" }} value={key} onChange={(evt) => setKey(evt.currentTarget.value)} pattern="^4?[A-HJ-NP-TV-Z1-9]{1,8}$" required />
+                        <input type="text" autoComplete="off" name="publickey" placeholder="KEY" style={{ width: "80%", float: "left", fontSize: "32px", fontFamily: "SMILEBASIC" }} value={key} onChange={(evt) => setKey(evt.currentTarget.value)} /*pattern="^4?[A-HJ-NP-TV-Z1-9]{1,8}$"*/ required />
                         <button onClick={FetchSBAPIInformation} style={{ width: "20%", float: "right", fontSize: "32px", fontFamily: "SMILEBASIC" }} type="button">GET!</button>
                         {keyInfo &&
                             <input type="text" name="title" placeholder="Title" autoComplete="off" required value={title} onChange={(evt) => setTitle(evt.currentTarget.value)} style={{ fontSize: "1.5em" }} />

@@ -192,8 +192,8 @@ const App = (({
 
             {/* OpenGraph stuff */}
             <meta property="og:description" content="A community for learning to program and sharing programs made with SmileBASIC for the Nintendo 3DS and Switch." />
-            <meta property="og:url" content={`https://smilebasicsource.com${router.asPath}`} />
-            <meta property="og:image" content={`https://smilebasicsource.com/favicon.svg`} />
+            <meta property="og:url" content={`https://new.smilebasicsource.com${router.asPath}`} />
+            <meta property="og:image" content={`https://new.smilebasicsource.com/res/img/logo.svg`} />
             <meta property="og:type" content="website" />
             <meta property="og:site_name" content="SmileBASIC Source" />
         </Head>

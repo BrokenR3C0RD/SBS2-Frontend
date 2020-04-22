@@ -67,4 +67,13 @@ export class ProgramPage extends Page {
     type: string = "@page.program"
     // @ts-ignore
     values: ProgramPageProperties = {};
+
+    public static async Search(query: SearchQuery): Promise<ProgramPage[]> {
+        return (await Content
+            .Search({
+                ...query,
+                type: "@page.program%"
+            }))
+            .map(entity => plainToClass(ProgramPage, entity));
+    }
 }

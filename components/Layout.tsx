@@ -69,7 +69,7 @@ const Gallery = (({
             wait = false;
             return;
         }
-        if (ref.current) {
+        if (ref.current && React.Children.count(children) > 0) {
             const current = ref.current.querySelector("[data-chosen]") as (HTMLElement | null);
             if (current) {
                 delete current.dataset["chosen"];
@@ -83,7 +83,7 @@ const Gallery = (({
             wait = false;
             return;
         }
-        if (ref.current) {
+        if (ref.current && React.Children.count(children) > 0) {
             const current = ref.current.querySelector("[data-chosen]") as (HTMLElement | null);
             if (current) {
                 delete current.dataset["chosen"];

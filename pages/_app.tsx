@@ -219,7 +219,7 @@ const App = (({
                 {user && (
                     <>
                         <span id="user-name" onClick={toggleParent}>{user.username}</span>
-                        <img src={user.avatar != 0 ? `${API_ENTITY("File")}/raw/${user.avatar}?size=64&square=true` : `https://www.tinygraphs.com/labs/isogrids/hexa/${user.username}?theme=seascape&size=64`} className="user-avatar" onClick={toggleParent} />
+                        <img src={user.avatar != 0 ? `${API_ENTITY("File")}/raw/${user.avatar}?size=64` : `https://www.tinygraphs.com/labs/isogrids/hexa/${user.username}?theme=seascape&size=64`} className="user-avatar" onClick={toggleParent} />
                         <ul>
                             <li><Link href="/user/[uid]" as={`/user/${user.id}`}><a>Profile</a></Link></li>
                             <li><Link href="/usersettings"><a>Settings</a></Link></li>

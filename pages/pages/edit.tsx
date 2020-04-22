@@ -115,10 +115,10 @@ export default (({
                     wiiu: keyInfo!.extInfo.console !== "Switch" && supported.indexOf("wiiu") !== -1 ? compat["wiiu"] : undefined,
                     switch: keyInfo!.extInfo.console === "Switch" ? false : undefined
                 }),
-                markupLang: info["markup_lang"] as string,
+                markupLang: info["markup-lang"] as string,
                 photos: images.join(",")
             } : {
-                    markupLang: info["markup_lang"] as string,
+                    markupLang: info["markup-lang"] as string,
                     photos: images.join(",")
                 },
             keywords: keywords.map(tag => tag.trim()),

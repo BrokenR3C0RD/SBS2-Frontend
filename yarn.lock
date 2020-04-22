@@ -958,14 +958,14 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@bbob/core@^2.5.5", "@bbob/core@^2.5.6":
+"@bbob/core@^2.5.6":
   version "2.5.6"
   resolved "https://registry.yarnpkg.com/@bbob/core/-/core-2.5.6.tgz#f851c1eb4345d7717390cf1c74c288c8b8e7c674"
   integrity sha512-UD/+8HMX8UPXX5vQm2ExqPrzBKWODeA8Qi1/7Zd8xN9cOQSXwsQnfXnJqICyLD7Myj5AmMx4Zi0c4JxgKBFN5w==
   dependencies:
     "@bbob/parser" "^2.5.6"
 
-"@bbob/html@^2.5.5", "@bbob/html@^2.5.6":
+"@bbob/html@^2.5.6":
   version "2.5.6"
   resolved "https://registry.yarnpkg.com/@bbob/html/-/html-2.5.6.tgz#3a85dbac296d31438b2d159015eac6d9931af5f6"
   integrity sha512-sAdpw/KFOLXVuSk91n8vFjPuIvMug00Q5Zhv48RAXygipSlm2UQeOl6e56JV1S68wZEbx+nZjLCoKAbbeNQmyQ==
@@ -985,20 +985,11 @@
   resolved "https://registry.yarnpkg.com/@bbob/plugin-helper/-/plugin-helper-2.5.6.tgz#6df3ac0f3ac54091266d1cbb9a29f578c0687919"
   integrity sha512-JQRr5aughtj9S2SyzK9kmalwbTEEpnDeyv21NRpPateehHUxiNM70QPERx/7mm4dVk21sEizUGYiMd61xfFXQQ==
 
-"@bbob/preset@^2.5.5":
+"@bbob/preset@^2.5.6":
   version "2.5.6"
   resolved "https://registry.yarnpkg.com/@bbob/preset/-/preset-2.5.6.tgz#acf47db58941c3a387456df1c91bf0365eacae0e"
   integrity sha512-XGn4+XEBQIWszs3Y6yQwqY/b5vXk9sYfL0onFDsr3DbAkemERmRcnvbmPPTXDHSV0igQiFHDulikJQQxn/n47A==
   dependencies:
-    "@bbob/plugin-helper" "^2.5.6"
-
-"@bbob/react@^2.5.5":
-  version "2.5.6"
-  resolved "https://registry.yarnpkg.com/@bbob/react/-/react-2.5.6.tgz#5b1d2d2e5c4ab4a8cdd9b45085f45a1bb7cd43da"
-  integrity sha512-bNIIAp3S5QMTFtJ2so0A5jqCHCyAWOAywcm/znX1iIM3hWZXO+BgblkkjF3otVSrKpaYaXPs6OkeHIt5R5e+2w==
-  dependencies:
-    "@bbob/core" "^2.5.6"
-    "@bbob/html" "^2.5.6"
     "@bbob/plugin-helper" "^2.5.6"
 
 "@types/color-name@^1.1.1":

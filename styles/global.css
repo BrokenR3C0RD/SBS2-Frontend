@@ -590,6 +590,13 @@ form input:not([type="checkbox"]), form button, form textarea {
     border-top: 2px solid var(--secondary-accent);
 }
 
+.info-avatar {
+    width: 1.5em;
+    height: 1.5em;
+    margin: 0 .5em;
+    vertical-align: middle;
+}
+
 .profile-avatar {
     display: block;
     margin: auto;

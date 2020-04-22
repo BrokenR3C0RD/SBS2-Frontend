@@ -1,9 +1,12 @@
 import BBCode from "@bbob/html";
+import TwelveMarkup from "../utils/12y";
+
 import createPreset, { Node, TagNode } from "@bbob/preset";
 import { Dictionary } from "../interfaces";
 import { isURL, isDataURI } from "validator";
 
 import { Html5Entities } from "html-entities";
+import React from "react";
 
 const entities = new Html5Entities;
 
@@ -152,15 +155,15 @@ const tags = {
         attrs: {
             src: (() => {
                 let url = "";
-                if(typeof node.content == "string"){
+                if (typeof node.content == "string") {
                     url = node.content;
-                } else if(typeof node.content == "object" && node.content.length > 0 && typeof node.content[0] === "string") {
+                } else if (typeof node.content == "object" && node.content.length > 0 && typeof node.content[0] === "string") {
                     url = node.content[0] as string;
                 } else {
                     return "";
                 }
 
-                if(isURL(url, urlOptions) || isDataURI(url)){
+                if (isURL(url, urlOptions) || isDataURI(url)) {
                     return url;
                 } else {
                     return "/res/img/blocked.png";
@@ -243,20 +246,29 @@ const tags = {
         content: node.content
     })
 } as (Dictionary<((node: TagNode) => TagNode)>)
+
 const preset = createPreset(tags);
-
-
 
 export default (({
     code,
+    markupLang = "12y",
     className = ""
 }) => {
-    return (<div className={`bbcode-view ${className}`} dangerouslySetInnerHTML={{
-        __html: BBCode(entities.encode(code).replace(/\\\[/g, "&lsqb;").replace(/\\\]/g, "&rsqb;").replace(/&quot;/g, "\""), preset(), {
-            onlyAllowTags: Object.keys(tags)
-        })
-    }}></div>);
+    if (markupLang == "12y") {
+        return <div className={`bbcode-view ${className}`} dangerouslySetInnerHTML={{
+            __html: TwelveMarkup(code)?.innerHTML || ""
+        }} />
+    } else if (markupLang == "bbcode") {
+        return (<div className={`bbcode-view ${className}`} dangerouslySetInnerHTML={{
+            __html: BBCode(entities.encode(code).replace(/\\\[/g, "&lsqb;").replace(/\\\]/g, "&rsqb;").replace(/&quot;/g, "\""), preset(), {
+                onlyAllowTags: Object.keys(tags)
+            })
+        }} />);
+    } else {
+        return <h1>Unknown markup lang {markupLang}</h1>
+    }
 }) as React.FunctionComponent<{
     code: string,
+    markupLang?: string,
     className?: string
 }>;

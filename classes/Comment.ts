@@ -51,6 +51,7 @@ export class Comment extends Entity {
         const [fetchMore, setFetchMore] = useState<boolean>(false);
         const [noMore, setNoMore] = useState<boolean>(false);
         const [listeners, setListeners] = useState<number[]>([]);
+        const [list, setList] = useState<number[]>([]);
 
         useEffect(() => {
             if (parent == null || parent[0] == null)
@@ -62,6 +63,7 @@ export class Comment extends Entity {
                 setDidInit(false);
                 setFetchMore(false);
                 setNoMore(false);
+                setList([]);
                 return;
             }
 
@@ -72,10 +74,11 @@ export class Comment extends Entity {
                     if(aborter.signal.aborted)
                         return;
                     
-                    let newc: Comment[]
-                    setComments(
-                        newc = (await Comment.GetComments(parent[0].id) || comments).reverse()
-                    );
+                    let newc: Comment[] = (await Comment.GetComments(parent[0].id) || comments).reverse();
+                    if(newc.length > 0)
+                        setComments(
+                            newc
+                        );
 
                     let newUsers = (newc as Comment[])
                         .map(comment => comment.createUserId)
@@ -95,10 +98,11 @@ export class Comment extends Entity {
                     if(aborter.signal.aborted)
                         return;
                     
-                    let newc: Comment[]
-                    setComments(
-                        newc = (await Comment.GetComments(parent[0].id, true, comments.length, 20) || []).reverse().concat(comments)
-                    );
+                    let newc: Comment[] = (await Comment.GetComments(parent[0].id, true, comments.length, 20) || []).reverse();
+                    if(newc.length > 0)
+                        setComments(
+                            newc.concat(comments)
+                        );
 
                     let newUsers = (newc as Comment[])
                         .map(comment => comment.createUserId)
@@ -167,13 +171,14 @@ export class Comment extends Entity {
                     }
                 })();
                 (async () => {
+                    let lastList: number[] = list;
                     while (!aborter.signal.aborted) {
                         if (!didInit)
                             continue;
 
                         try {
                             let token = sessionStorage.getItem("sbs-auth") || localStorage.getItem("sbs-auth") || null;
-                            let resp = await fetch(`${API_ENTITY("Comment")}/listen/${parent[0].id}/listeners?${listeners.map(id => `lastListeners=${id}`).join("&")}`, {
+                            let resp = await fetch(`${API_ENTITY("Comment")}/listen/${parent[0].id}/listeners?${lastList.map(id => `lastListeners=${id}`).join("&")}`, {
                                 method: "GET",
                                 headers: {
                                     "Accept": "application/json",
@@ -191,6 +196,10 @@ export class Comment extends Entity {
 
                             if (resp.status === 200) {
                                 let newc = (await resp.json());
+                                lastList = newc.slice().map((u: any) => u.userId);
+                                setList(lastList);
+
+                                newc = newc.filter((u: any) => listeners.indexOf(u.userId) === -1);
                                 if (newc.length > 0) {
                                     setListeners(newc.filter((info: any) => info.contentListenId == lastParent.id).map((info: any) => info.userId));
                                     let newUsers = (newc as any[])

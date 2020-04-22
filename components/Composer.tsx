@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import BBCodeView from "./BBCode";
+import BBCodeView from "./DisplayMarkup";
 import { UploadFile } from "../utils/Request";
 import { useDropzone } from "react-dropzone";
 import { API_ENTITY } from "../utils/Constants";
@@ -116,8 +116,8 @@ export default (({
                     <li><button onClick={insertTag("youtube")} type="button" title="YouTube"><span className="iconify" data-icon="ant-design:youtube-filled" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("quote")} type="button" title="Quote"><span className="iconify" data-icon="oi:double-quote-serif-left" data-inline="true"></span></button></li>
                     <li><button onClick={insertTag("table", "\n [tr]\n  [th]Table Heading 1[/th]\n  [th]Table Heading 2[/th]\n [/tr]\n[tr]\n  [td]Data1[/td]\n  [td]Data2[/td]\n [/tr]\n")} type="button" title="Table"><span className="iconify" data-icon="mdi:table" data-inline="true"></span></button></li>
-                    <li><select name="markup-lang" value={cmarkup} onChange={(evt) => { setMarkup(evt.currentTarget.value); onChange(ccode, markup) }} title="Markup language">
-                        <option value="12y" disabled>12-Y-Markup</option>
+                    <li><select name="markup-lang" value={cmarkup} onChange={(evt) => { setMarkup(evt.currentTarget.value); onChange(ccode, evt.currentTarget.value) }} title="Markup language">
+                        <option value="12y">12-Y-Markup</option>
                         <option value="bbcode">BBCode</option>
                     </select></li>
                     {hidePreview && <li><button onClick={() => { setPreview(!preview); areaRef.current!.focus() }} type="button" title="Show Preview">{preview ? "<" : ">"}</button></li>}
@@ -125,7 +125,7 @@ export default (({
             </div>
             {preview &&
                 <div className="composer-previewwrapper">
-                    <BBCodeView className="composer-preview" code={ccode} />
+                    <BBCodeView className="composer-preview" code={ccode} markupLang={markup} />
                 </div>
             }
         </div>

@@ -38,7 +38,7 @@ export default (({
                     </div>
                 </Cell>
                 <Cell x={1} y={2} width={1} >
-                    <img className="profile-avatar" src={user[0].avatar !== 0 ? `${API_ENTITY("File")}/raw/${user[0].avatar}?size=256&square=true` : `https://www.tinygraphs.com/labs/isogrids/hexa/${user[0].username}?theme=seascape&size=256`} />
+                    <img className="profile-avatar" width="256" height="256" src={user[0].avatar !== 0 ? `${API_ENTITY("File")}/raw/${user[0].avatar}?size=256&square=true` : `https://www.tinygraphs.com/labs/isogrids/hexa/${user[0].username}?theme=seascape&size=258`} />
                 </Cell>
                 <Cell x={2} y={2} height={2}>
                     <h2>About me:</h2>

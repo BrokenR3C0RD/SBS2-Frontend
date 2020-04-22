@@ -1,4 +1,8 @@
-export const APIRoot = process.env["API_ROOT"];
+let APIRoot = process.env["API_ROOT"];
+if (typeof window !== 'undefined')
+    APIRoot = location.protocol + process.env["API_ROOT"];
+
+export { APIRoot }
 
 export const API_ENTITY = (type: string) => `${APIRoot}/api/${type}`;
 

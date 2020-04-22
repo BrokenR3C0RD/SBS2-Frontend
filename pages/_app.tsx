@@ -49,7 +49,7 @@ const App = (({
         } else {
             return pages
                 .map(page => <li key={page.id}>
-                    <Link href="/pages/[pid]" as={`/pages/${page.id}`}><a>{page.title}</a></Link>
+                    <Link href="/pages/[pid]" as={`/pages/${page.id}`}><a>{page.name}</a></Link>
                 </li>);
         }
     }, []);
@@ -150,7 +150,7 @@ const App = (({
             .concat(
                 (pagesThatMatch.map<any>(page => ({
                     type: "page",
-                    name: page.title,
+                    name: page.name,
                     link: `/pages/${page.id}`,
                     keywords: page.keywords
                 }))

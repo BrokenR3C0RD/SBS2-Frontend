@@ -11,13 +11,14 @@ export default (({
     hidePreview = false
 }) => {
     const [ccode, setCode] = useState("");
-    const [cmarkup, setMarkup] = useState("bbcode")
+    const [cmarkup, setMarkup] = useState("12y")
     const areaRef = useRef<HTMLTextAreaElement>(null);
     const [preview, setPreview] = useState(!hidePreview);
 
     useEffect(() => {
         setCode(code);
-        setMarkup(markup);
+        if(markup)
+            setMarkup(markup);
     }, [code, markup]);
 
     let onDrop = useCallback(async (files: File[]) => {
@@ -125,7 +126,7 @@ export default (({
             </div>
             {preview &&
                 <div className="composer-previewwrapper">
-                    <BBCodeView className="composer-preview" code={ccode} markupLang={markup} />
+                    <BBCodeView className="composer-preview" code={ccode} markupLang={cmarkup} />
                 </div>
             }
         </div>

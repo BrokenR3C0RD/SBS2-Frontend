@@ -767,7 +767,7 @@ form input:not([type="checkbox"]), form button, form textarea {
 }
 
 .bbcode-view code {
-    font-family: "SMILEBASIC", 'Courier New', Courier, monospace;
+    font-family: 'Courier New', Courier, monospace, "SMILEBASIC";
     font-size: 1em;
     display: inline;
     white-space: pre-wrap;

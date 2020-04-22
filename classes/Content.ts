@@ -10,7 +10,7 @@ export class Content extends AccessControlledEntity {
     type: string = "";
 
     @IsString()
-    title: string = "";
+    name: string = "";
 
     @IsOptional()
     @IsString()
@@ -46,7 +46,6 @@ export class Content extends AccessControlledEntity {
     public static async Search(query: SearchQuery): Promise<Content[]> {
         return (await Entity
             .Search({
-                title: query.name,
                 ...query
             }, "Content"))
             .map(entity => plainToClass(Content, entity));

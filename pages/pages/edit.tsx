@@ -64,7 +64,7 @@ export default (({
                 setCompat(JSON.parse(page.values.supported));
                 setSupported(Object.keys(JSON.parse(page.values.supported)));
             }
-            setTitle(page.title);
+            setTitle(page.name);
             setCode(page.content);
             setPerms(Object.keys(page.permissions).map(id => +id).filter(id => id !== 0));
             setProgramPage(page.type === "@page.program");
@@ -104,7 +104,7 @@ export default (({
 
         const info = data;
         let content: Partial<Page | ProgramPage> = {
-            title: info["title"] as string,
+            name: info["title"] as string,
             content: info["composer-code"] as string,
             values: programPage ? {
                 key: keyInfo!.path,

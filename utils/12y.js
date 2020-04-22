@@ -28,8 +28,7 @@ let defoptions = (() => {
         line: creator('hr'),
         // code block
         code: function (code, language) {
-            var node = create('pre');
-            node.className = 'highlight-sb';
+            var node = create('code');
             node.dataset.lang = language;
             node.innerHTML = highlightSB(code, language);
             return node;
@@ -38,6 +37,7 @@ let defoptions = (() => {
         icode: function (code) {
             var node = create('code');
             node.textContent = code;
+            node.dataset.inline = "true";
             return node;
         },
         audio: function (url) {

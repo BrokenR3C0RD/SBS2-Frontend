@@ -264,7 +264,7 @@ export default (({
                                             {((comment.editDate.valueOf() - comment.createDate.valueOf()) >= 2000) ? "Edited " : "Posted "} {moment(comment.editDate).fromNow()}
                                         </span>
                                         <div className="comment-content">
-                                            <BBCodeView code={comment.content["t"]} />
+                                            <BBCodeView code={comment.content["t"]} markupLang={comment.content["m"]} />
                                         </div>
                                     </div>
                                 })

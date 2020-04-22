@@ -170,7 +170,7 @@ export default (({
                                         <td>Public key</td>
                                         <td style={{
                                             textDecoration: (!keyInfo || !keyInfo.available) ? "line-through" : undefined
-                                        }}>{page.values.key}</td>
+                                        }} title={page.values.key}>{page.values.key}</td>
                                     </tr>
                                     <tr>
                                         <td>Download size</td>
@@ -257,17 +257,19 @@ export default (({
                                 if (user == null) return null;
 
                                 return <div className="comment" key={comment.id} ref={comments.length - 1 == idx && !fetching ? ref : undefined}>
-                                    <div className="user-info">
-                                        <img src={user.GetAvatarURL(64)} className="avatar" />
-                                        <span className="username">
-                                            <Link href="/user/[uid]" as={`/user/${user.id}`}><a>{user.username}</a></Link>
-                                        </span>
-                                    </div>
-                                    <span className="editdate">
-                                        {((comment.editDate.valueOf() - comment.createDate.valueOf()) >= 2000) ? "Edited " : "Posted "} {moment(comment.editDate).fromNow()}
-                                    </span>
-                                    <div className="comment-content">
-                                        <BBCodeView code={comment.content["t"]} markupLang={comment.content["m"]} />
+                                    <img src={user.GetAvatarURL(64)} className="avatar" />
+                                    <div className="comment-body">
+                                        <div className="user-info">
+                                            <span className="username">
+                                                <Link href="/user/[uid]" as={`/user/${user.id}`}><a>{user.username}</a></Link>
+                                            </span>
+                                            <span className="editdate">
+                                                {((comment.editDate.valueOf() - comment.createDate.valueOf()) >= 2000) ? "Edited " : "Posted "} {moment(comment.editDate).fromNow()}
+                                            </span>
+                                        </div>
+                                        <div className="comment-content">
+                                            <BBCodeView code={comment.content["t"]} markupLang={comment.content["m"]} />
+                                        </div>
                                     </div>
                                 </div>
                             })

@@ -17,5 +17,6 @@ export interface SearchQuery {
     parentIds?: number[],
     limit?: number,
     skip?: number,
-    reverse?: boolean
+    reverse?: boolean,
+    sort?: "id" | "random"
 }

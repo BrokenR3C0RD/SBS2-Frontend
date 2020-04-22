@@ -219,7 +219,7 @@ const App = (({
                 {user && (
                     <>
                         <span id="user-name" onClick={toggleParent}>{user.username}</span>
-                        <img src={user.GetAvatarURL(64)} className="user-avatar" onClick={toggleParent} />
+                        <img src={user?.GetAvatarURL(64)} className="user-avatar" onClick={toggleParent} />
                         <ul>
                             <li><Link href="/user/[uid]" as={`/user/${user.id}`}><a>Profile</a></Link></li>
                             <li><Link href="/usersettings"><a>Settings</a></Link></li>

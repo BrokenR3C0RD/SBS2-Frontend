@@ -48,7 +48,7 @@ export class Activity {
 
                             let uids = res
                                 .activity
-                                .map(event => [event.userId, event.action === CRUD.Create && event.userId === -1 ? event.contentId : -1])
+                                .map(event => [event.userId, event.action === CRUD.Create && event.userId === event.contentId ? event.contentId : -1])
                                 .reduce((acc, e) => acc.concat(e), [])
                                 .filter(id => id != -1 && users.findIndex(user => user.id == id) == -1);
 
@@ -58,7 +58,7 @@ export class Activity {
 
                             let newcontent = res
                                 .activity
-                                .map(event => event.action === CRUD.Create && event.userId === -1 ? -1 : event.contentId)
+                                .map(event => event.action === CRUD.Create && event.userId === event.contentId ? -1 : event.contentId)
                                 .filter(id => id !== -1);
 
                             if(newcontent.length > 0)

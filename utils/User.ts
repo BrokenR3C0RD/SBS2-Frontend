@@ -3,7 +3,7 @@ import { validateOrReject } from "class-validator";
 import { useEffect, useState } from "react";
 import useSWR, { mutate } from "swr";
 import { isEmail, isUUID } from "validator";
-import { FullUser, UserCredential } from "../classes";
+import { FullUser, UserCredential, Content } from "../classes";
 import { API_USER_LOGIN, API_USER_ME, API_USER_REGISTER, API_USER_REGISTER_CONFIRM, API_USER_REGISTER_SENDEMAIL, API_USER_VARIABLE } from "./Constants";
 import { DoRequest, useRequest } from "./Request";
 import { Dictionary } from "../interfaces";
@@ -110,19 +110,34 @@ export async function Confirm(key: string) {
             confirmationKey: key
         }
     });
+
     if(result != null){
         localStorage.removeItem("sbs-auth")
         sessionStorage.setItem("sbs-auth", result);
     }
-    
-    mutate(API_USER_ME, null, true);
-
     let theme = localStorage.getItem("sbs-theme") || "light";
 
     await Variable("user_settings", JSON.stringify({
         theme: theme,
         SiteJS: ""
     }));
+
+    let user = await DoRequest<FullUser>({
+        url: API_USER_ME
+    });
+    if(user == null)
+        return;
+
+    await Content.Update({
+        parentId: user!.id,
+        type: "@user.page",
+        name: `${user!.username}'s user page`,
+        permissions: {},
+        values: {},
+        content: "Edit me in user settings!"
+    });
+
+    mutate(API_USER_ME, null, true);
 }
 
 export async function Logout() {

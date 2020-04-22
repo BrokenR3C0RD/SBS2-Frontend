@@ -12,14 +12,15 @@ import Moment from "moment";
 
 export default (({
     setInfo,
-    //user
+    user: self
 }) => {
     const Router = useRouter();
     useEffect(() => setInfo("Home", [1]), []);
     const [, programs] = Page.usePage({
         type: "@page.program%",
         reverse: true,
-        limit: 10
+        limit: 10,
+        sort: "random"
     });
 
     const [events, users, contents] = Activity.useActivity();
@@ -44,12 +45,14 @@ export default (({
                 <p>
                     Here are some programs you should check out!
                 </p>
-                <Gallery width="400px" height="240px" className="program-showcase">
-                    {programs ? programs.map((program, i) => <div key={program.id} data-chosen={i == 0} className="program" onClick={() => Router.push("/pages/[pid]", `/pages/${program.id}`)}>
-                        <img src={program.values.photos?.length > 0 ? `${API_ENTITY("File")}/raw/${+program.values.photos.split(",")[0]}?size=400` : "/res/img/logo.svg"} />
-                        <span className="title">{program.name}</span>
-                    </div>) : []}
-                </Gallery>
+                <div className="showcase-container">
+                    <Gallery width="400px" height="240px" className="program-showcase">
+                        {programs ? programs.map((program, i) => <div key={program.id} data-chosen={i == 0} className="program" onClick={() => Router.push("/pages/[pid]", `/pages/${program.id}`)}>
+                            <img src={program.values.photos?.length > 0 ? `${API_ENTITY("File")}/raw/${+program.values.photos.split(",")[0]}?size=400` : "/res/img/logo.svg"} />
+                            <span className="title">{program.name}</span>
+                        </div>) : []}
+                    </Gallery>
+                </div>
             </Cell>
             <Cell x={3} y={1} width={2} height={2} style={{
                 maxHeight: "100vh"
@@ -59,11 +62,11 @@ export default (({
                     {events.map(event => {
                         let content: React.ReactElement = <></>;
                         let user = users.find(user => user.id == event.userId);
-                        if (event.userId != -1 && user == null)
+                        if (user == null)
                             return null;
 
                         let c = contents.find(content => content.id == event.contentId);
-                        if (event.userId != -1 && event.action !== CRUD.Delete && c == null)
+                        if (event.userId != event.contentId && event.action !== CRUD.Delete && c == null)
                             return null;
 
                         let href = c ? `/${c.type.substr(1).split(".")[0]}s/[${c.type.substr(1, 1)}id]` : "";
@@ -71,7 +74,7 @@ export default (({
 
                         switch (event.action) {
                             case CRUD.Create:
-                                if (event.userId == -1) { // A new user joined!
+                                if (event.userId == event.contentId) { // A new user joined!
                                     user = users.find(user => user.id == event.contentId);
                                     if (user != null)
                                         content = <>
@@ -96,15 +99,21 @@ export default (({
                                 }
                                 break;
                             case CRUD.Update:
-                                content = <>
-                                    <Link href="/user/[uid]" as={`/user/${user!.id}`}><a>
-                                        {user!.username}
-                                    </a></Link>
-                                    {` edited `}
-                                    <Link href={href} as={as}><a>
-                                        {c!.name}
-                                    </a></Link>
-                                </>;
+                                if (event.userId == event.contentId && event.userId == self?.id) {
+                                    content = <i>
+                                        You edited your profile.
+                                    </i>
+                                } else {
+                                    content = <>
+                                        <Link href="/user/[uid]" as={`/user/${user!.id}`}><a>
+                                            {user!.username}
+                                        </a></Link>
+                                        {` edited `}
+                                        <Link href={href} as={as}><a>
+                                            {c!.name}
+                                        </a></Link>
+                                    </>;
+                                }
                                 break;
                             case CRUD.Delete:
                                 content = <>
@@ -118,9 +127,11 @@ export default (({
                                 break;
                         }
                         return <li key={event.id}>
-                            <img src={user!.GetAvatarURL(128)} />
-                            <span className="content">{content}</span>
-                            <span className="time">{Moment(event.date).fromNow()}</span>
+                            {event.contentId == self?.id && event.action == CRUD.Update ? <></> : <img src={user?.GetAvatarURL(128)} />}
+                            <div className="content">
+                                <span>{content}</span>
+                                <span className="time">{Moment(event.date).fromNow()}</span>
+                            </div>
                         </li>
                     })}
                 </ul>
@@ -132,8 +143,8 @@ export default (({
                     developed and released by SmileBoom Co. Ltd.
                     It all began with Petit Computer in 2011, which gave users the first taste of SmileBASIC. Since then,
                     there have been iterations of SmileBASIC for the 3DS, Wii U, and now the Nintendo Switch.
-                    <br/>
-                    <br/>
+                    <br />
+                    <br />
                     SmileBASIC Source was made to give people a place to discuss SmileBASIC, share their creations, and ask questions.
                     Whether brand new to programming or a seasoned veteran, we hope to provide everything you need to enjoy
                     SmileBASIC!
@@ -143,7 +154,7 @@ export default (({
                 <h2>Under development</h2>
                 <p>
                     SmileBASIC Source is still under active development, so you may find bugs or notice features that aren't yet available.
-                    <br/><br/>
+                    <br /><br />
                     Please report any bugs to MasterR3C0RD on Discord: @MasterR3C0RD#7695
                 </p>
             </Cell>

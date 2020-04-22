@@ -26,7 +26,6 @@ export default (({
         if (file) {
             try {
                 let d = await UploadFile(file);
-                console.log(d);
                 return insertTag("img", `${API_ENTITY("File")}/raw/${d}`)();
             } catch(e){
                 console.error("Failed to upload file");
@@ -73,7 +72,6 @@ export default (({
             if (between.length == 0)
                 between = defaultContent || "";
 
-            console.log(area);
             area.selectionStart = selectionStart + tagName.length + 2;
             area.selectionEnd = selectionEnd + tagName.length + 2;
             area.focus();

@@ -465,7 +465,6 @@ form input:not([type="checkbox"]), form button, form textarea {
     vertical-align: top;
     padding: 0em 1em;
     min-height: 1em;
-    max-height: 3em;
     word-break: break-word;
     overflow: hidden;
     max-width: calc(100% - 2em);
@@ -474,8 +473,7 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 .activity li .time {
     display: block;
-    margin-top: 0em;
-    margin-left: 3em;
+    margin-top: .5em;
     color: var(--primary-accent);
 }
 
@@ -767,7 +765,7 @@ form input:not([type="checkbox"]), form button, form textarea {
 .bbcode-view {
     color: var(--primary-text);
     white-space: pre-line;
-    word-break: break-all;
+    word-break: break-word;
     padding: .5em 1em;
 }
 
@@ -916,11 +914,35 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 .comment {
     width: 100%;
+    padding: 1em 0;
+}
+.comment .avatar {
+    display: inline-block;
+    box-shadow: 2px 2px 5px var(--shadow);
+}
+.comment .comment-body {
+    display: inline-block;
+    vertical-align: top;
+    max-width: calc(100% - 4em);
+}
+
+.comment .user-info {
+    display: inline-block;
+}
+.comment .username {
+    vertical-align: top;
+    margin-left: 1em;
 }
 
 .comment .editdate {
-    margin-left: 1em;
+    display: inline-block;
+    vertical-align: top;
     color: var(--primary-accent);
+    margin-left: 1em;
+}
+.comment .comment-content {
+    display: block;
+    word-break: break-word;
 }
 
 #hideout {

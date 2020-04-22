@@ -30,6 +30,13 @@ export class BaseUser extends Entity {
         })) || [];
     }
 
+    public GetAvatarURL(size: number, square: boolean = true): string {
+        if(this.avatar != 0)
+            return `${API_ENTITY("File")}/raw/${this.avatar}?size=${size}&square=${square}`;
+        else 
+            return `https://www.tinygraphs.com/labs/isogrids/hexa/${this.username}?theme=seascape&size=${size}`;
+    }
+
     public static async Search(query: SearchQuery): Promise<BaseUser[]> {
         return (await Entity
             .Search({

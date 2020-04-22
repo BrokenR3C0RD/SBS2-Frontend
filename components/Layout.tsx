@@ -113,9 +113,9 @@ const Gallery = (({
         <div className="gallery-prev" onClick={() => prevImage(true)} />
         <style jsx>{`
             .gallery > .gallery-content > :global(*) {
+                position: relative;
                 max-width: ${width};
                 max-height: ${height};
-                position: relative;
             }
         `}</style>
     </div>

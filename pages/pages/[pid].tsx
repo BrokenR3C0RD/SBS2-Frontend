@@ -130,7 +130,7 @@ export default (({
                         <div id="page-info">
                             <b>{`Author: `}</b>
                             <Link href="/user/[uid]" as={`/user/${user.id}`}><a>
-                                <img src={user.avatar != 0 ? `${API_ENTITY("File")}/raw/${user.avatar}?size=32&square=true` : `https://www.tinygraphs.com/labs/isogrids/hexa/${user.username}?theme=seascape&size=32`} className="info-avatar" />
+                                <img src={user.GetAvatarURL(32)} className="info-avatar" />
                                 {user.username}
                             </a></Link>
                             {` • `}
@@ -138,7 +138,7 @@ export default (({
                             {(page.editDate.valueOf() - page.createDate.valueOf()) >= 2000 && <>
                                 {` • `}
                                 <b>Last edited: </b>{Moment(page.editDate).fromNow()} by <Link href="/user/[uid]" as={`/user/${editUser.id}`}><a>
-                                    <img src={editUser.avatar != 0 ? `${API_ENTITY("File")}/raw/${editUser.avatar}?size=32&square=true` : `https://www.tinygraphs.com/squares/${editUser.username}?theme=seascape&size=32&fmt=jpeg`} className="info-avatar" />
+                                    <img src={editUser.GetAvatarURL(32)} className="info-avatar" />
                                     {editUser.username}
                                 </a></Link>
                             </>}
@@ -258,7 +258,7 @@ export default (({
 
                                 return <div className="comment" key={comment.id} ref={comments.length - 1 == idx && !fetching ? ref : undefined}>
                                     <div className="user-info">
-                                        <img src={user.avatar != 0 ? `${API_ENTITY("File")}/raw/${user.avatar}?size=64&square=true` : `https://www.tinygraphs.com/labs/isogrids/hexa/${user.username}?theme=seascape&size=64`} className="avatar" />
+                                        <img src={user.GetAvatarURL(64)} className="avatar" />
                                         <span className="username">
                                             <Link href="/user/[uid]" as={`/user/${user.id}`}><a>{user.username}</a></Link>
                                         </span>

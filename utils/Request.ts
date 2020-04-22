@@ -9,7 +9,8 @@ export interface RequestOptions<T = any> {
     url: string | URL,
     data?: Dictionary<any> | string,
     headers?: Dictionary<string>,
-    return?: new() => T
+    return?: new() => T,
+    signal?: AbortSignal
 }
 
 export interface RequestOptionsPages<T = any> extends RequestOptions<T> {
@@ -40,7 +41,8 @@ export async function DoRequest<T>(options: RequestOptions<T>): Promise<T | null
             "Accept": "application/json",
             "Content-Type": (method == "POST" || method == "PUT") ? "application/json" : undefined
         }, options.headers || {}),
-        body: (method == "POST" || method == "PUT") ? JSON.stringify(options.data || {}) : undefined
+        body: (method == "POST" || method == "PUT") ? JSON.stringify(options.data || {}) : undefined,
+        signal: options.signal
     });
 
     if (resp.status === 200) {

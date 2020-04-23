@@ -20,6 +20,10 @@ export default (({
     const [pageCode, setPageCode] = useState<string>("");
     const [pageMarkup, setPageMarkup] = useState<string>("12y");
     const [uploaded, setUploaded] = useState<boolean>(false);
+    const [errors, setErrors] = useState<string>();
+    const [uploadErrors, setUploadErrors] = useState<string>();
+    const [pageErrors, setPageErrors] = useState<string>();
+
 
     useEffect(() => { user == null && Router.replace("/") });
     useEffect(() => setInfo("User Settings", []), []);
@@ -49,8 +53,10 @@ export default (({
                 });
                 UpdateUser();
                 setUploaded(true);
+                setUploadErrors(undefined);
             } catch (e) {
                 console.log("Updating user avatar failed: " + e.stack || e.toString());
+                setUploadErrors(e.toString());
             }
         }
     }
@@ -61,27 +67,37 @@ export default (({
     const [, settings, mutateSettings] = useSettings();
 
     async function UpdateSettings(data: Dictionary<string | number | boolean>) {
-        await Variable("user_settings", JSON.stringify(Object.assign({}, settings, data)));
-        mutateSettings();
-        Router.push("/");
+        try {
+            await Variable("user_settings", JSON.stringify(Object.assign({}, settings, data)));
+            mutateSettings();
+            Router.push("/");
+        } catch (e) {
+            console.log("Updating settings failed: " + e.stack || e.toString());
+            setErrors(e.toString());
+        }
     }
 
     async function UpdatePage() {
-        await UserPage.Update({
-            type: "@user.page",
-            id: page?.id,
-            name: "Userpage",
-            content: pageCode,
-            values: {
-                markupLang: pageMarkup
-            },
-            permissions: {
-                0: "cr"
-            },
-            parentId: user!.id
-        });
-        mutate();
-        await Router.replace("/user/[uid]", `/user/${user!.id}`);
+        try {
+            await UserPage.Update({
+                type: "@user.page",
+                id: page?.id,
+                name: "Userpage",
+                content: pageCode,
+                values: {
+                    markupLang: pageMarkup
+                },
+                permissions: {
+                    0: "cr"
+                },
+                parentId: user!.id
+            });
+            mutate();
+            await Router.replace("/user/[uid]", `/user/${user!.id}`);
+        } catch(e){
+            console.log("Updating userpage failed: " + e.stack || e.toString());
+            setPageErrors(e.toString());
+        }
     }
 
     return <>
@@ -118,17 +134,20 @@ export default (({
                         {!isDragActive && <>
                             <span>Drag and drop your avatar here or click here to open files dialog</span>
                             {uploaded && <p>Upload successful!</p>}
+                            {uploadErrors && <p className="error">{uploadErrors}</p>}
                         </>}
 
                     </div>
                     <input {...getInputProps()} />
                     <input type="submit" value="Save Settings!" />
+                    {errors && <p className="error">{errors}</p>}
                 </Form>
             </Cell>
             <Cell x={1} y={2} width={2}>
                 <h2>User page</h2>
                 <Composer code={pageCode} markup={pageMarkup} onChange={(code, markup) => { setPageCode(code); setPageMarkup(markup); }} />
                 <button onClick={UpdatePage}>Update!</button>
+                {pageErrors && <p className="error">{pageErrors}</p>}
             </Cell>
         </Grid>
     </>;

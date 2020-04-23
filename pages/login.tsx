@@ -6,6 +6,7 @@ import Form from "../components/Form";
 import { Dictionary, PageProps } from "../interfaces";
 import { Login, Register } from "../utils/User";
 import { Grid, Cell } from "../components/Layout";
+import Link from "next/link";
 
 export default (({
     setInfo
@@ -101,6 +102,9 @@ export default (({
                         {rerrors.join(", ")}
                     </p>
                 </Form>
+                <p>
+                    If you already registered but you need to confirm your email, go <Link href="/confirm">here!</Link>
+                </p>
             </Cell>
         </Grid>
     </>;

@@ -217,6 +217,9 @@ export class Comment extends Entity {
 
                             if (resp.status === 400)
                                 break;
+                            
+                            if(resp.status === 524)
+                                continue;
 
                             if (resp.status === 200) {
                                 let newc = (await resp.json());

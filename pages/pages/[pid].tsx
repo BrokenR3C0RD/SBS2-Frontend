@@ -116,11 +116,15 @@ export default (({
     useEffect(() => {
         if (page && page.type === "@page.program") {
             (async () => {
-                const ki = await GetSBAPIInfo(page.values.key);
-                if (ki == null) {
-                    setKeyInfo(null);
-                } else {
-                    setKeyInfo(ki);
+                try {
+                    const ki = await GetSBAPIInfo(page.values.key);
+                    if (ki == null) {
+                        setKeyInfo(null);
+                    } else {
+                        setKeyInfo(ki);
+                    }
+                } catch (e) {
+                    setKeyInfo(JSON.parse(page.values.keyinfo || "null"));
                 }
             })();
         }
@@ -205,7 +209,7 @@ export default (({
                                     <tr id="pubkey">
                                         <td>Public key</td>
                                         <td style={{
-                                            textDecoration: (!keyInfo || !keyInfo.available) ? "line-through" : undefined
+                                            textDecoration: (!keyInfo || ("available" in keyInfo && !keyInfo.available)) ? "line-through" : undefined
                                         }} title={page.values.key}>{page.values.key}</td>
                                     </tr>
                                     <tr>
@@ -220,29 +224,30 @@ export default (({
                                         <td>Last updated</td>
                                         <td>{keyInfo && Moment(keyInfo.version * 1000).fromNow()}</td>
                                     </tr>
-                                    <tr>
+                                    {keyInfo && "downloads" in keyInfo && <tr>
                                         <td>Downloads</td>
-                                        <td>{keyInfo && keyInfo.downloads.toString()}</td>
-                                    </tr>
+                                        <td>{keyInfo.downloads.toString()}</td>
+                                    </tr>}
                                     <tr>
                                         <td>Compatible devices</td>
                                         <td>
                                             {
-                                                Object
-                                                    .keys(supported)
-                                                    .map(device => {
-                                                        switch (device) {
-                                                            case "o3ds":
-                                                                return `Old 3DS` + (supported[device] ? " (with DLC)" : "");
-                                                            case "n3ds":
-                                                                return `New 3DS` + (supported[device] ? " (with DLC)" : "");
-                                                            case "wiiu":
-                                                                return `Wii U` + (supported[device] ? " (with DLC)" : "");
-                                                            case "switch":
-                                                                return `Switch` + (supported[device] ? " (with DLC)" : "");
-                                                        }
-                                                    })
-                                                    .map((m, i) => <span key={i}>{m}<br /></span>)
+                                                keyInfo == null ? "Unknown" :
+                                                    Object
+                                                        .keys(supported)
+                                                        .map(device => {
+                                                            switch (device) {
+                                                                case "o3ds":
+                                                                    return `Old 3DS` + (supported[device] ? " (with DLC)" : "");
+                                                                case "n3ds":
+                                                                    return `New 3DS` + (supported[device] ? " (with DLC)" : "");
+                                                                case "wiiu":
+                                                                    return `Wii U` + (supported[device] ? " (with DLC)" : "");
+                                                                case "switch":
+                                                                    return `Switch` + (supported[device] ? " (with DLC)" : "");
+                                                            }
+                                                        })
+                                                        .map((m, i) => <span key={i}>{m}<br /></span>)
                                             }
                                         </td>
                                     </tr>

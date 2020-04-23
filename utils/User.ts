@@ -3,7 +3,7 @@ import { validateOrReject } from "class-validator";
 import { useEffect, useState } from "react";
 import useSWR, { mutate } from "swr";
 import { isEmail, isUUID } from "validator";
-import { FullUser, UserCredential, Content } from "../classes";
+import { FullUser, UserCredential } from "../classes";
 import { API_USER_LOGIN, API_USER_ME, API_USER_REGISTER, API_USER_REGISTER_CONFIRM, API_USER_REGISTER_SENDEMAIL, API_USER_VARIABLE } from "./Constants";
 import { DoRequest, useRequest } from "./Request";
 import { Dictionary } from "../interfaces";

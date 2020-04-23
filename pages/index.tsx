@@ -58,7 +58,7 @@ export default (({
                 </p>
                 <div className="showcase-container">
                     <Gallery width="400px" height="240px" className="program-showcase">
-                        {programs ? programs.map((program, i) => <div key={program.id} className="program" onClick={() => Router.push("/pages/[pid]", `/pages/${program.id}`)} {...{ "data-chosen": i == 0 ? "data-chosen" : undefined }} >
+                        {programs ? programs.map((program) => <div key={program.id} className="program" onClick={() => Router.push("/pages/[pid]", `/pages/${program.id}`)}>
                             <img src={program.values.photos?.length > 0 ? `${API_ENTITY("File")}/raw/${+program.values.photos.split(",")[0]}?size=400` : "/res/img/logo.svg"} />
                             <span className="title">{program.name}</span>
                         </div>) : []}

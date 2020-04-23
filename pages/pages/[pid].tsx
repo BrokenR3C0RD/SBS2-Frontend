@@ -192,11 +192,11 @@ export default (({
                                 {keyInfo && keyInfo.extInfo.project_name || keyInfo && `【${keyInfo.filename.substr(1)}】`}
                             </h2>
                             {page.values.photos &&
-                                <Gallery className="program-images" width="400px" height="240px" timer={0}>
+                                <Gallery className="program-images" width="400px" height="240px" timer={2000}>
                                     {
                                         page.values.photos.split(",")
                                             .filter(photo => photo != "")
-                                            .map((photo, i) => <img src={`${API_ENTITY("File")}/raw/${+photo}?size=400`} key={i} {...{ "data-chosen": i == 0 ? "data-chosen" : undefined }} />)
+                                            .map((photo, i) => <img src={`${API_ENTITY("File")}/raw/${+photo}?size=400`} key={i} />)
                                     }
                                 </Gallery>
                             }

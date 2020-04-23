@@ -39,7 +39,14 @@ export class Page extends Content {
         const [lastCid, setLastCid] = useState<number>(0);
 
         useEffect(() => {
+            console.log(cid, more, loading, fetchMore);
             if(cid && lastCid !== cid){
+                setContent([]);
+                setMore(true);
+                setLoading(true);
+                setFetchMore(true);
+                setLastCid(cid);
+            } else if(content.length == 0 && cid    ){
                 setContent([]);
                 setMore(true);
                 setLoading(true);
@@ -96,7 +103,7 @@ export class Page extends Content {
             }
 
             return () => aborter.abort();
-        }, [fetchMore, lastCid]);
+        }, [fetchMore, cid]);
 
         return [users, content, loading, () => setFetchMore(true), more];
     }

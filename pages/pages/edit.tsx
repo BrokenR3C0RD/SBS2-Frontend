@@ -177,7 +177,7 @@ export default (({
                 setErrors(["Key doesn't exist!"]);
             } else {
                 setKeyInfo(info);
-                if (code.length == 0 && info.extInfo.console === "Switch" && info.type == "PRJ" && info.extInfo.project_description) {
+                if (!origPages && code.length == 0 && info.extInfo.console === "Switch" && info.type == "PRJ" && info.extInfo.project_description) {
                     setCode(`[code lang=none]${info.extInfo.project_description}[/code]`);
                 }
                 if (keywords.length == 0)

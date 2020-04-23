@@ -106,11 +106,15 @@ nav .search-container #results {
     top: 1.5em;
 
     height: max-content;
+    max-height: calc(100vh - 1.5em);
     background-color: var(--secondary-bg);
     box-shadow: 2px 2px 5px var(--shadow);
     display: none;
     color: var(--primary-text);
     z-index: 100000000;
+    word-break: break-word;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 nav .search-container #results ul {
@@ -122,7 +126,7 @@ nav .search-container #results ul {
 nav .search-container #results ul li {
     width: 100%;
     min-height: 2em;
-    max-height: 4em;
+    height: 100%;
 }
 
 nav .search-container input:focus + #hideout + #results, nav .search-container #results:active {
@@ -152,13 +156,15 @@ nav #user-info .user-avatar {
     height: 100%;
 }
 
-.program-showcase.gallery > .gallery-content > .program[data-chosen] {
+.program-showcase.gallery > .gallery-content > .program {
     line-height: 1em;
     cursor: pointer;
     width: 100%;
     flex-grow: 1;
     height: 100%!important;
+    color: white;
 }
+
 .program img {
     display: block;
     width: 100%;
@@ -364,15 +370,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     flex-basis: 50%;
 }
 
-.gallery>.gallery-content>*[data-chosen] {
-    display: block;
-    text-align: center;
-    box-sizing: border-box;
-    min-width: 0;
-    min-height: 0;
-}
-
-.gallery>.gallery-content>*:not([data-chosen]) {
+.gallery>.gallery-content>* {
     display: none;
 }
 
@@ -810,6 +808,10 @@ form input:not([type="checkbox"]), form button, form textarea {
     nav #user-info {
         display: inline-block;
         padding-left: .25em;
+    }
+    nav .search-container #results {
+        width: 100vw;
+        left: 0;
     }
     .cell, .composer {
         padding: .5em;

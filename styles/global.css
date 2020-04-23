@@ -244,9 +244,11 @@ nav #user-info[data-open="true"] ul li a:hover {
     /* backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px); */
     float: left;
-    height: 100vh;
+    height: calc(100vh - 1.5em);
     width: 20%;
     opacity: 1;
+    overflow-y: auto;
+
     box-shadow: -3px 0 5px var(--shadow);
 }
 
@@ -263,7 +265,7 @@ nav #user-info[data-open="true"] ul li a:hover {
 }
 
 #sidebar>ul>li {
-    font-size: 1.75rem;
+    font-size: 1em;
 }
 
 #sidebar ul>li {
@@ -305,11 +307,11 @@ nav #show-sidebar {
 }
 
 #content {
-    margin-top: 4em;
-    margin-left: 2em;
-    margin-right: calc(20% + 2em);
+    margin-top: 2.5em;
+    margin-left: 1em;
+    margin-right: calc(20% + 1em);
     margin-bottom: 2em;
-    width: calc(80% - 4em);
+    width: calc(80% - 2em);
     min-height: calc(100vh - 5.3em);
     height: 100%;
     position: relative;
@@ -535,10 +537,8 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 .composer {
     width: 100%;
-    background-color: var(--secondary-accent);
-    padding: 2em;
+    padding: 0 2em;
     display: flex;
-    box-shadow: 2px 2px 5px var(--shadow);
 }
 
 .composer[data-previewhidden="true"] .composer-commands * {
@@ -615,7 +615,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     min-height: 100%;
     position: relative;
     flex-grow: 1;
-    box-shadow: 1px 1px 5px var(--shadow);
+    box-shadow: 2px 2px 5px var(--shadow);
 }
 
 .composer .composer-editorwrapper .composer-dropping {
@@ -643,7 +643,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     width: 100%;
     height: 100%;
     border-left: 1px solid var(--primary-accent);
-    box-shadow: 1px 1px 5px var(--shadow);
+    box-shadow: 2px 2px 5px var(--shadow);
     overflow-y: auto;
     overflow-x: hidden;
     white-space: pre-wrap;
@@ -724,7 +724,7 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 @media only screen and (max-width: 1280px) {
     #content {
-        margin: 6em 1em;
+        margin: 3em 1em;
         width: calc(100% - 2em);
     }
     nav #user-info {

@@ -73,7 +73,7 @@ export class Activity {
                             setUsers(users);
                             setContent(content);
                             setEvents(events);
-                            setMore(res.activity.length % 35 === 0);
+                            setMore(res.activity.length % limit === 0);
                         }
                     } catch (e) {
                         if (!aborter.signal.aborted)

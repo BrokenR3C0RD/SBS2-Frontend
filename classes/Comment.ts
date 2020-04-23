@@ -40,7 +40,7 @@ export class Comment extends Entity {
     deleted: boolean = false;
 
     public Permitted(user: FullUser, perm: CRUD = CRUD.Read): boolean {
-        return ((this.createUserId == user.id) || (user.super)) &&  (perm == CRUD.Update || perm == CRUD.Delete);
+        return (this.createUserId == user.id || (user.super)) && (perm == CRUD.Update || perm == CRUD.Delete);
     }
 
     public static async GetComments(parentId: number, reverse: boolean = true, skip: number = 0, limit: number = 20, createEnd?: Date): Promise<Comment[] | null> {

@@ -222,7 +222,7 @@ export default (({
                                     </tr>
                                     <tr>
                                         <td>Last updated</td>
-                                        <td>{keyInfo && Moment(keyInfo.version * 1000).fromNow()}</td>
+                                        <td>{keyInfo && Moment((keyInfo.version - 9 * 60 * 60) * 1000).fromNow()}</td>
                                     </tr>
                                     {keyInfo && "downloads" in keyInfo && <tr>
                                         <td>Downloads</td>

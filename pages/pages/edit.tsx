@@ -398,7 +398,7 @@ export default (({
                                     </tr>
                                     {keyInfo.extInfo.console === "Switch" && <tr>
                                         <td>Last updated:</td>
-                                        <td>{Moment(keyInfo.version * 1000).fromNow()}</td>
+                                        <td>{Moment((keyInfo.version - 9 * 60 * 60) * 1000).fromNow()}</td>
                                     </tr>}
                                     <tr>
                                         <td>Downloaded:</td>

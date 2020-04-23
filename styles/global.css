@@ -454,6 +454,10 @@ form input:not([type="checkbox"]), form button, form textarea {
     max-height: 50vh;
 }
 
+.activity.activity-full {
+    max-height: 100%;
+}
+
 .activity li {
     display: block;
     width: 100%;

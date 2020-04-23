@@ -25,6 +25,10 @@ export default (({
 
     const [events, users, contents, loading, loadMore, more] = Activity.useActivity();
     const [ref, inView] = useInView();
+    useEffect(() => {
+        if(inView && !loading && more)
+            loadMore()
+    }, [inView])
 
     const [, categories] = Category.useCategory({
         name: "Pages"
@@ -32,10 +36,7 @@ export default (({
 
     let pageCategoryId = categories?.[0]?.id; 
 
-    useEffect(() => {
-        if(inView && !loading && more)
-            loadMore()
-    }, [inView])
+
 
     return <>
         <Grid
@@ -69,7 +70,7 @@ export default (({
                 </p>
             </Cell>
             <Cell x={3} y={2} width={2} height={1}>
-                <h2>Recent Activity</h2>
+                <h2><Link href="/activity"><a>Recent Activity</a></Link></h2>
                 <ul className="activity">
                     {events.map((event, i) => {
                         let content: React.ReactElement = <></>;

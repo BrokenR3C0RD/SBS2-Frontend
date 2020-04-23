@@ -64,12 +64,13 @@ export default (({
     return <>
         <Grid
             cols={["1fr", "1fr"]}
-            rows={["fit-content(50%)", "fit-content(50%)"]}
+            rows={["50%", "50%"]}
             gapX="2em"
             gapY="0"
             style={{
                 width: "100%",
-                height: "100%"
+                height: "100%",
+                minHeight: "100%"
             }}
         >
             <Cell x={1} y={1}>

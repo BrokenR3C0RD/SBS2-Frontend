@@ -128,14 +128,14 @@ export async function Confirm(key: string) {
     if(user == null)
         return;
 
-    await Content.Update({
-        parentId: user!.id,
-        type: "@user.page",
-        name: `${user!.username}'s user page`,
-        permissions: {},
-        values: {},
-        content: "Edit me in user settings!"
-    });
+    // await Content.Update({
+    //     parentId: user!.id,
+    //     type: "@user.page",
+    //     name: `${user!.username}'s user page`,
+    //     permissions: {},
+    //     values: {},
+    //     content: "Edit me in user settings!"
+    // });
 
     mutate(API_USER_ME, null, true);
 }

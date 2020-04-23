@@ -47,6 +47,10 @@ export function useUser(): FullUser | null | false {
     return user;
 }
 
+export function UpdateUser(): void {
+    mutate(API_USER_ME);
+}
+
 export async function Login(username: string, password: string, rememberMe: boolean = false): Promise<void> {
     const creds: UserCredential = plainToClass(UserCredential, {
         username: isEmail(username) ? undefined : username,

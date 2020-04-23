@@ -66,7 +66,7 @@ const App = (({
     }
 
     useEffect(() => {
-        if (user !== null && user !== false && settings != null)
+        if (user !== null && user !== false && settings?.["theme"])
             localStorage.setItem("sbs-theme", ((settings?.["theme"] as string) || "light"));
         else if (user === null && localStorage.getItem("sbs-theme") == null)
             localStorage.setItem("sbs-theme", "light");

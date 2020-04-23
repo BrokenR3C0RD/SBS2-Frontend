@@ -4,8 +4,8 @@ import { PageProps, Dictionary } from "../interfaces";
 import { Grid, Cell } from "../components/Layout";
 import { useRouter } from "next/router";
 import Form from "../components/Form";
-import { useSettings, Variable } from "../utils/User";
-import {useDropzone} from "react-dropzone";
+import { useSettings, Variable, UpdateUser } from "../utils/User";
+import { useDropzone } from "react-dropzone";
 import { UploadFile, DoRequest } from "../utils/Request";
 import { API_ENTITY } from "../utils/Constants";
 import { UserPage } from "../classes";
@@ -19,24 +19,26 @@ export default (({
 
     const [pageCode, setPageCode] = useState<string>("");
     const [pageMarkup, setPageMarkup] = useState<string>("12y");
+    const [uploaded, setUploaded] = useState<boolean>(false);
 
-    useEffect(() => {user == null && Router.replace("/")});
+    useEffect(() => { user == null && Router.replace("/") });
     useEffect(() => setInfo("User Settings", []), []);
 
     const [, pages, mutate] = UserPage.useUserPage(user);
     let page = pages?.[0];
 
     useEffect(() => {
-        if(page){
+        if (page) {
             setPageCode(page.content);
             setPageMarkup(page.values.markupLang);
         }
     }, [pages])
 
-    async function onDrop(files: File[]){
+    async function onDrop(files: File[]) {
         let file = files[0];
-        if(file){
+        if (file) {
             try {
+                setUploaded(false);
                 let id = await UploadFile(file);
                 await DoRequest({
                     url: `${API_ENTITY("User")}/basic`,
@@ -45,25 +47,26 @@ export default (({
                         avatar: id
                     }
                 });
-                mutateSettings();
-            } catch(e){
+                UpdateUser();
+                setUploaded(true);
+            } catch (e) {
                 console.log("Updating user avatar failed: " + e.stack || e.toString());
             }
         }
     }
 
-    const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop, multiple: false, accept: "image/png, image/jpeg, image/gif"})
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, multiple: false, accept: "image/png, image/jpeg, image/gif" })
 
 
     const [, settings, mutateSettings] = useSettings();
 
-    async function UpdateSettings(data: Dictionary<string | number | boolean>){
+    async function UpdateSettings(data: Dictionary<string | number | boolean>) {
         await Variable("user_settings", JSON.stringify(Object.assign({}, settings, data)));
         mutateSettings();
         Router.push("/");
     }
 
-    async function UpdatePage(){
+    async function UpdatePage() {
         await UserPage.Update({
             type: "@user.page",
             id: page?.id,
@@ -82,7 +85,7 @@ export default (({
     }
 
     return <>
-        <Grid 
+        <Grid
             rows={["1fr", "1fr"]}
             cols={["1fr", "1fr"]}
             gapX="2em"
@@ -108,9 +111,15 @@ export default (({
                         <textarea name="SiteJS" defaultValue={(settings?.["SiteJS"] as string) || ""} />
                     </label>
                     Avatar:
-                    <div {...getRootProps()}>
-                        {isDragActive && <h1>Drop here!</h1>}
-                        {!isDragActive && <h1>Drag your new avatar here or click to open files dialog</h1>}
+                    <div {...getRootProps({
+                        className: "avatar-upload"
+                    })}>
+                        {isDragActive && <span>Drop here!</span>}
+                        {!isDragActive && <>
+                            <span>Drag and drop your avatar here or click here to open files dialog</span>
+                            {uploaded && <p>Upload successful!</p>}
+                        </>}
+
                     </div>
                     <input {...getInputProps()} />
                     <input type="submit" value="Save Settings!" />
@@ -118,7 +127,7 @@ export default (({
             </Cell>
             <Cell x={1} y={2} width={2}>
                 <h2>User page</h2>
-                <Composer code={pageCode} markup={pageMarkup} onChange={(code, markup) => {setPageCode(code); setPageMarkup(markup); }} />
+                <Composer code={pageCode} markup={pageMarkup} onChange={(code, markup) => { setPageCode(code); setPageMarkup(markup); }} />
                 <button onClick={UpdatePage}>Update!</button>
             </Cell>
         </Grid>

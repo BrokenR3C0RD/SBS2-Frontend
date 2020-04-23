@@ -67,8 +67,8 @@ export default (({
     const [, users] = BaseUser.useUser({
         ids: [page?.createUserId as number, page?.editUserId as number]
     });
-    const user = users?.[0];
-    const editUser = users?.[1] || user;
+    const user = users?.find(user => user.id == page?.createUserId);
+    const editUser = users?.find(user => user.id == page?.editUserId);
 
     async function DeletePage() {
         if (!confirm("Are you sure you want to delete this page?"))

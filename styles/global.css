@@ -105,8 +105,7 @@ nav .search-container #results {
     width: 50%;
     top: 1.5em;
 
-    height: 100%;
-    max-height: 50vh;
+    height: max-content;
     background-color: var(--secondary-bg);
     box-shadow: 2px 2px 5px var(--shadow);
     display: none;
@@ -509,6 +508,29 @@ form input:not([type="checkbox"]), form button, form textarea {
     float: right;
 }
 
+.avatar-upload {
+    width: 100%;
+    min-width: 10em;
+    max-width: 30em;
+    height: 10em;
+    background-color: var(--primary-bg);
+    padding: .5em;
+    margin-bottom: 1em;
+    box-shadow: 2px 2px 5px var(--shadow);
+    text-align: center;
+    border: 2px dotted var(--primary-accent);
+    border-radius: 7px;
+}
+
+.avatar-upload:hover {
+    background-color: var(--secondary-bg);
+}
+
+.avatar-upload span {
+    display: inline-block;
+    font-size: 1.25em;
+}
+
 .composer {
     width: 100%;
     background-color: var(--secondary-accent);
@@ -536,6 +558,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     width: 100%;
     vertical-align: top;
     background-color: var(--primary-bg);
+    height: 100%;
 }
 
 .composer .composer-commands li {
@@ -622,7 +645,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     overflow-y: auto;
     overflow-x: hidden;
     white-space: pre-wrap;
-    word-break: break-all;
+    word-break: break-word;
     position: relative;
 }
 

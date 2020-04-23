@@ -7,6 +7,13 @@ import { API_ENTITY } from "../utils/Constants";
 import { BaseUser, FullUser } from "./User";
 import { Dictionary } from "../interfaces";
 
+
+function Wait(ms: number): Promise<void> {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    })
+}
+
 export class Comment extends Entity {
     @Transform(obj => {
         try {
@@ -136,7 +143,7 @@ export class Comment extends Entity {
                             continue;
 
                         try {
-                            let token = sessionStorage.getItem("sbs-auth") || localStorage.getItem("sbs-auth") || null;
+                            let token = localStorage.getItem("sbs-auth") || sessionStorage.getItem("sbs-auth") || null;
                             let resp = await fetch(`${API_ENTITY("Comment")}/listen/${parent[0].id}?lastID=${comments?.[comments.length - 1]?.id || 0}`, {
                                 method: "GET",
                                 headers: {
@@ -182,6 +189,8 @@ export class Comment extends Entity {
                         } catch (e) {
                             if (!aborter.signal.aborted)
                                 console.error("An error occurred while polling for comments:" + (e && e.stack ? e.stack : e));
+                            
+                            await Wait(2500);
                         }
                     }
                 })();

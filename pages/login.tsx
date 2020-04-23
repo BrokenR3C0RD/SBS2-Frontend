@@ -64,7 +64,7 @@ export default (({
     return <>
         <Grid
             cols={["1fr", "1fr"]}
-            rows={["50%", "50%"]}
+            rows={["100%"]}
             gapX="2em"
             gapY="0"
             style={{

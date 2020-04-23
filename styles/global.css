@@ -562,6 +562,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     display: inline;
     padding: .10em;
     border: 0;
+    width: 100%;
 }
 
 .composer .composer-editor {

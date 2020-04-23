@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import { useEffect } from "react";
 import { PageProps } from "../interfaces";
 import { Grid, Cell, Gallery } from "../components/Layout";
-import { Page } from "../classes";
+import { Page, Category } from "../classes";
 import { API_ENTITY } from "../utils/Constants";
 import { useRouter } from "next/router";
 import { Activity } from "../classes";
@@ -25,6 +25,12 @@ export default (({
 
     const [events, users, contents, loading, loadMore, more] = Activity.useActivity();
     const [ref, inView] = useInView();
+
+    const [, categories] = Category.useCategory({
+        name: "Pages"
+    });
+
+    let pageCategoryId = categories?.[0]?.id; 
 
     useEffect(() => {
         if(inView && !loading && more)
@@ -58,6 +64,9 @@ export default (({
                         </div>) : []}
                     </Gallery>
                 </div>
+                <p>
+                    You can view all programs and resources <Link href="/pages/categories/[cid]" as={`/pages/categories/${pageCategoryId}`}>here!</Link>
+                </p>
             </Cell>
             <Cell x={3} y={2} width={2} height={1}>
                 <h2>Recent Activity</h2>

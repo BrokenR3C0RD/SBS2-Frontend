@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { PageProps, Dictionary } from "../../interfaces";
 import { Grid, Cell, Gallery } from "../../components/Layout";
 import Form from "../../components/Form";
-import { Page, ProgramPage, BaseUser, Comment } from "../../classes";
+import { Page, ProgramPage, BaseUser, Comment, Category } from "../../classes";
 import { useRouter } from "next/router";
 import BBCodeView from "../../components/DisplayMarkup";
 import Moment from "moment";
@@ -40,8 +40,12 @@ export default (({
     const [, pages] = Page.usePage({
         ids: [+pid]
     });
-
     const page = (pages?.[0] as ProgramPage | Page | undefined);
+    const cid = +(page?.parentId || 0);
+    const [, category] = Category.useCategory({
+        ids: [cid]
+    })
+
 
     useEffect(() => setInfo(page?.name || "", []), [pages]);
 
@@ -147,7 +151,7 @@ export default (({
             {(!pages || (pages!.length != 0 && !user)) && <Cell x={1} y={1} width={3}>
                 <h1>Loading...</h1>
             </Cell>}
-            {page && isPage && user && editUser &&
+            {page && isPage && user && editUser && category &&
                 <>
 
                     <Cell x={1} y={1} width={3}>
@@ -171,6 +175,8 @@ export default (({
                                     {editUser.username}
                                 </a></Link>
                             </>}
+                            {` • `}
+                            <b>Category: </b><Link href="/pages/categories/[cid]" as={`/pages/categories/${page.parentId}`}>{category[0]?.name}</Link>
                         </div>
                     </Cell>
                     {page.type === "@page.program" && <>

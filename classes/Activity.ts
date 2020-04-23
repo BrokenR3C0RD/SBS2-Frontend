@@ -79,6 +79,7 @@ export class Activity {
                             console.error("An error occurred while fetching activity: " + e.stack);
                     }
                     setLoading(false);
+                    setFetchMore(false);
                 })();
 
             if (realtime) {

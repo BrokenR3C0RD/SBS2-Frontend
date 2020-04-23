@@ -76,7 +76,7 @@ const App = (({
 
         let siteJS = document.createElement("script");
         siteJS.async = true;
-        if (settings && settings["SiteJS"]) {
+        if (settings && settings["SiteJS"] && router.query["sitejs"] != "off") {
             siteJS.innerHTML = `try { ${settings["SiteJS"] as string} } catch(e){console.error("Error in SiteJS:" + e.stack)};`;
             document.head.appendChild(siteJS);
 

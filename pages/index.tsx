@@ -146,6 +146,7 @@ export default (({
                             </div>
                         </li>
                     })}
+                    <li ref={ref}></li>
                     {loading && <div className="spinner circles">
                         <div></div>
                         <div></div>

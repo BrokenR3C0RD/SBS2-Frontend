@@ -87,6 +87,7 @@ export class Page extends Content {
                         if (!aborter.signal.aborted)
                             console.error("An error occurred while fetching pages: " + e.stack);
                     }
+                    setFetchMore(false);
                     setLoading(false);
                 })();
 

@@ -35,7 +35,7 @@ export default (({
     useEffect(() => {
         if(inView && !loading && more)
             loadMore()
-    }, [inView])
+    }, [inView, loading])
 
     return <>
         <Grid

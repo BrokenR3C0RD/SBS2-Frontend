@@ -240,7 +240,7 @@ const App = (({
                     <Link href="/"><a>Home</a></Link>
                 </li>
                 <li onClick={toggle} data-open="false">
-                    <Link href="/pages/categories/[pid]" as={`/pages/categories/${tree?.find(page => page.name === "Pages")?.id}`}><a>Pages</a></Link>
+                    <Link href="/pages/categories/[cid]" as={`/pages/categories/${tree?.find(page => page.name === "Pages")?.id}`}><a>Pages</a></Link>
                     <ul>
                         <li key={-1}><Link href="/pages/edit"><a>Create a new page!</a></Link></li>
                         {loadingPages && <p key={-3}>Loading pages...</p>}

@@ -1,8 +1,8 @@
-import {DoRequest} from "./Request";
+import { DoRequest } from "./Request";
 
 export interface KeyInfo {
     filename: string,
-    type: "TXT" | "DAT1" | "DAT2" | "PRJ" | "META" | "DAT" 
+    type: "TXT" | "DAT1" | "DAT2" | "PRJ" | "META" | "DAT"
     icon: "TXT" | "DAT" | "PRJ" | "PRG" | "GRP",
     path: string,
     author: {
@@ -14,12 +14,12 @@ export interface KeyInfo {
     size: number,
     downloads: number,
     available: boolean,
-    extInfo:  {
+    extInfo: {
         version: number,
         type?: "col" | "int" | "real",
         dims?: number,
-        files?: {name: string, size: number}[],
-        console: "Switch" |  "3DS",
+        files?: { name: string, size: number }[],
+        console: "Switch" | "3DS",
         project_name?: string,
         project_description?: string,
         tags: string[]
@@ -27,17 +27,22 @@ export interface KeyInfo {
     encodings: string[]
 }
 
-export async function GetSBAPIInfo(key: string, filename?: string): Promise<KeyInfo | null>{
-    let info = await DoRequest<KeyInfo>({
-        url: `https://sbapi.me/get/${key}${filename ? `/${filename}` : ""}/info`,
-        data: {
-            json: "1",
-            en: "1"
-        },
-        method: "GET",
-        headers: {
-            Authorization: ""
-        }
-    });
-    return info;
+export async function GetSBAPIInfo(key: string, filename?: string): Promise<KeyInfo | null> {
+    try {
+        let info = await DoRequest<KeyInfo>({
+            url: `https://sbapi.me/get/${key}${filename ? `/${filename}` : ""}/info`,
+            data: {
+                json: "1",
+                en: "1"
+            },
+            method: "GET",
+            headers: {
+                Authorization: ""
+            }
+        });
+        return info;
+    } catch(e){
+        console.error("An error occurred while loading information from SBAPI: " + e.stack);
+        return null;
+    }
 }

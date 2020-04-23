@@ -256,11 +256,11 @@ export default (({
 }) => {
     if (markupLang == "12y") {
         return <div className={`bbcode-view ${className}`} dangerouslySetInnerHTML={{
-            __html: TwelveMarkup(code)?.innerHTML || ""
+            __html: TwelveMarkup(code || "")?.innerHTML || ""
         }} />
     } else if (markupLang == "bbcode") {
         return (<div className={`bbcode-view ${className}`} dangerouslySetInnerHTML={{
-            __html: BBCode(entities.encode(code).replace(/\\\[/g, "&lsqb;").replace(/\\\]/g, "&rsqb;").replace(/&quot;/g, "\""), preset(), {
+            __html: BBCode(entities.encode(code || "").replace(/\\\[/g, "&lsqb;").replace(/\\\]/g, "&rsqb;").replace(/&quot;/g, "\""), preset(), {
                 onlyAllowTags: Object.keys(tags)
             })
         }} />);

@@ -4,12 +4,12 @@ import { UploadFile } from "../utils/Request";
 import { useDropzone } from "react-dropzone";
 import { API_ENTITY } from "../utils/Constants";
 
-export default (({
+export default React.forwardRef(({
     code = "",
     markup = "",
     onChange = () => { },
-    hidePreview = false
-}) => {
+    hidePreview = false,
+}, ref) => {
     const [ccode, setCode] = useState("");
     const [cmarkup, setMarkup] = useState("12y")
     const areaRef = useRef<HTMLTextAreaElement>(null);
@@ -17,7 +17,7 @@ export default (({
 
     useEffect(() => {
         setCode(code);
-        if(markup)
+        if (markup)
             setMarkup(markup);
     }, [code, markup]);
 
@@ -27,7 +27,7 @@ export default (({
             try {
                 let d = await UploadFile(file);
                 return insertTag("img", `${API_ENTITY("File")}/raw/${d}`)();
-            } catch(e){
+            } catch (e) {
                 console.error("Failed to upload file");
                 console.error(e);
             }
@@ -84,7 +84,7 @@ export default (({
 
 
     return (
-        <div className="composer" data-previewhidden={!preview}>
+        <div className="composer" data-previewhidden={!preview} ref={ref}>
             <div className="composer-editorwrapper" {...getRootProps()}>
                 <input {...getInputProps()} />
                 {isDragActive && <div className="composer-dropping">
@@ -127,11 +127,17 @@ export default (({
                     <BBCodeView className="composer-preview" code={ccode} markupLang={cmarkup} />
                 </div>
             }
+            {!preview && <style jsx>{`
+                .composer .composer-editor {
+                    min-height: 7.5em;
+                }
+            `}</style>}
         </div>
     );
 }) as React.FunctionComponent<{
     onChange?: (value: string, markup: string) => any,
     code?: string,
     markup?: string,
-    hidePreview?: boolean
+    hidePreview?: boolean,
+    ref?: React.Ref<HTMLDivElement>
 }>;

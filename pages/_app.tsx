@@ -9,7 +9,7 @@ import { Category, Page, BaseUser } from "../classes";
 import "../styles/dark.css";
 import "../styles/global.css";
 import "../styles/light.css";
-import { API_ENTITY, PAGE_CATEGORY, USER_PAGE_CATEGORY } from "../utils/Constants";
+import { API_ENTITY } from "../utils/Constants";
 import { useRequestPage } from "../utils/Request";
 import { Logout, useSettings, useUser, Variable } from "../utils/User";
 import dl from "damerau-levenshtein";
@@ -240,7 +240,7 @@ const App = (({
                     <Link href="/"><a>Home</a></Link>
                 </li>
                 <li onClick={toggle} data-open="false">
-                    Pages
+                    <Link href="/pages/categories/[pid]" as={`/pages/categories/${tree?.find(page => page.name === "Pages")?.id}`}><a>Pages</a></Link>
                     <ul>
                         <li key={-1}><Link href="/pages/edit"><a>Create a new page!</a></Link></li>
                         {loadingPages && <p key={-3}>Loading pages...</p>}
@@ -248,7 +248,7 @@ const App = (({
                         {!end && <button type="button" key={-2} onClick={loadMorePages}>Load more</button>}
                     </ul>
                 </li>
-                <li onClick={toggle} data-open="false">
+                {/* <li onClick={toggle} data-open="false">
                     Discussions
                     <ul>
                         {tree && tree.filter(c => [PAGE_CATEGORY, USER_PAGE_CATEGORY].indexOf(c.id) == -1).map(function render(cat) {
@@ -264,7 +264,7 @@ const App = (({
                             }
                         })}
                     </ul>
-                </li>
+                </li> */}
                 {user && user.super &&
                     <li>
                         <Link href="/admin"><a>Admin Panel</a></Link>

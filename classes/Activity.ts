@@ -19,11 +19,13 @@ export interface Event {
 export class Activity {
     activity: Event[] = [];
 
-    public static useActivity(realtime: boolean = false): [Event[], BaseUser[], Content[], () => void] {
+    public static useActivity(realtime: boolean = false): [Event[], BaseUser[], Content[], boolean, () => void, boolean] {
         let [events, setEvents] = useState<Event[]>([]);
         let [users, setUsers] = useState<BaseUser[]>([]);
         let [content, setContent] = useState<Content[]>([]);
         const [fetchMore, setFetchMore] = useState<boolean>(true)
+        const [loading, setLoading] = useState<boolean>(true);
+        const [more, setMore] = useState<boolean>(true);
 
         useEffect(() => {
             let aborter = new AbortController();
@@ -31,15 +33,17 @@ export class Activity {
             if (fetchMore)
                 (async () => {
                     try {
+                        setLoading(true);
                         let res = await DoRequest({
                             url: `${API_ENTITY("Activity")}`,
                             method: "GET",
                             signal: aborter.signal,
                             return: Activity,
                             data: {
-                                limit: 25,
+                                limit: 35,
                                 maxId: events?.[events?.length - 1]?.id || undefined,
-                                reverse: true
+                                reverse: true,
+                                includeAnonymous: true
                             } as SearchQuery
                         });
 
@@ -48,7 +52,7 @@ export class Activity {
 
                             let uids = res
                                 .activity
-                                .map(event => [event.userId, event.action === CRUD.Create && event.userId === event.contentId ? event.contentId : -1])
+                                .map(event => [event.userId, event.action === CRUD.Create && event.userId === -1 ? event.contentId : -1])
                                 .reduce((acc, e) => acc.concat(e), [])
                                 .filter(id => id != -1 && users.findIndex(user => user.id == id) == -1);
 
@@ -58,7 +62,8 @@ export class Activity {
 
                             let newcontent = res
                                 .activity
-                                .map(event => event.action === CRUD.Create && event.userId === event.contentId ? -1 : event.contentId)
+                                .filter(event => event.contentType != "@user.page" && event.contentType !== "")
+                                .map(event => event.action === CRUD.Create && event.userId === -1 ? -1 : event.contentId)
                                 .filter(id => id !== -1);
 
                             if(newcontent.length > 0)
@@ -67,11 +72,13 @@ export class Activity {
                             setUsers(users);
                             setContent(content);
                             setEvents(events);
+                            setMore(res.activity.length % 35 === 0);
                         }
                     } catch (e) {
                         if (!aborter.signal.aborted)
                             console.error("An error occurred while fetching activity: " + e.stack);
                     }
+                    setLoading(false);
                 })();
 
             if (realtime) {
@@ -81,6 +88,6 @@ export class Activity {
             return () => aborter.abort();
         }, [fetchMore]);
 
-        return [events, users, content, () => setFetchMore(true)];
+        return [events, users, content, loading, () => setFetchMore(true), more];
     }
 }

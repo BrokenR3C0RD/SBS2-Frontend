@@ -8,8 +8,8 @@ import UserPicker from "../../components/UserPicker";
 import { useRouter } from "next/router";
 import { GetSBAPIInfo, KeyInfo } from "../../utils/SBAPI";
 import Moment from "moment";
-import { Page, ProgramPage } from "../../classes";
-import { PAGE_CATEGORY, API_ENTITY } from "../../utils/Constants";
+import { Page, ProgramPage, Category } from "../../classes";
+import { API_ENTITY } from "../../utils/Constants";
 import { CRUD } from "../../classes/Entity";
 import { useDropzone } from "react-dropzone";
 import { UploadFile } from "../../utils/Request";
@@ -32,7 +32,7 @@ export default (({
     user
 }) => {
     const Router = useRouter();
-    const { pid } = Router.query;
+    const { pid, cid } = Router.query;
 
     useEffect(() => setInfo("Edit page", []), []);
     useEffect(() => {
@@ -43,6 +43,11 @@ export default (({
     const [, origPages] = ProgramPage.usePage({
         ids: [+pid]
     });
+
+    useEffect(() => {
+        if(cid)
+            setCategory(+cid);
+    }, [cid])
 
     useEffect(() => {
         if (pid == null) {
@@ -67,12 +72,20 @@ export default (({
             setTitle(page.name);
             setCode(page.content);
             setPerms(Object.keys(page.permissions).map(id => +id).filter(id => id !== 0));
+            setCommenting(page.permissions["0"].indexOf("c") !== -1);
+            setCategory(page.parentId);
             setProgramPage(page.type === "@page.program");
             setMarkup(page.values.markupLang);
             setKeywords(page.keywords);
-            setImages((page.values.photos || "").split(",").map(id => +id));
+            setImages((page.values.photos || "").split(",").filter(photo => photo != "").map(id => +id));
         }
     }, [origPages])
+
+    let [, tree] = Category.useCategoryTree();
+
+    let availableCategories = tree
+        ?.find(category => category.name == "Pages")
+        ?.children;
 
     const [programPage, setProgramPage] = useState<boolean>(false);
     const [key, setKey] = useState<string>();
@@ -87,7 +100,9 @@ export default (({
     const [supported, setSupported] = useState<string[]>([
         "o3ds", "n3ds", "wiiu"
     ]);
+    const [category, setCategory] = useState<number>(0);
 
+    const [commenting, setCommenting] = useState<boolean>(true);
 
     const [perms, setPerms] = useState<number[]>([]);
 
@@ -121,12 +136,12 @@ export default (({
                     markupLang: info["markup-lang"] as string,
                     photos: images.join(",")
                 },
-            keywords: keywords.map(tag => tag.trim()),
+            keywords: keywords.map(tag => tag.trim()).filter(tag => tag.length > 0),
             permissions: {
-                "0": "cr",
+                "0": commenting ? "cr" : "r",
                 ...perms.reduce<Dictionary<string>>((acc, id) => (acc[id.toString()] = "cru") && acc, {})
             },
-            parentId: PAGE_CATEGORY,
+            parentId: category,
             id: origPages && origPages.length !== 0 ? origPages[0].id : undefined,
             type: programPage ? "@page.program" : "@page.resource"
         }
@@ -181,22 +196,22 @@ export default (({
         }
     }
 
-    const [images, setImages] = useState<number[]>([]); 
+    const [images, setImages] = useState<number[]>([]);
 
     let onDrop = useCallback(async (files: File[]) => {
         let uploadedImages: number[] = [];
-        for(let i = 0; i < files.length; i++){
+        for (let i = 0; i < files.length; i++) {
             try {
                 let id = await UploadFile(files[i]);
                 images.push(id);
-            } catch(e){
+            } catch (e) {
                 console.error("Failed to upload file: " + e.stack);
             }
         }
         setImages(images.concat(uploadedImages));
     }, []);
 
-    function RemoveImage(id: number){
+    function RemoveImage(id: number) {
         images.splice(images.indexOf(id), 1);
         setImages(images);
     }
@@ -230,12 +245,37 @@ export default (({
                         make it difficult for other people to access it. Only add editors if you trust them.
                         </b></p>
                     <UserPicker values={perms} onChange={setPerms} />
+                    <label>
+                        <input type="checkbox" name="commenting" checked={commenting} onChange={(evt) => setCommenting(evt.currentTarget.value == "on")} />
+                        <b> Enable public comments.</b> Editors can always comment on your pages.
+                    </label>
+                    <label>
+                        Category:
+                        <select name="category" value={category} onChange={evt => setCategory(+evt.currentTarget.value)} style={{
+                            whiteSpace: "pre"
+                        }}>
+                            <option value={0} disabled>Choose a category</option>
+                            {
+                                availableCategories
+                                    ?.map(cat => {
+                                        return (function r(category, level: number): React.ReactElement {
+                                            return <>
+                                                <option value={category.id} key={category.id}>
+                                                    {`-`.repeat(level) + " " + category.name}
+                                                </option>
+                                                {category.children.map(c => r(c, level + 1))}
+                                            </>
+                                        })(cat, 0);
+                                    })
+                            }
+                        </select>
+                    </label>
                 </Cell>}
                 {programPage && <>
                     <Cell x={1} y={2}>
                         <h2>Details about your program:</h2>
                         <input type="text" autoComplete="off" name="publickey" placeholder="KEY" style={{ width: "80%", float: "left", fontSize: "32px", fontFamily: "SMILEBASIC" }} value={key} onChange={(evt) => setKey(evt.currentTarget.value)} /*pattern="^4?[A-HJ-NP-TV-Z1-9]{1,8}$"*/ required />
-                        <button onClick={FetchSBAPIInformation} style={{ width: "20%", float: "right", fontSize: "32px", fontFamily: "SMILEBASIC" }} type="button">GET!</button>
+                        <button onClick={FetchSBAPIInformation} style={{ width: "20%", float: "right", fontSize: "32px", fontFamily: "SMILEBASIC", padding: ".3em" }} type="button">GET!</button>
                         {keyInfo &&
                             <input type="text" name="title" placeholder="Title" autoComplete="off" required value={title} onChange={(evt) => setTitle(evt.currentTarget.value)} style={{ fontSize: "1.5em" }} />
                         }
@@ -288,6 +328,31 @@ export default (({
                                 make it difficult for other people to access it. Only add editors if you trust them.
                             </b></p>
                             <UserPicker values={perms} onChange={setPerms} />
+                            <label>
+                                <input type="checkbox" name="commenting" checked={commenting} onChange={() => setCommenting(!commenting)} />
+                                <b> Enable public comments.</b> Editors can always comment on your pages.
+                            </label>
+                            <label>
+                                Category:
+                                <select name="category" value={category} onChange={evt => setCategory(+evt.currentTarget.value)} style={{
+                                    whiteSpace: "pre"
+                                }}>
+                                    <option value={0} disabled>Choose a category</option>
+                                    {
+                                        availableCategories
+                                            ?.map(cat => {
+                                                return (function r(category, level: number): React.ReactElement {
+                                                    return <>
+                                                        <option value={category.id} key={category.id}>
+                                                            {`-`.repeat(level) + " " + category.name}
+                                                        </option>
+                                                        {category.children.map(c => r(c, level + 1))}
+                                                    </>
+                                                })(cat, 0);
+                                            })
+                                    }
+                                </select>
+                            </label>
                         </>}
                     </Cell>
 
@@ -330,7 +395,7 @@ export default (({
                 }
                 <Cell x={1} y={3} width={2}>
                     <h2>Content:</h2>
-                    <Composer code={code} onChange={(newcode, newmarkup) => { setCode(newcode); setMarkup(newmarkup) }} markup={markup} />
+                    <Composer code={code} onChange={(newcode, newmarkup) => { setCode(newcode); setMarkup(newmarkup); }} markup={markup} />
                 </Cell>
                 <Cell x={1} y={4} width={2} {...getRootProps()}>
                     <h2>Images:</h2>
@@ -339,7 +404,7 @@ export default (({
                         {isDragActive && "Drop here!"}
                         {!isDragActive && "Drag and drop images here, or click to open the file explorer."}
                     </p>
-                    {images.map((id) => <img className="page-image" src={`${API_ENTITY("File")}/raw/${id}?size=200`} key={id} onClick={(evt) => {evt.stopPropagation(); RemoveImage(id)}} /> )}
+                    {images.map((id) => <img className="page-image" src={`${API_ENTITY("File")}/raw/${id}?size=200`} key={id} onClick={(evt) => { evt.stopPropagation(); RemoveImage(id) }} />)}
                 </Cell>
                 <Cell x={1} y={5} width={2}>
                     <h2>Ready to post?</h2>
@@ -350,10 +415,11 @@ export default (({
                     {user == null && <p>You can't create a page unless you log in!</p>}
                     {user != null && (origPages && !origPages[0].Permitted(user, CRUD.Update)) && <p>You don't have permission to edit this page!</p>}
                     {code.length < 2 && <p>You must provide a description!</p>}
-                    <input type="submit" value="Post!" disabled={(programPage && keyInfo == null) || user == null || (origPages && !origPages[0].Permitted(user, CRUD.Update)) || code.length < 2 || false} />
+                    {category == 0 && <p>You must choose a category for your program!</p>}
+                    <input type="submit" value="Post!" disabled={(programPage && keyInfo == null) || user == null || (origPages && !origPages[0].Permitted(user, CRUD.Update)) || code.length < 2 || category == 0 || false} />
                     <br />
                     <h3>Advanced</h3>
-                    <input type="text" name="keywords" value={keywords.join(",")} onChange={(evt) => setKeywords(evt.currentTarget.value.split(","))} placeholder="Keywords" />
+                    <input type="text" name="keywords" value={keywords.join(" ")} onChange={(evt) => setKeywords(evt.currentTarget.value.split(/ /g))} placeholder="Keywords (space separated)" />
                 </Cell>
             </Grid>
         </Form>

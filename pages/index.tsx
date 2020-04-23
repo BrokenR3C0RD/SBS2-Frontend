@@ -9,6 +9,7 @@ import { Activity } from "../classes";
 import { CRUD } from "../classes/Entity";
 import Link from "next/link";
 import Moment from "moment";
+import {useInView} from "react-intersection-observer";
 
 export default (({
     setInfo,
@@ -18,55 +19,57 @@ export default (({
     useEffect(() => setInfo("Home", [1]), []);
     const [, programs] = Page.usePage({
         type: "@page.program%",
-        reverse: true,
         limit: 10,
         sort: "random"
     });
 
-    const [events, users, contents] = Activity.useActivity();
+    const [events, users, contents, loading, loadMore, more] = Activity.useActivity();
+    const [ref, inView] = useInView();
+
+    useEffect(() => {
+        if(inView && !loading && more)
+            loadMore()
+    }, [inView])
 
     return <>
         <Grid
             rows={["min-content", "1fr", "min-content", "min-content"]}
-            cols={["1fr", "max-content", "max-content", "1fr"]}
+            cols={["1fr", "max-content", "1fr"]}
             gapX="1em"
             gapY="1em"
             style={{
                 width: "100%",
-                height: "100%",
                 right: 0
             }}
         >
-            <Cell x={1} y={1} width={2}>
+            <Cell x={1} y={1} width={4}>
                 <h1>Welcome to SmileBASIC Source!</h1>
             </Cell>
             <Cell x={1} y={2} width={2}>
                 <h2>Program Gallery</h2>
                 <p>
-                    Here are some programs you should check out!
+                    Here's a selection of programs submitted by users in our community!
                 </p>
                 <div className="showcase-container">
                     <Gallery width="400px" height="240px" className="program-showcase">
-                        {programs ? programs.map((program, i) => <div key={program.id} data-chosen={i == 0} className="program" onClick={() => Router.push("/pages/[pid]", `/pages/${program.id}`)}>
+                        {programs ? programs.map((program, i) => <div key={program.id} className="program" onClick={() => Router.push("/pages/[pid]", `/pages/${program.id}`)} {...{ "data-chosen": i == 0 ? "data-chosen" : undefined }} >
                             <img src={program.values.photos?.length > 0 ? `${API_ENTITY("File")}/raw/${+program.values.photos.split(",")[0]}?size=400` : "/res/img/logo.svg"} />
                             <span className="title">{program.name}</span>
                         </div>) : []}
                     </Gallery>
                 </div>
             </Cell>
-            <Cell x={3} y={1} width={2} height={2} style={{
-                maxHeight: "100vh"
-            }}>
+            <Cell x={3} y={2} width={2} height={1}>
                 <h2>Recent Activity</h2>
                 <ul className="activity">
-                    {events.map(event => {
+                    {events.map((event, i) => {
                         let content: React.ReactElement = <></>;
                         let user = users.find(user => user.id == event.userId);
-                        if (user == null)
+                        if (user == null && (event.userId != -1))
                             return null;
 
                         let c = contents.find(content => content.id == event.contentId);
-                        if (event.userId != event.contentId && event.action !== CRUD.Delete && c == null)
+                        if (event.userId != -1 && event.action !== CRUD.Delete && c == null)
                             return null;
 
                         let href = c ? `/${c.type.substr(1).split(".")[0]}s/[${c.type.substr(1, 1)}id]` : "";
@@ -74,7 +77,7 @@ export default (({
 
                         switch (event.action) {
                             case CRUD.Create:
-                                if (event.userId == event.contentId) { // A new user joined!
+                                if (event.userId == -1) { // A new user joined!
                                     user = users.find(user => user.id == event.contentId);
                                     if (user != null)
                                         content = <>
@@ -121,12 +124,12 @@ export default (({
                                         {user!.username}
                                     </a>
                                     </Link>
-                                    deleted
+                                    {` deleted `}
                                     {event.extra}
                                 </>;
                                 break;
                         }
-                        return <li key={event.id}>
+                        return <li key={event.id} ref={events.length - 1 == i ? ref : undefined}>
                             {event.contentId == self?.id && event.action == CRUD.Update ? <></> : <img src={user?.GetAvatarURL(128)} />}
                             <div className="content">
                                 <span>{content}</span>
@@ -134,9 +137,19 @@ export default (({
                             </div>
                         </li>
                     })}
+                    {loading && <div className="spinner circles">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>}
                 </ul>
             </Cell>
-            <Cell x={1} y={3} width={4}>
+            <Cell x={1} y={4} width={4}>
                 <h2>About SmileBASIC Source</h2>
                 <p>
                     SmileBASIC Source is an online community for <a href="http://smilebasic.com/en/">"SmileBASIC"</a>, a programming language and IDE for Nintendo platforms
@@ -150,7 +163,7 @@ export default (({
                     SmileBASIC!
                 </p>
             </Cell>
-            <Cell x={1} y={4} width={4}>
+            <Cell x={1} y={5} width={4}>
                 <h2>Under development</h2>
                 <p>
                     SmileBASIC Source is still under active development, so you may find bugs or notice features that aren't yet available.

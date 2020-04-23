@@ -1,19 +1,20 @@
-import { IsInt } from "class-validator";
+import { IsInt, IsBoolean } from "class-validator";
 import { useState, useEffect } from "react";
 import { plainToClass, Transform } from "class-transformer";
-import { Entity } from "./Entity";
+import { Entity, CRUD } from "./Entity";
 import { DoRequest } from "../utils/Request";
 import { API_ENTITY } from "../utils/Constants";
-import { BaseUser } from "./User";
+import { BaseUser, FullUser } from "./User";
 import { Dictionary } from "../interfaces";
 
 export class Comment extends Entity {
     @Transform(obj => {
         try {
             return JSON.parse(obj)
-        } catch(e){
+        } catch (e) {
             return {
-                t: obj
+                t: obj,
+                m: "12y"
             }
         }
     })
@@ -28,6 +29,13 @@ export class Comment extends Entity {
     @IsInt()
     editUserId: number = 0;
 
+    @IsBoolean()
+    deleted: boolean = false;
+
+    public Permitted(user: FullUser, perm: CRUD = CRUD.Read): boolean {
+        return ((this.createUserId == user.id) || (user.super)) &&  (perm == CRUD.Update || perm == CRUD.Delete);
+    }
+
     public static async GetComments(parentId: number, reverse: boolean = true, skip: number = 0, limit: number = 20, createEnd?: Date): Promise<Comment[] | null> {
         return (await DoRequest<Comment[]>({
             url: API_ENTITY("Comment"),
@@ -37,7 +45,7 @@ export class Comment extends Entity {
                 reverse: reverse,
                 limit,
                 skip,
-                ... (createEnd ? {createEnd: createEnd.toISOString()} : {})
+                ... (createEnd ? { createEnd: createEnd.toISOString() } : {})
             }
         }))?.map(comment => plainToClass(Comment, comment)) || null;
     }
@@ -56,8 +64,8 @@ export class Comment extends Entity {
         useEffect(() => {
             if (parent == null || parent[0] == null)
                 return;
-            
-            if(lastParent !== parent[0]){
+
+            if (lastParent !== parent[0]) {
                 setComments([]);
                 setLastParent(parent[0]);
                 setDidInit(false);
@@ -71,11 +79,11 @@ export class Comment extends Entity {
 
             if (!didInit) {
                 (async () => {
-                    if(aborter.signal.aborted)
+                    if (aborter.signal.aborted)
                         return;
-                    
+
                     let newc: Comment[] = (await Comment.GetComments(parent[0].id) || comments).reverse();
-                    if(newc.length > 0)
+                    if (newc.length > 0)
                         setComments(
                             newc
                         );
@@ -89,19 +97,23 @@ export class Comment extends Entity {
                         setUsers(
                             users.concat(await BaseUser.GetByIDs(newUsers))
                         );
-                    
+
                     setDidInit(true);
                     setNoMore(newc.length < 20);
                 })();
-            } else if(fetchMore && !noMore){
+            } else if (fetchMore && !noMore) {
                 (async () => {
-                    if(aborter.signal.aborted)
+                    if (aborter.signal.aborted)
                         return;
-                    
+
                     let newc: Comment[] = (await Comment.GetComments(parent[0].id, true, comments.length, 20) || []).reverse();
-                    if(newc.length > 0)
+                    if (newc.length > 0)
                         setComments(
-                            newc.concat(comments)
+                            newc = newc
+                                .concat(comments.map(comment => newc.find(c => c.id == comment.id) || comment))
+                                .reduce<Comment[]>((acc, comment) => acc.findIndex(c => c.id == comment.id) == -1 ? acc.concat([comment]) : acc, [])
+                                .filter(comment => !comment.deleted)
+                                .sort((a, b) => a.id - b.id)
                         );
 
                     let newUsers = (newc as Comment[])
@@ -113,11 +125,11 @@ export class Comment extends Entity {
                         setUsers(
                             users.concat(await BaseUser.GetByIDs(newUsers))
                         );
-                    
+
                     setFetchMore(false);
                     setNoMore((newc.length % 20) !== 0);
                 })();
-            } else if(realtime){
+            } else if (realtime) {
                 (async () => {
                     while (!aborter.signal.aborted) {
                         if (!didInit)
@@ -142,12 +154,15 @@ export class Comment extends Entity {
                                 break;
 
                             if (resp.status === 200) {
-                                let newc = (await resp.json());
+                                let newc: Comment[] = (await resp.json()).map((obj: Comment) => plainToClass(Comment, obj));
+
                                 if (newc.length > 0) {
                                     setComments(
-                                        newc = comments.concat(
-                                            newc.map((obj: Comment) => plainToClass(Comment, obj))
-                                        )
+                                        newc = newc
+                                            .concat(comments.map(comment => newc.find(c => c.id == comment.id) || comment))
+                                            .reduce<Comment[]>((acc, comment) => acc.findIndex(c => c.id == comment.id) == -1 ? acc.concat([comment]) : acc, [])
+                                            .filter(comment => !comment.deleted)
+                                            .sort((a, b) => a.id - b.id)
                                     );
                                     let newUsers = (newc as Comment[])
                                         .map(comment => comment.createUserId)
@@ -165,7 +180,7 @@ export class Comment extends Entity {
                                 throw await resp.text();
                             }
                         } catch (e) {
-                            if(!aborter.signal.aborted)
+                            if (!aborter.signal.aborted)
                                 console.error("An error occurred while polling for comments:" + (e && e.stack ? e.stack : e));
                         }
                     }
@@ -218,7 +233,7 @@ export class Comment extends Entity {
                                 throw await resp.text();
                             }
                         } catch (e) {
-                            if(!aborter.signal.aborted)
+                            if (!aborter.signal.aborted)
                                 console.error("An error occurred while polling for listeners:" + (e && e.stack ? e.stack : e));
                         }
                     }
@@ -247,7 +262,7 @@ export class Comment extends Entity {
 
     public static async Delete(comment: Comment): Promise<boolean> {
         await DoRequest({
-            url: `${API_ENTITY("Content")}/${comment.id}`,
+            url: `${API_ENTITY("Comment")}/${comment.id}`,
             method: "DELETE"
         });
         return true;

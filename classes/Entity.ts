@@ -3,7 +3,7 @@ import { Type } from "class-transformer";
 import { Dictionary, SearchQuery } from "../interfaces";
 import { DoRequest, useRequest } from "../utils/Request";
 import { API_ENTITY } from "../utils/Constants";
-import { BaseUser } from "./User";
+import { FullUser } from "./User";
 
 export enum CRUD {
     Create = "c",
@@ -72,7 +72,7 @@ export abstract class AccessControlledEntity extends Entity {
     @IsInt()
     editUserId: number = 0;
 
-    public Permitted(user: BaseUser, permission: CRUD = CRUD.Read): boolean {
-        return ((this.permissions[user.id.toString()] || this.permissions["0"] || "").indexOf(permission) !== -1) || this.createUserId == user.id;
+    public Permitted(user: FullUser, permission: CRUD = CRUD.Read): boolean { 
+        return ((this.permissions[user.id.toString()] || this.permissions["0"] || "").indexOf(permission) !== -1) || this.createUserId == user.id || (user.super && permission !== CRUD.Read);
     }
 }

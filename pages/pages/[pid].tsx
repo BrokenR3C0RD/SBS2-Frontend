@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { PageProps, Dictionary } from "../../interfaces";
 import { Grid, Cell, Gallery } from "../../components/Layout";
 import Form from "../../components/Form";
@@ -40,6 +40,7 @@ export default (({
     const [, pages] = Page.usePage({
         ids: [+pid]
     });
+
     const page = (pages?.[0] as ProgramPage | Page | undefined);
 
     useEffect(() => setInfo(page?.name || "", []), [pages]);
@@ -47,11 +48,17 @@ export default (({
     const [comments, commentUsers, listeners, fetching, fetchMoreComments] = Comment.useComments(pages, self != null);
     const [ref, inView] = useInView();
 
+    const [commentId, setCommentId] = useState<number>(0);
+    const [commentCode, setCommentCode] = useState<string>("");
+    const [commentMarkup, setCommentMarkup] = useState<string>("12y");
+    const commentRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
         if (inView)
             fetchMoreComments();
 
-    }, [inView])
+    }, [inView]);
+
 
     const [, users] = BaseUser.useUser({
         ids: [page?.createUserId as number, page?.editUserId as number]
@@ -73,11 +80,33 @@ export default (({
 
         await Comment.Update({
             parentId: page!.id,
+            id: (commentId === 0 ? undefined : commentId),
             content: {
                 t: commentText,
                 m: markup
             }
         });
+
+        setCommentCode("");
+        setCommentMarkup("12y");
+        setCommentId(0);
+    }
+
+    async function EditComment(id: number) {
+        let comment = comments.find(comment => comment.id == id);
+
+        setCommentCode(comment?.content?.t || "");
+        setCommentMarkup(comment?.content?.m || "12y");
+        setCommentId(comment?.id || 0);
+
+        commentRef.current!.scrollIntoView(true);
+    }
+
+    async function DeleteComment(id: number) {
+        if (!confirm("Are you sure you want to delete this comment?"))
+            return;
+
+        await Comment.Delete(comments.find(comment => comment.id == id)!);
     }
 
     useEffect(() => {
@@ -107,11 +136,12 @@ export default (({
     return <>
         <Grid
             rows={["min-content", "min-content", "1fr", "min-content"]}
-            cols={["fit-content(30%)", "1fr"]}
+            cols={["minmax(260px, 1fr)", "2fr"]}
             gapX="1em"
             gapY="1em"
             style={{
-                width: "100%"
+                width: "100%",
+                maxWidth: "100%"
             }}
         >
             {(!pages || (pages!.length != 0 && !user)) && <Cell x={1} y={1} width={3}>
@@ -123,9 +153,8 @@ export default (({
                     <Cell x={1} y={1} width={3}>
                         <h1>
                             {page.name}
-                            {self && page.Permitted(self, CRUD.Update) && <button type="button" style={{ float: "right", fontSize: "1rem", height: "2em", width: "2em", color: "lightcoral", marginLeft: "5px", textAlign: "center" }} onClick={DeletePage}><span className="iconify" data-icon="ic:baseline-delete" data-inline="true"></span></button>}
-                            {self && page.Permitted(self, CRUD.Delete) && <button type="button" style={{ float: "right", fontSize: "1rem", height: "2em", width: "2em", textAlign: "center" }} onClick={() => Router.push(`/pages/edit?pid=${page.id}`)}><span className="iconify" data-icon="fe:pencil" data-inline="true"></span></button>}
-
+                            {self && page.Permitted(self, CRUD.Delete) && <button type="button" style={{ float: "right", fontSize: "1rem", height: "2em", width: "2em", color: "lightcoral", marginLeft: "5px", textAlign: "center" }} onClick={DeletePage}><span className="iconify" data-icon="ic:baseline-delete" data-inline="true"></span></button>}
+                            {self && page.Permitted(self, CRUD.Update) && <button type="button" style={{ float: "right", fontSize: "1rem", height: "2em", width: "2em", textAlign: "center" }} onClick={() => Router.push(`/pages/edit?pid=${page.id}`)}><span className="iconify" data-icon="fe:pencil" data-inline="true"></span></button>}
                         </h1>
                         <div id="page-info">
                             <b>{`Author: `}</b>
@@ -145,7 +174,7 @@ export default (({
                         </div>
                     </Cell>
                     {page.type === "@page.program" && <>
-                        <Cell x={1} y={2} className="program-infobox">
+                        <Cell x={1} y={2} width={1} className="program-infobox">
                             {keyInfo && keyInfo.extInfo.console === "Switch" && keyInfo.type === "PRJ" &&
                                 <>
                                     <img src={`https://sbapi.me/get/${keyInfo.path}/META/icon`} width="64" style={{ imageRendering: "pixelated", verticalAlign: "middle", margin: "0 auto", display: "block", padding: ".5em" }} />
@@ -160,6 +189,7 @@ export default (({
                                 <Gallery className="program-images" width="400px" height="240px" timer={0}>
                                     {
                                         page.values.photos.split(",")
+                                            .filter(photo => photo != "")
                                             .map((photo, i) => <img src={`${API_ENTITY("File")}/raw/${+photo}?size=400`} key={i} {...{ "data-chosen": i == 0 ? "data-chosen" : undefined }} />)
                                     }
                                 </Gallery>
@@ -228,10 +258,10 @@ export default (({
 
                     <Cell x={1} y={4} width={3}>
                         <h2>Comments</h2>
-                        {self && <Form onSubmit={PostComment}>
-                            <Composer hidePreview />
+                        {self && page.Permitted(self, CRUD.Create) && <Form onSubmit={PostComment}>
+                            <Composer hidePreview markup={commentMarkup} code={commentCode} onChange={(code, markup) => { setCommentCode(code); setCommentMarkup(markup); }} ref={commentRef} />
                             <input type="submit" value="Post Comment!" />
-                        </Form> || <h3>Sign in to comment!</h3>}
+                        </Form> || !self && <h3>Sign in to comment!</h3> || <h3>You can't post comments here!</h3>}
                         {
                             (() => {
                                 let listeningUsers = listeners.map(listener => {
@@ -263,10 +293,16 @@ export default (({
                                             <span className="username">
                                                 <Link href="/user/[uid]" as={`/user/${user.id}`}><a>{user.username}</a></Link>
                                             </span>
+
                                             <span className="editdate">
                                                 {((comment.editDate.valueOf() - comment.createDate.valueOf()) >= 2000) ? "Edited " : "Posted "} {moment(comment.editDate).fromNow()}
                                             </span>
+                                            <div className="buttons">
+                                                {self && comment.Permitted(self, CRUD.Update) && <button type="button" style={{ textAlign: "center" }} onClick={() => EditComment(comment.id)}><span className="iconify" data-icon="fe:pencil" data-inline="true"></span></button>}
+                                                {self && comment.Permitted(self, CRUD.Delete) && <button type="button" style={{ color: "lightcoral", }} onClick={() => { DeleteComment(comment.id) }}><span className="iconify" data-icon="ic:baseline-delete" data-inline="true"></span></button>}
+                                            </div>
                                         </div>
+
                                         <div className="comment-content">
                                             <BBCodeView code={comment.content["t"]} markupLang={comment.content["m"]} />
                                         </div>

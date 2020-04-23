@@ -148,21 +148,32 @@ nav #user-info .user-avatar {
     margin: 0 1em;
 }
 
-.program-showcase .program {
+.program-showcase .gallery-content {
+    width: 100%;
+    height: 100%;
+}
+
+.program-showcase.gallery > .gallery-content > .program[data-chosen] {
     line-height: 1em;
     cursor: pointer;
+    width: 100%;
+    flex-grow: 1;
+    height: 100%!important;
 }
-.program-showcase img {
+.program img {
     display: block;
     width: 100%;
+    height: 100%!important;
 }
 
 .program-showcase .program .title {
     position: absolute;
     bottom: 0;
+    line-height: 1em;
     display: block;
     width: 100%;
     margin: 0;
+    height: 2em;
     padding: .5em;
     background-color: var(--shadow);
     font-weight: bold;
@@ -397,26 +408,22 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 .program-infobox {
     max-width: 100%;
-}
-
-.program-infobox * {
-    word-break: break-all;
-    white-space: nowrap;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    min-width: 0;
+    display: flex;
+    flex-direction: column;
 }
  
 .program-infobox>table {
-    overflow: hidden;
     table-layout: fixed;
     background-color: var(--primary-bg);
     margin-top: 2em;
     box-shadow: 3px 3px 5px var(--shadow);
-    margin-left: auto;
-    margin-right: auto;
-    width: 90%;
-    padding: 1em;
+    padding: .5em;
+    flex-grow: 1;
+}
+
+.program-infobox>table>tbody>tr>td {
+    vertical-align: top;
+    width: 50%;
 }
 
 .program-infobox>table>thead>td:first-child {
@@ -445,6 +452,9 @@ form input:not([type="checkbox"]), form button, form textarea {
 .activity {
     list-style: none;
     padding: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 50vh;
 }
 
 .activity li {
@@ -453,7 +463,6 @@ form input:not([type="checkbox"]), form button, form textarea {
     padding: .75em;
     position: relative;
     line-height: 100%;
-    vertical-align: top;
 }
 
 .activity li img {
@@ -475,6 +484,29 @@ form input:not([type="checkbox"]), form button, form textarea {
     display: block;
     margin-top: .5em;
     color: var(--primary-accent);
+}
+
+.page-entry {
+    width: 100%;
+    min-height: 4em;
+    background-color: var(--secondary-accent);
+    box-shadow: 1px 1px 5px var(--shadow);
+    padding: .5em;
+    margin-bottom: .5em;
+}
+
+.page-entry .page-name {
+    display: block;
+    padding-bottom: .5em;
+}
+
+.page-entry .page-author {
+    display: block;
+    float: left;
+}
+
+.page-entry .page-time {
+    float: right;
 }
 
 .composer {
@@ -530,7 +562,6 @@ form input:not([type="checkbox"]), form button, form textarea {
     display: inline;
     padding: .10em;
     border: 0;
-    width: 100%;
 }
 
 .composer .composer-editor {
@@ -912,9 +943,18 @@ form input:not([type="checkbox"]), form button, form textarea {
     background-color: var(--primary-accent);
 }
 
+.wall-comments {
+    max-height: 30em;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-bottom: 2em;
+}
+
 .comment {
     width: 100%;
     padding: 1em 0;
+    position: relative;
 }
 .comment .avatar {
     display: inline-block;
@@ -924,11 +964,38 @@ form input:not([type="checkbox"]), form button, form textarea {
     display: inline-block;
     vertical-align: top;
     max-width: calc(100% - 4em);
+    width: max-content;
 }
 
 .comment .user-info {
     display: inline-block;
 }
+
+.comment .buttons {
+    display: inline-block;
+    font-size: 1em;
+    vertical-align: top;
+
+}
+
+
+.comment .buttons button {
+    display: inline-block;
+    background-color: transparent;
+    box-shadow: none;
+    padding: 0;
+    vertical-align: middle;
+    padding-left: .5em;
+    cursor: pointer;
+    margin: 0;
+    opacity: .5;
+    transition: opacity .2s;
+}
+
+.comment .buttons button:hover {
+    opacity: 1;
+}
+
 .comment .username {
     vertical-align: top;
     margin-left: 1em;

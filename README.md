@@ -5,13 +5,13 @@ Requires Node.js
 
 ### Development server:
 ```bash
-$ npm i -D # install dependencies
-$ npm run dev # run the development server
+$ yarn install -D # install dependencies
+$ yarn dev # run the development server
 ```
 
 ### Production server:
 ```bash
-$ npm i -D # install dependencies
-$ npm run build # build the production server
-$ npm run start # run the production server
+$ yarn install -D # install dependencies
+$ yarn build-production # build the production server
+$ yarn start # run the production server
 ```

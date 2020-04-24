@@ -29,7 +29,6 @@ export class Activity {
 
         useEffect(() => {
             let aborter = new AbortController();
-            console.log(fetchMore)
 
             if (fetchMore && !loading)
                 (async () => {

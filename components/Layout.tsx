@@ -65,7 +65,6 @@ const Gallery = (({
     const [selected, setSelected] = useState<number>(0);
     const [wait, setWait] = useState<boolean>(false);
     const childCount = Children.count(children);
-    console.log(selected, childCount);
 
     function nextImage(user = false) {
         if (wait && !user) {

@@ -23,7 +23,7 @@ export default (({
     const [users, pages, loading, loadMore, more] = Page.usePages({
         parentIds: [+cid],
         reverse: true,
-        limit: 2
+        limit: 25
     });
 
     useEffect(() => {

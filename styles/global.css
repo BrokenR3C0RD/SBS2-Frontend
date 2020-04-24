@@ -538,6 +538,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     height: 280px;
     transition: width .25s, height .25s, background-color .25s;
     position: relative;
+    max-width: 320px;
 }
 
 .page-entry:hover {
@@ -916,6 +917,7 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 .bbcode-view .spoiler {
     background-color: var(--secondary-bg);
+    width: max-content;
 }
 
 .bbcode-view .spoiler .spoiler-open[data-open="true"][data-open="true"] {

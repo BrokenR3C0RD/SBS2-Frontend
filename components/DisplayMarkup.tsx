@@ -191,7 +191,8 @@ const tags = {
             attrs: {
                 "class": "spoiler-open",
                 "data-open": "false",
-                "onClick": "event.target.dataset.open = ['true', 'false'][(['true', 'false'].indexOf(event.target.dataset.open) + 1) % 2]"
+                "onClick": "event.target.dataset.open = ['true', 'false'][(['true', 'false'].indexOf(event.target.dataset.open) + 1) % 2]",
+                "type": "button"
             },
             content: [` ${getSoleAttr(node.attrs!) || "spoiler"}`]
         },

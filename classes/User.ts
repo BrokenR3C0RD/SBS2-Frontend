@@ -37,12 +37,12 @@ export class BaseUser extends Entity {
             return `https://www.tinygraphs.com/labs/isogrids/hexa/${this.username}?theme=seascape&size=${size}`;
     }
 
-    public static async Search(query: SearchQuery): Promise<BaseUser[]> {
+    public static async Search(query: SearchQuery, abort?: AbortSignal | string): Promise<BaseUser[]> {
         return (await Entity
             .Search({
                 username: query.name,
                 ...query
-            }, "User"))
+            }, "User", abort as AbortSignal))
             .map(entity => plainToClass(BaseUser, entity));
     }
 

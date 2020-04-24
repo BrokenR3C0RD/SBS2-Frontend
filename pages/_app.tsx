@@ -32,6 +32,7 @@ const App = (({
     const [selected, setSelected] = useState([0]);
     const [loaded, setLoaded] = useState(false);
     const [results, setResults] = useState<any[]>([]);
+    const [query, setQuery] = useState<string>("");
 
     const router = useRouter();
 
@@ -120,60 +121,68 @@ const App = (({
             evt.target.parentElement.dataset.open = ["true", "false"][(["true", "false"].indexOf(evt.target.parentElement.dataset.open) + 1) % 2];
     }
 
-    async function handleSearch(evt: React.FormEvent<HTMLInputElement>) {
-        const query = evt.currentTarget.value;
+    useEffect(() => {
+        let abort = new AbortController();
+        (async () => {
+            if (query.length == 0)
+                return setResults([]);;
 
-        if(query.length == 0)
-            return setResults([]);;
+            try {
+                let usersThatMatch = await BaseUser.Search({
+                    name: `%${query}%`,
+                    limit: 10
+                }, abort.signal);
+                let pagesThatMatch = (await Page.Search({
+                    name: `%${query}%`,
+                    limit: 10
+                }, abort.signal)).concat((await Page.Search({
+                    keyword: `%${query}%`,
+                    limit: 10
+                }, abort.signal))).reduce<Page[]>((acc, val) => {
+                    if (acc.findIndex(r => r.id == val.id) == -1)
+                        acc.push(val)
 
-        let usersThatMatch = await BaseUser.Search({
-            name: `%${query}%`,
-            limit: 10
-        });
-        let pagesThatMatch = (await Page.Search({
-            name: `%${query}%`,
-            limit: 10
-        })).concat((await Page.Search({
-            keyword: `%${query}%`,
-            limit: 10
-        }))).reduce<Page[]>((acc, val) => {
-            if(acc.findIndex(r => r.id == val.id) == -1)
-                acc.push(val)
+                    return acc;
+                }, [])
 
-            return acc;
-        }, [])
+                let aggregate = (usersThatMatch.map<any>(user => ({
+                    type: "user",
+                    name: user.username,
+                    link: `/user/${user.id}`,
+                    keywords: []
+                })))
+                    .concat(
+                        (pagesThatMatch.map<any>(page => ({
+                            type: "page",
+                            name: page.name,
+                            link: `/pages/${page.id}`,
+                            keywords: page.keywords
+                        }))
+                        )
+                    )
+                    .sort((a: any, b: any) => {
+                        return (
+                            dl(b.keywords.join(" "), query).similarity
+                            - dl(a.keywords.join(" "), query).similarity
+                        ) * 10
+                            + (
+                                dl(b.name, query).similarity
+                                - dl(a.name, query).similarity
+                            ) * 5
+                    })
+                    .slice(0, 10);
 
-        let aggregate = (usersThatMatch.map<any>(user => ({
-            type: "user",
-            name: user.username,
-            link: `/user/${user.id}`,
-            keywords: []
-        })))
-            .concat(
-                (pagesThatMatch.map<any>(page => ({
-                    type: "page",
-                    name: page.name,
-                    link: `/pages/${page.id}`,
-                    keywords: page.keywords
-                }))
-                )
-            )
-            .sort((a: any, b: any) => {
-                return (
-                    dl(b.keywords.join(" "), query).similarity
-                    - dl(a.keywords.join(" "), query).similarity
-                ) * 10
-                + (
-                    dl(b.name, query).similarity
-                    - dl(a.name, query).similarity
-                ) *5
-            })
-            .slice(0, 10);
-        
-        setResults(aggregate);
-    }
+                setResults(aggregate);
+            } catch (e) {
 
-    const SearchTypeHref: {[i: string]: string} = {
+            }
+        })();
+
+
+        return () => abort.abort();
+    }, [query]);
+
+    const SearchTypeHref: { [i: string]: string } = {
         page: "/pages/[pid]",
         user: "/user/[uid]"
     }
@@ -205,7 +214,7 @@ const App = (({
             </span>
 
             <span className="search-container">
-                <input type="text" placeholder="Search..." onChange={handleSearch} />
+                <input type="text" placeholder="Search..." value={query} onChange={(evt) => setQuery(evt.currentTarget.value)} />
                 <div id="hideout" />
                 <div id="results">
                     <ul>
@@ -246,7 +255,7 @@ const App = (({
                     <ul>
                         <li key={-1}><Link href="/pages/edit"><a>📝 Create a new page!</a></Link></li>
                         {pageTree && pageTree.children.map(function render(cat) {
-                            if (cat.children && cat.children.length == 0){
+                            if (cat.children && cat.children.length == 0) {
                                 return <li key={cat.id}><Link href="/pages/categories/[cid]" as={`/pages/categories/${cat.id}`}><a>{cat.name}</a></Link></li>;
                             } else {
                                 return <li key={cat.id} data-open="false" onClick={toggle}>

@@ -110,12 +110,12 @@ export class Page extends Content {
         return Content.useContent(query, p => mutate(plainToClass(Page, p))) as [any, Page[] | null, () => void];
     }
 
-    public static async Search(query: SearchQuery): Promise<Page[]> {
+    public static async Search(query: SearchQuery, signal?: string | AbortSignal): Promise<Page[]> {
         return (await Content
             .Search({
                 ...query,
                 type: "@page%"
-            }))
+            }, signal as AbortSignal))
             .map(entity => plainToClass(Page, entity));
     }
 

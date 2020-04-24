@@ -34,13 +34,14 @@ export class Entity {
         }))!;
     }
 
-    public static async Search(query: SearchQuery | Dictionary<string | number | boolean | (string | number | boolean)[]>, type: string): Promise<Entity[]> {
+    public static async Search(query: SearchQuery | Dictionary<string | number | boolean | (string | number | boolean)[]>, type: string | AbortSignal, signal?: AbortSignal): Promise<Entity[]> {
         return (await DoRequest<Entity[]>({
-            url: API_ENTITY(type),
+            url: API_ENTITY(type as string),
             method: "GET",
             data: {
                 ...query
-            }
+            },
+            signal
         }))!;
     }
 

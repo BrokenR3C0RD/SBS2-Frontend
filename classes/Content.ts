@@ -43,11 +43,11 @@ export class Content extends AccessControlledEntity {
         return Entity.useEntity(query, "Content", async (e) => mutate(plainToClass(Content, e))) as [any, Content[] | null, () => void];
     }
 
-    public static async Search(query: SearchQuery): Promise<Content[]> {
+    public static async Search(query: SearchQuery, signal?: string | AbortSignal): Promise<Content[]> {
         return (await Entity
             .Search({
                 ...query
-            }, "Content"))
+            }, "Content", signal as AbortSignal))
             .map(entity => plainToClass(Content, entity));
     }
 

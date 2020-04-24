@@ -30,35 +30,34 @@ export class Page extends Content {
             .map(entity => plainToClass(Page, entity));
     }
 
-    public static usePages(cid: number, realtime: boolean = false): [BaseUser[], Content[], boolean, () => void, boolean] {
+    public static usePages(query: SearchQuery | null, realtime: boolean = false): [BaseUser[], Content[], boolean, () => void, boolean] {
         let [users, setUsers] = useState<BaseUser[]>([]);
         let [content, setContent] = useState<Content[]>([]);
         const [fetchMore, setFetchMore] = useState<boolean>(true)
         const [loading, setLoading] = useState<boolean>(true);
         const [more, setMore] = useState<boolean>(true);
-        const [lastCid, setLastCid] = useState<number>(0);
+        const [lquery, setLquery] = useState<SearchQuery>();
 
         useEffect(() => {
-            console.log(cid, more, loading, fetchMore);
-            if(cid && lastCid !== cid){
+            if(query && JSON.stringify(lquery) != JSON.stringify(query)){
                 setContent([]);
                 setMore(true);
                 setLoading(true);
                 setFetchMore(true);
-                setLastCid(cid);
-            } else if(content.length == 0 && cid    ){
+                setLquery(query);
+            } else if(!loading && content.length == 0 && query){
                 setContent([]);
                 setMore(true);
                 setLoading(true);
                 setFetchMore(true);
-                setLastCid(cid);
+                setLquery(query);
             }
-        }, [cid]);
+        }, [query]);
 
         useEffect(() => {
             let aborter = new AbortController();
 
-            if (fetchMore && !isNaN(cid))
+            if (fetchMore && query)
                 (async () => {
                     try {
                         setLoading(true);
@@ -67,10 +66,10 @@ export class Page extends Content {
                             method: "GET",
                             signal: aborter.signal,
                             data: {
+                                ...query,
                                 limit: 20,
                                 maxId: content?.[content.length - 1]?.id || undefined,
-                                reverse: true,
-                                parentIds: [cid]
+                                reverse: true
                             } as SearchQuery
                         }))?.map(obj => plainToClass(Page, obj));
 
@@ -103,7 +102,7 @@ export class Page extends Content {
             }
 
             return () => aborter.abort();
-        }, [fetchMore, cid]);
+        }, [fetchMore, query]);
 
         return [users, content, loading, () => setFetchMore(true), more];
     }

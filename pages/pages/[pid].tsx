@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import { PageProps, Dictionary } from "../../interfaces";
-import { Grid, Cell, Gallery } from "../../components/Layout";
+import { Grid, Cell, Gallery, Spinner } from "../../components/Layout";
 import Form from "../../components/Form";
 import { Page, ProgramPage, BaseUser, Comment, Category } from "../../classes";
 import { useRouter } from "next/router";
@@ -321,16 +321,7 @@ export default (({
                                 </div>
                             })
                         }
-                        {fetching && <div className="spinner circles">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>}
+                        {fetching && <Spinner />}
                     </Cell>
                 </>
             }

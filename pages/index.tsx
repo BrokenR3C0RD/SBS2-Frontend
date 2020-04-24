@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import { useEffect } from "react";
 import { PageProps } from "../interfaces";
-import { Grid, Cell, Gallery } from "../components/Layout";
+import { Grid, Cell, Gallery, Spinner } from "../components/Layout";
 import { Page, Category } from "../classes";
 import { API_ENTITY } from "../utils/Constants";
 import { useRouter } from "next/router";
@@ -148,16 +148,7 @@ export default (({
                         </li>
                     })}
                     <li ref={ref}></li>
-                    {loading && <div className="spinner circles">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    </div>}
+                    {loading && <Spinner />}
                 </ul>
             </Cell>
             <Cell x={1} y={4} width={4}>

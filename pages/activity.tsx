@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { Activity } from "../classes";
 import { CRUD } from "../classes/Entity";
-import { Cell, Grid } from "../components/Layout";
+import { Cell, Grid, Spinner } from "../components/Layout";
 import { PageProps } from "../interfaces";
 
 export default (({
@@ -105,16 +105,7 @@ export default (({
                     </li>
                 })}
                 <li ref={ref}></li>
-                {loading && <div className="spinner circles">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>}
+                {loading && <Spinner />}
             </ul>
         </Cell>
     </Grid>

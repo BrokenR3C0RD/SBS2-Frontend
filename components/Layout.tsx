@@ -129,4 +129,17 @@ const Gallery = (({
     className?: string,
 } & HTMLAttributes<HTMLDivElement>>;
 
-export { Grid, Cell, Gallery }
+const Spinner = (() => {
+    return <div className="spinner circles">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>;
+}) as React.FunctionComponent;
+
+export { Grid, Cell, Gallery, Spinner }

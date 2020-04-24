@@ -13,6 +13,7 @@ import { API_ENTITY } from "../utils/Constants";
 import { useRequestPage } from "../utils/Request";
 import { Logout, useSettings, useUser, Variable } from "../utils/User";
 import dl from "damerau-levenshtein";
+import { Spinner } from "../components/Layout";
 
 const App = (({
     Component,
@@ -286,18 +287,7 @@ const App = (({
         <div id="content">
             <Component {...pageProps} setInfo={setInfo} user={user ? user : undefined} />
         </div>
-        {!loaded && <div id="loading">
-            <div className="spinner circles">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-            </div>
-        </div>}
+        {!loaded && <Spinner />}
         <footer>
             <div style={{ float: "left", height: "2em" }}>
                 (c) 2020 SmileBASIC Source community

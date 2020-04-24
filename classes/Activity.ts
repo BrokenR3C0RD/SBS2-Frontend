@@ -62,21 +62,6 @@ export class Activity {
                             comments = res.comments;
                             console.log(comments);
 
-                            let uids = res
-                                .activity
-                                .map(event => [event.userId, event.action === CRUD.Create && event.userId === -1 ? event.contentId : -1])
-                                .concat(
-                                    comments
-                                    .map(comment => comment.userIds)
-                                    .reduce((acc, e) => acc.concat(e), [])
-                                )
-                                .reduce((acc, e) => acc.concat(e), [])
-                                .filter(id => id != -1 && users.findIndex(user => user.id == id) == -1);
-
-                            if (uids.length > 0) {
-                                users = users.concat(await BaseUser.GetByIDs(uids));
-                            }
-
                             let newcontent = res
                                 .activity
                                 .filter(event => event.contentType != "@user.page" && event.contentType !== "")
@@ -86,6 +71,22 @@ export class Activity {
 
                             if(newcontent.length > 0)
                                 content = content.concat(await Content.GetByIDs(newcontent));
+
+                            let uids = res
+                                .activity
+                                .map(event => [event.userId, event.action === CRUD.Create && event.userId === -1 ? event.contentId : -1])
+                                .concat(
+                                    comments
+                                    .map(comment => comment.userIds)
+                                    .reduce((acc, e) => acc.concat(e), [])
+                                )
+                                .reduce((acc, e) => acc.concat(e), [])
+                                .concat(content.filter(content => content.type == "@user.page").map(content => content.parentId))
+                                .filter(id => id != -1 && users.findIndex(user => user.id == id) == -1);
+
+                            if (uids.length > 0) {
+                                users = users.concat(await BaseUser.GetByIDs(uids));
+                            }
 
                             setUsers(users);
                             setComments(comments);

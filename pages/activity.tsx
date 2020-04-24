@@ -48,7 +48,8 @@ export default (({
                         let as = `/${c.type.substr(1).split(".")[0]}s/${c.id}`;
 
                         if (c.type == "@user.page") {
-                            c.name = "MasterR3C0RD's userpage";
+                            let pageUser = users.find(user => user.id == c!.parentId);
+                            c.name = `${pageUser?.username}'s userpage`;
                             href = "/user/[uid]";
                             as = `/user/${c.parentId}`;
                         }

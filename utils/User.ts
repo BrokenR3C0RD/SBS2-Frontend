@@ -190,7 +190,7 @@ export function useSettings(): [any, Dictionary<string | number | boolean> | und
         method: "GET"
     }, async (data: any) => JSON.parse(data));
 
-    if(data == null)
+    if(data == null && typeof localStorage != "undefined")
         Variable("user_settings", JSON.stringify({
             theme: localStorage.getItem("sbs-theme"),
             SiteJS: ""

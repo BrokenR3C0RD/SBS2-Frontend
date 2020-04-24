@@ -16,11 +16,20 @@ export interface Event {
     extra: string;
 }
 
+export interface CommentActivity {
+    parentId: number;
+    count: number;
+    lastDate: Date;
+    userIds: number[];
+}
+
 export class Activity {
     activity: Event[] = [];
+    comments: CommentActivity[] = [];
 
-    public static useActivity(limit: number = 35, realtime: boolean = false): [Event[], BaseUser[], Content[], boolean, () => void, boolean] {
+    public static useActivity(limit: number = 35, realtime: boolean = false): [(Event | CommentActivity)[], BaseUser[], Content[], boolean, () => void, boolean] {
         let [events, setEvents] = useState<Event[]>([]);
+        let [comments, setComments] = useState<CommentActivity[]>([]);
         let [users, setUsers] = useState<BaseUser[]>([]);
         let [content, setContent] = useState<Content[]>([]);
         const [fetchMore, setFetchMore] = useState<boolean>(true)
@@ -43,16 +52,24 @@ export class Activity {
                                 limit: limit,
                                 maxId: events?.[events?.length - 1]?.id || undefined,
                                 reverse: true,
-                                includeAnonymous: true
+                                includeAnonymous: true,
+                                recentCommentTime: "01:00:00:00"
                             } as SearchQuery
                         });
 
                         if (res) {
                             events = events.concat(res.activity);
+                            comments = res.comments;
+                            console.log(comments);
 
                             let uids = res
                                 .activity
                                 .map(event => [event.userId, event.action === CRUD.Create && event.userId === -1 ? event.contentId : -1])
+                                .concat(
+                                    comments
+                                    .map(comment => comment.userIds)
+                                    .reduce((acc, e) => acc.concat(e), [])
+                                )
                                 .reduce((acc, e) => acc.concat(e), [])
                                 .filter(id => id != -1 && users.findIndex(user => user.id == id) == -1);
 
@@ -64,12 +81,14 @@ export class Activity {
                                 .activity
                                 .filter(event => event.contentType != "@user.page" && event.contentType !== "")
                                 .map(event => event.action === CRUD.Create && event.userId === -1 ? -1 : event.contentId)
+                                .concat(comments.map(comment => comment.parentId))
                                 .filter(id => id !== -1);
 
                             if(newcontent.length > 0)
                                 content = content.concat(await Content.GetByIDs(newcontent));
 
                             setUsers(users);
+                            setComments(comments);
                             setContent(content);
                             setEvents(events);
                             setMore(res.activity.length % limit === 0);
@@ -89,6 +108,9 @@ export class Activity {
             return () => aborter.abort();
         }, [fetchMore]);
 
-        return [events, users, content, loading, () => setFetchMore(true), more];
+        return [((events as (Event|CommentActivity)[]).concat(comments)).sort((a, b) => {
+            return new Date((b as Event)?.date || (b as CommentActivity)?.lastDate)!.getTime()
+                - new Date((a as Event)?.date || (a as CommentActivity)?.lastDate)!.getTime();
+        }), users, content, loading, () => setFetchMore(true), more];
     }
 }

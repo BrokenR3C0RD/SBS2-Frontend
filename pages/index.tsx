@@ -10,6 +10,7 @@ import { CRUD } from "../classes/Entity";
 import Link from "next/link";
 import Moment from "moment";
 import {useInView} from "react-intersection-observer";
+import { Event, CommentActivity } from "../classes/Activity";
 
 export default (({
     setInfo,
@@ -73,8 +74,31 @@ export default (({
             <Cell x={3} y={2} width={2} height={1}>
                 <h2><Link href="/activity"><a>Recent Activity</a></Link></h2>
                 <ul className="activity">
-                    {events.map((event, i) => {
-                        let content: React.ReactElement = <></>;
+                {events.map((e, i) => {
+                    let content: React.ReactElement = <></>;
+                    if ((e as CommentActivity).lastDate) {
+                        let comment = e as CommentActivity;
+
+                        let pl = (num: number) => num != 1 ? "s" : "";
+                        let c = contents.find(content => content.id == comment.parentId);
+                        if (c == null)
+                            return null;
+                        
+                        //let cusers = users.find(user => comment.userIds.indexOf(user.id) !== -1);
+
+                        let href = c ? `/${c.type.substr(1).split(".")[0]}s/[${c.type.substr(1, 1)}id]` : "";
+                        let as = c ? `/${c.type.substr(1).split(".")[0]}s/${c.id}` : "";
+
+                        return <li key={"c" + comment.parentId}>
+                            <div className="content">
+                                <span>{comment.userIds.length} user{pl(comment.userIds.length)} made {comment.count} comment{pl(comment.count)} on <Link href={href} as={as}>
+                                    {c.name}    
+                                </Link></span>
+                                <span className="time">{Moment(comment.lastDate).fromNow()}</span>
+                            </div>
+                        </li>
+                    } else {
+                        let event = e as Event;
                         let user = users.find(user => user.id == event.userId);
                         if (user == null && (event.userId != -1))
                             return null;
@@ -147,7 +171,8 @@ export default (({
                                 <span className="time">{Moment(event.date).fromNow()}</span>
                             </div>
                         </li>
-                    })}
+                    }
+                })}
                     <li ref={ref}></li>
                     {loading && <Spinner />}
                 </ul>

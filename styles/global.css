@@ -479,8 +479,25 @@ form input:not([type="checkbox"]), form button, form textarea {
     line-height: 100%;
 }
 
+
 .activity li img {
     width: 2em;
+    cursor: pointer;
+}
+
+.activity li .imgs img {
+    width: 1em;
+    height: 1em;
+}
+
+.activity li .imgs {
+    display: inline-flex;
+    width: 2em;
+    height: 2em;
+    max-height: 2em;
+    overflow: hidden;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .activity li .content {

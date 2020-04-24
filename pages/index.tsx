@@ -52,7 +52,9 @@ export default (({
                 <h1>Welcome to SmileBASIC Source!</h1>
             </Cell>
             <Cell x={1} y={2} width={2}>
-                <h2>Program Gallery</h2>
+                <h2>
+                    <Link href="/pages/programs">Program Gallery</Link>
+                </h2>
                 <p>
                     Here's a selection of programs submitted by users in our community!
                 </p>

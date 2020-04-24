@@ -45,7 +45,7 @@ export class Page extends Content {
                 setLoading(true);
                 setFetchMore(true);
                 setLquery(query);
-            } else if(!loading && content.length == 0 && query){
+            } else if(!loading && more && content.length == 0 && query){
                 setContent([]);
                 setMore(true);
                 setLoading(true);
@@ -67,9 +67,8 @@ export class Page extends Content {
                             signal: aborter.signal,
                             data: {
                                 ...query,
-                                limit: 20,
+                                limit: query.limit!,
                                 maxId: content?.[content.length - 1]?.id || undefined,
-                                reverse: true
                             } as SearchQuery
                         }))?.map(obj => plainToClass(Page, obj));
 
@@ -87,7 +86,7 @@ export class Page extends Content {
 
                             setUsers(users);
                             setContent(content);
-                            setMore(res.length % 20 === 0);
+                            setMore(res.length % query.limit! === 0 && res.length > 0);
                         }
                     } catch (e) {
                         if (!aborter.signal.aborted)

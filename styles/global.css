@@ -489,7 +489,13 @@ form input:not([type="checkbox"]), form button, form textarea {
     color: var(--primary-accent);
 }
 
-.page-entry {
+.program-library {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.resource-entry {
     width: 100%;
     min-height: 4em;
     background-color: var(--secondary-accent);
@@ -498,18 +504,78 @@ form input:not([type="checkbox"]), form button, form textarea {
     margin-bottom: .5em;
 }
 
-.page-entry .page-name {
+.resource-entry .page-name {
     display: block;
     padding-bottom: .5em;
 }
 
-.page-entry .page-author {
+.resource-entry .page-author {
     display: block;
     float: left;
 }
 
-.page-entry .page-time {
+.resource-entry .page-time {
     float: right;
+}
+
+.page-entry {
+    display: inline-block;
+    background-color: var(--secondary-accent);
+    box-shadow: 1px 1px 5px var(--shadow);
+    padding: .5em;
+    margin: .5em;
+    height: 340px;
+    transition: width .25s, height .25s, background-color .25s;
+    position: relative;
+}
+
+.page-entry:hover {
+    background-color: var(--secondary-bg);
+    cursor: pointer;
+}
+
+.page-entry .page-photo-wrap {
+    height: 220px;
+    width: 400px;
+    display: flex;
+    background-color: var(--secondary-bg);
+    margin-bottom: 1em;
+}
+
+.page-entry .page-photo {
+    max-height: 250px;
+    display: block;
+    margin: auto;
+}
+
+.page-entry .page-name {
+    display: block;
+    font-size: 1.75em;
+    padding-bottom: .5em;
+    
+    text-overflow: ellipsis;
+    word-break: break-all;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.page-entry .page-key {
+    font-size: 16px;
+    font-family: "SMILEBASIC";
+    color: tomato;
+    font-weight: bold;
+}
+
+.page-entry .page-extra {
+    float: right;
+}
+
+.page-entry .page-author {
+    display: block;
+}
+
+.page-entry .page-time {
+    color: var(--primary-accent);
 }
 
 .avatar-upload {
@@ -1111,7 +1177,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: white;
+    background: var(--primary-accent);
     position: absolute;
     top: 35px;
     left: 45px;

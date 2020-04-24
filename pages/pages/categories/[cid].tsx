@@ -21,7 +21,9 @@ export default (({
     const [ref, inView] = useInView();
 
     const [users, pages, loading, loadMore, more] = Page.usePages({
-        parentIds: [+cid]
+        parentIds: [+cid],
+        reverse: true,
+        limit: 2
     });
 
     useEffect(() => {
@@ -117,8 +119,7 @@ export default (({
                                     return null;
 
                                 // let img = page.values.photos?.split(",")?.[0];
-
-                                return <div className="page-entry" key={page.id} ref={i == pages.length - 1 && more ? ref : undefined}>
+                                return <div className="resource-entry" key={page.id} ref={i == pages.length - 1 && more ? ref : undefined}>
                                     {/* <img src={img ? `${API_ENTITY("File")}/raw/${+img}?size=200` : "/res/img/logo.svg"} className="page-photo" /> */}
                                     <span className="page-name">
                                         <Link href="/pages/[pid]" as={`/pages/${page.id}`}>

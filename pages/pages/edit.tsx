@@ -160,7 +160,7 @@ export default (({
             let result = await Page.Update(content);
             if (result != null) {
                 scrollTo(0, 0);
-                Router.push("/pages/[pid]", `/pages/${result.id}`);
+                await Router.push("/pages/[pid]", `/pages/${result.id}`);
             }
         } catch (e) {
             console.log(e.stack);

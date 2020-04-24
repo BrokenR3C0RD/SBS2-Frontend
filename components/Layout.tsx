@@ -103,8 +103,10 @@ const Gallery = (({
         <div className="gallery-content" ref={ref}>
             {children}
         </div>
-        <div className="gallery-next" onClick={() => nextImage(true)} />
-        <div className="gallery-prev" onClick={() => prevImage(true)} />
+        {childCount > 1 && <>
+            <div className="gallery-next" onClick={() => nextImage(true)} />
+            <div className="gallery-prev" onClick={() => prevImage(true)} />
+        </>}
         <style jsx>{`
             .gallery > .gallery-content > :global(*) {
                 position: relative;

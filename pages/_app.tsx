@@ -290,7 +290,7 @@ const App = (({
         {!loaded && <Spinner />}
         <footer>
             <div style={{ float: "left", height: "2em" }}>
-                (c) 2020 SmileBASIC Source community
+                &copy; 2020 SmileBASIC Source
             </div>
             <button onClick={SwitchTheme} data-theme={typeof document !== "undefined" && document.documentElement.dataset.theme} style={{ float: "right", height: "2em", verticalAlign: "top", padding: "0" }}><span className="iconify" data-icon={"mdi:electric-switch" + ((typeof document !== "undefined" && document.documentElement.dataset.theme) === "dark" ? "-closed" : "")} data-inline="false"></span></button>
         </footer>

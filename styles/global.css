@@ -49,6 +49,7 @@ footer {
     height: 2.3em;
     font-size: 1em;
     line-height: 2em;
+    overflow: hidden;
 }
 
 footer button {

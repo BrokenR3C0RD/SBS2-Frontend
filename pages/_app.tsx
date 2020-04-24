@@ -26,11 +26,6 @@ const App = (({
 
     const [, tree] = Category.useCategoryTree();
     const pageTree = tree?.find(category => category.name === "Pages");
-    const [, pages] = Page.usePages({
-        limit: 40,
-        type: "@page%",
-        reverse: true
-    });
 
     const [title, setTitle] = useState("");
     const [sidebar, setSidebar] = useState(false);
@@ -128,7 +123,7 @@ const App = (({
     async function handleSearch(evt: React.FormEvent<HTMLInputElement>) {
         const query = evt.currentTarget.value;
 
-        if (query.length == 0)
+        if(query.length == 0)
             return setResults([]);;
 
         let usersThatMatch = await BaseUser.Search({
@@ -142,7 +137,7 @@ const App = (({
             keyword: `%${query}%`,
             limit: 10
         }))).reduce<Page[]>((acc, val) => {
-            if (acc.findIndex(r => r.id == val.id) == -1)
+            if(acc.findIndex(r => r.id == val.id) == -1)
                 acc.push(val)
 
             return acc;
@@ -168,17 +163,17 @@ const App = (({
                     dl(b.keywords.join(" "), query).similarity
                     - dl(a.keywords.join(" "), query).similarity
                 ) * 10
-                    + (
-                        dl(b.name, query).similarity
-                        - dl(a.name, query).similarity
-                    ) * 5
+                + (
+                    dl(b.name, query).similarity
+                    - dl(a.name, query).similarity
+                ) *5
             })
             .slice(0, 10);
-
+        
         setResults(aggregate);
     }
 
-    const SearchTypeHref: { [i: string]: string } = {
+    const SearchTypeHref: {[i: string]: string} = {
         page: "/pages/[pid]",
         user: "/user/[uid]"
     }
@@ -250,16 +245,17 @@ const App = (({
                     <Link href="/pages/categories/[cid]" as={`/pages/categories/${tree?.find(page => page.name === "Pages")?.id}`}><a>Pages</a></Link>
                     <ul>
                         <li key={-1}><Link href="/pages/edit"><a>📝 Create a new page!</a></Link></li>
-                        {pageTree && pages && pageTree.children.map(function render(cat) {
-                            return <li key={cat.id} data-open="false" onClick={toggle}>
-                                <Link href="/pages/categories/[cid]" as={`/pages/categories/${cat.id}`}><a>{cat.name}</a></Link>
-                                <ul>
-                                    {cat.children.map(render)}
-                                    {pages.filter(page => page.parentId == cat.id).map(page => <li key={page.id} className="link">
-                                        <Link href="/pages/[pid]" as={`/pages/${page.id}`}><a>{page.name}</a></Link>
-                                    </li>)}
-                                </ul>
-                            </li>;
+                        {pageTree && pageTree.children.map(function render(cat) {
+                            if (cat.children && cat.children.length == 0){
+                                return <li key={cat.id}><Link href="/pages/categories/[cid]" as={`/pages/categories/${cat.id}`}><a>{cat.name}</a></Link></li>;
+                            } else {
+                                return <li key={cat.id} data-open="false" onClick={toggle}>
+                                    <Link href="/pages/categories/[cid]" as={`/pages/categories/${cat.id}`}><a>{cat.name}</a></Link>
+                                    <ul>
+                                        {cat.children.map(render)}
+                                    </ul>
+                                </li>;
+                            }
                         })}
                     </ul>
                 </li>

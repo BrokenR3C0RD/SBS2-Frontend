@@ -45,7 +45,7 @@ export default (({
     });
 
     useEffect(() => {
-        if(cid)
+        if (cid)
             setCategory(+cid);
     }, [cid])
 
@@ -106,7 +106,7 @@ export default (({
 
     const [perms, setPerms] = useState<number[]>([]);
 
-    const [keyInfo, setKeyInfo] = useState<KeyInfo>();
+    const [keyInfo, setKeyInfo] = useState<KeyInfo | null>();
     const [keywords, setKeywords] = useState<string[]>([]);
 
     const [errors, setErrors] = useState<string[]>([]);
@@ -131,7 +131,18 @@ export default (({
                     switch: keyInfo!.extInfo.console === "Switch" ? false : undefined
                 }),
                 markupLang: info["markup-lang"] as string,
-                photos: images.join(",")
+                photos: images.join(","),
+                keyinfo: keyInfo ? JSON.stringify({
+                    type: keyInfo?.type,
+                    version: keyInfo?.version,
+                    size: keyInfo?.size,
+                    uploaded: keyInfo?.uploaded,
+                    extInfo: {
+                        project_name: keyInfo?.extInfo.project_name,
+                        project_description: keyInfo?.extInfo.project_description,
+                        console: keyInfo.extInfo.console
+                    }
+                }) : origPages?.[0]?.values?.keyinfo || ""
             } : {
                     markupLang: info["markup-lang"] as string,
                     photos: images.join(",")
@@ -174,10 +185,12 @@ export default (({
             const info = await GetSBAPIInfo(tkey);
             if (info == null) {
                 setKeyInfo(undefined);
-                setErrors(["Key doesn't exist!"]);
+                setErrors([
+                    "The key you specified does not exist. If this is incorrect, please contact MasterR3C0RD."
+                ]);
             } else {
                 setKeyInfo(info);
-                if (code.length == 0 && info.extInfo.console === "Switch" && info.type == "PRJ" && info.extInfo.project_description) {
+                if (!origPages && code.length == 0 && info.extInfo.console === "Switch" && info.type == "PRJ" && info.extInfo.project_description) {
                     setCode(`[code lang=none]${info.extInfo.project_description}[/code]`);
                 }
                 if (keywords.length == 0)
@@ -188,12 +201,11 @@ export default (({
                     ].filter(tag => tag !== false) as string[]));
             }
         } catch (e) {
-            console.log(e.stack);
-            let errors: string[] = [];
-            if (e instanceof Error) {
-                errors.push(e.message);
-            }
-            setErrors(errors);
+            console.log("SBAPI failure.", e.stack);
+            setErrors([
+                "WARNING: We were unable to verify that this key works. As such, your program may be missing information, including download count and file size. Please contact MasterR3C0RD for more information on what just happened."
+            ]);
+            setKeyInfo(null);
         }
     }
 
@@ -276,11 +288,15 @@ export default (({
                     <Cell x={1} y={2}>
                         <h2>Details about your program:</h2>
                         <input type="text" autoComplete="off" name="publickey" placeholder="KEY" style={{ width: "80%", float: "left", fontSize: "32px", fontFamily: "SMILEBASIC" }} value={key} onChange={(evt) => setKey(evt.currentTarget.value)} /*pattern="^4?[A-HJ-NP-TV-Z1-9]{1,8}$"*/ required />
-                        <button onClick={FetchSBAPIInformation} style={{ width: "20%", float: "right", fontSize: "32px", fontFamily: "SMILEBASIC", padding: ".3em" }} type="button">GET!</button>
-                        {keyInfo &&
+                        <button onClick={FetchSBAPIInformation} style={{width: "20%", float: "right", minHeight: "32px", fontSize: "24px", fontFamily: "SMILEBASIC", padding: ".3em" }} type="button">GET</button>
+                        <br/>
+                        <div className="errors" style={{float: "left"}}>
+                            {errors.join(", ")}
+                        </div>
+                        {keyInfo !== undefined &&
                             <input type="text" name="title" placeholder="Title" autoComplete="off" required value={title} onChange={(evt) => setTitle(evt.currentTarget.value)} style={{ fontSize: "1.5em" }} />
                         }
-                        {keyInfo && keyInfo.extInfo.console === "3DS" && <>
+                        {keyInfo !== undefined && keyInfo?.extInfo?.console === "3DS" && <>
                             <h3>Supported devices</h3>
                             <table>
                                 <tr>
@@ -322,7 +338,7 @@ export default (({
                             </table>
                         </>}
                         <br />
-                        {keyInfo && <>
+                        {keyInfo !== undefined && <>
                             <h2>Editors:</h2>
                             <p><b>
                                 Note: Editors can edit your page at any time. This includes adding/removing other editors. They cannot delete your page, but they can
@@ -358,7 +374,7 @@ export default (({
                     </Cell>
 
                     <Cell x={2} y={2}>
-                        {!keyInfo && <h3>Put in a key to see its info!</h3>}
+                        {keyInfo === undefined && <h3>Put in a key to see its info!</h3>}
                         {keyInfo && <>
                             {keyInfo.extInfo.console == "Switch" && keyInfo.type === "PRJ" && <img width="32" src={`https://sbapi.me/get/${keyInfo.path}/META/icon`} />}
                             <h3 style={{
@@ -382,7 +398,7 @@ export default (({
                                     </tr>
                                     {keyInfo.extInfo.console === "Switch" && <tr>
                                         <td>Last updated:</td>
-                                        <td>{Moment(keyInfo.version * 1000).fromNow()}</td>
+                                        <td>{Moment((keyInfo.version - 9 * 60 * 60) * 1000).fromNow()}</td>
                                     </tr>}
                                     <tr>
                                         <td>Downloaded:</td>
@@ -409,10 +425,10 @@ export default (({
                 </Cell>
                 <Cell x={1} y={5} width={2}>
                     <h2>Ready to post?</h2>
-                    <div className="errors">
+                    {!programPage && <div className="errors">
                         {errors.join(", ")}
-                    </div>
-                    {programPage && keyInfo == null && <p>You need to provide a valid key before submitting your page!</p>}
+                    </div>}
+                    {programPage && keyInfo === undefined && <p>You need to provide a valid key before submitting your page!</p>}
                     {user == null && <p>You can't create a page unless you log in!</p>}
                     {user != null && (origPages && !origPages[0].Permitted(user, CRUD.Update)) && <p>You don't have permission to edit this page!</p>}
                     {code.length < 2 && <p>You must provide a description!</p>}
@@ -430,6 +446,10 @@ export default (({
             }
             input:invalid + button {
                 display: none;
+            }
+            input + button {
+                display: block;
+                height: 56px;
             }
             tr > td:first-child {
                 font-weight: bold;

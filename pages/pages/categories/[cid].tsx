@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import Link from "next/link";
 import { useEffect } from "react";
 import { PageProps } from "../../../interfaces";
-import { Grid, Cell } from "../../../components/Layout";
+import { Grid, Cell, Spinner } from "../../../components/Layout";
 import { Category, ParentCategory, Page } from "../../../classes";
 import { useRouter } from "next/router";
 import { useInView } from "react-intersection-observer";
@@ -20,7 +20,9 @@ export default (({
     const [, tree] = Category.useCategoryTree();
     const [ref, inView] = useInView();
 
-    const [users, pages, loading, loadMore, more] = Page.usePages(+cid);
+    const [users, pages, loading, loadMore, more] = Page.usePages({
+        parentIds: [+cid]
+    });
 
     useEffect(() => {
         if (inView && more && !loading)
@@ -132,6 +134,7 @@ export default (({
                                 </div>
                             })
                         }
+                        {loading && <Spinner />}
                     </Cell>
                 </>
             }

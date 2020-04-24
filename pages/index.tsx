@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import { useEffect } from "react";
 import { PageProps } from "../interfaces";
-import { Grid, Cell, Gallery } from "../components/Layout";
+import { Grid, Cell, Gallery, Spinner } from "../components/Layout";
 import { Page, Category } from "../classes";
 import { API_ENTITY } from "../utils/Constants";
 import { useRouter } from "next/router";
@@ -25,6 +25,10 @@ export default (({
 
     const [events, users, contents, loading, loadMore, more] = Activity.useActivity();
     const [ref, inView] = useInView();
+    useEffect(() => {
+        if(inView && !loading && more)
+            loadMore()
+    }, [inView])
 
     const [, categories] = Category.useCategory({
         name: "Pages"
@@ -32,10 +36,6 @@ export default (({
 
     let pageCategoryId = categories?.[0]?.id; 
 
-    useEffect(() => {
-        if(inView && !loading && more)
-            loadMore()
-    }, [inView, loading])
 
     return <>
         <Grid
@@ -58,7 +58,7 @@ export default (({
                 </p>
                 <div className="showcase-container">
                     <Gallery width="400px" height="240px" className="program-showcase">
-                        {programs ? programs.map((program, i) => <div key={program.id} className="program" onClick={() => Router.push("/pages/[pid]", `/pages/${program.id}`)} {...{ "data-chosen": i == 0 ? "data-chosen" : undefined }} >
+                        {programs ? programs.map((program) => <div key={program.id} className="program" onClick={() => Router.push("/pages/[pid]", `/pages/${program.id}`)}>
                             <img src={program.values.photos?.length > 0 ? `${API_ENTITY("File")}/raw/${+program.values.photos.split(",")[0]}?size=400` : "/res/img/logo.svg"} />
                             <span className="title">{program.name}</span>
                         </div>) : []}
@@ -69,7 +69,7 @@ export default (({
                 </p>
             </Cell>
             <Cell x={3} y={2} width={2} height={1}>
-                <h2>Recent Activity</h2>
+                <h2><Link href="/activity"><a>Recent Activity</a></Link></h2>
                 <ul className="activity">
                     {events.map((event, i) => {
                         let content: React.ReactElement = <></>;
@@ -147,16 +147,7 @@ export default (({
                         </li>
                     })}
                     <li ref={ref}></li>
-                    {loading && <div className="spinner circles">
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                    </div>}
+                    {loading && <Spinner />}
                 </ul>
             </Cell>
             <Cell x={1} y={4} width={4}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, HTMLAttributes } from "react";
+import React, { useEffect, useRef, HTMLAttributes, Children, useState } from "react";
 
 const Grid = (({
     children,
@@ -62,35 +62,30 @@ const Gallery = (({
     className = ""
 }) => {
     const ref = useRef<HTMLDivElement>(null);
+    const [selected, setSelected] = useState<number>(0);
+    const [wait, setWait] = useState<boolean>(false);
+    const childCount = Children.count(children);
+    console.log(selected, childCount);
 
-    let wait: boolean = false;
     function nextImage(user = false) {
-        if(wait && !user){
-            wait = false;
+        if (wait && !user) {
+            setWait(false);
             return;
         }
-        if (ref.current && React.Children.count(children) > 0) {
-            const current = ref.current.querySelector("[data-chosen]") as (HTMLElement | null);
-            if (current) {
-                delete current.dataset["chosen"];
-            }
-            (current?.nextElementSibling as (HTMLElement | null) || ref.current.children[0] as HTMLElement).dataset["chosen"] = "chosen";
+        if (ref.current && childCount > 0) {
+            setSelected((selected + 1) % childCount);
         }
-        wait = user;
+        setWait(user);
     }
     function prevImage(user = false) {
-        if(wait && !user){
-            wait = false;
+        if (wait && !user) {
+            setWait(false);
             return;
         }
-        if (ref.current && React.Children.count(children) > 0) {
-            const current = ref.current.querySelector("[data-chosen]") as (HTMLElement | null);
-            if (current) {
-                delete current.dataset["chosen"];
-            }
-            (current?.previousElementSibling as (HTMLElement | null) || ref.current.children[ref.current.children.length - 1] as HTMLElement).dataset["chosen"] = "chosen";
+        if (ref.current && childCount > 0) {
+            setSelected((selected + (childCount - 1)) % childCount);
         }
-        wait = user;
+        setWait(user);
     }
 
     useEffect(() => {
@@ -117,6 +112,13 @@ const Gallery = (({
                 max-width: ${width};
                 max-height: ${height};
             }
+            .gallery > .gallery-content > :global(*:nth-child(${selected + 1})){
+                display: block;
+                text-align: center;
+                box-sizing: border-box;
+                min-width: 0;
+                min-height: 0;
+            }
         `}</style>
     </div>
 }) as React.FunctionComponent<{
@@ -127,4 +129,17 @@ const Gallery = (({
     className?: string,
 } & HTMLAttributes<HTMLDivElement>>;
 
-export { Grid, Cell, Gallery }
+const Spinner = (() => {
+    return <div className="spinner circles">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>;
+}) as React.FunctionComponent;
+
+export { Grid, Cell, Gallery, Spinner }

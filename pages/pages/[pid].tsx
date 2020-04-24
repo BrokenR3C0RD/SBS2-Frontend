@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import { PageProps, Dictionary } from "../../interfaces";
-import { Grid, Cell, Gallery } from "../../components/Layout";
+import { Grid, Cell, Gallery, Spinner } from "../../components/Layout";
 import Form from "../../components/Form";
 import { Page, ProgramPage, BaseUser, Comment, Category } from "../../classes";
 import { useRouter } from "next/router";
@@ -116,11 +116,15 @@ export default (({
     useEffect(() => {
         if (page && page.type === "@page.program") {
             (async () => {
-                const ki = await GetSBAPIInfo(page.values.key);
-                if (ki == null) {
-                    setKeyInfo(null);
-                } else {
-                    setKeyInfo(ki);
+                try {
+                    const ki = await GetSBAPIInfo(page.values.key);
+                    if (ki == null) {
+                        setKeyInfo(null);
+                    } else {
+                        setKeyInfo(ki);
+                    }
+                } catch (e) {
+                    setKeyInfo(JSON.parse(page.values.keyinfo || "null"));
                 }
             })();
         }
@@ -192,11 +196,11 @@ export default (({
                                 {keyInfo && keyInfo.extInfo.project_name || keyInfo && `【${keyInfo.filename.substr(1)}】`}
                             </h2>
                             {page.values.photos &&
-                                <Gallery className="program-images" width="400px" height="240px" timer={0}>
+                                <Gallery className="program-images" width="400px" height="240px" timer={2000}>
                                     {
                                         page.values.photos.split(",")
                                             .filter(photo => photo != "")
-                                            .map((photo, i) => <img src={`${API_ENTITY("File")}/raw/${+photo}?size=400`} key={i} {...{ "data-chosen": i == 0 ? "data-chosen" : undefined }} />)
+                                            .map((photo, i) => <img src={`${API_ENTITY("File")}/raw/${+photo}?size=400`} key={i} />)
                                     }
                                 </Gallery>
                             }
@@ -205,7 +209,7 @@ export default (({
                                     <tr id="pubkey">
                                         <td>Public key</td>
                                         <td style={{
-                                            textDecoration: (!keyInfo || !keyInfo.available) ? "line-through" : undefined
+                                            textDecoration: (!keyInfo || ("available" in keyInfo && !keyInfo.available)) ? "line-through" : undefined
                                         }} title={page.values.key}>{page.values.key}</td>
                                     </tr>
                                     <tr>
@@ -218,31 +222,32 @@ export default (({
                                     </tr>
                                     <tr>
                                         <td>Last updated</td>
-                                        <td>{keyInfo && Moment(keyInfo.version * 1000).fromNow()}</td>
+                                        <td>{keyInfo && Moment((keyInfo.version - 9 * 60 * 60) * 1000).fromNow()}</td>
                                     </tr>
-                                    <tr>
+                                    {keyInfo && "downloads" in keyInfo && <tr>
                                         <td>Downloads</td>
-                                        <td>{keyInfo && keyInfo.downloads.toString()}</td>
-                                    </tr>
+                                        <td>{keyInfo.downloads.toString()}</td>
+                                    </tr>}
                                     <tr>
                                         <td>Compatible devices</td>
                                         <td>
                                             {
-                                                Object
-                                                    .keys(supported)
-                                                    .map(device => {
-                                                        switch (device) {
-                                                            case "o3ds":
-                                                                return `Old 3DS` + (supported[device] ? " (with DLC)" : "");
-                                                            case "n3ds":
-                                                                return `New 3DS` + (supported[device] ? " (with DLC)" : "");
-                                                            case "wiiu":
-                                                                return `Wii U` + (supported[device] ? " (with DLC)" : "");
-                                                            case "switch":
-                                                                return `Switch` + (supported[device] ? " (with DLC)" : "");
-                                                        }
-                                                    })
-                                                    .map((m, i) => <span key={i}>{m}<br /></span>)
+                                                keyInfo == null ? "Unknown" :
+                                                    Object
+                                                        .keys(supported)
+                                                        .map(device => {
+                                                            switch (device) {
+                                                                case "o3ds":
+                                                                    return `Old 3DS` + (supported[device] ? " (with DLC)" : "");
+                                                                case "n3ds":
+                                                                    return `New 3DS` + (supported[device] ? " (with DLC)" : "");
+                                                                case "wiiu":
+                                                                    return `Wii U` + (supported[device] ? " (with DLC)" : "");
+                                                                case "switch":
+                                                                    return `Switch` + (supported[device] ? " (with DLC)" : "");
+                                                            }
+                                                        })
+                                                        .map((m, i) => <span key={i}>{m}<br /></span>)
                                             }
                                         </td>
                                     </tr>
@@ -316,16 +321,7 @@ export default (({
                                 </div>
                             })
                         }
-                        {fetching && <div className="spinner circles">
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                            <div></div>
-                        </div>}
+                        {fetching && <Spinner />}
                     </Cell>
                 </>
             }

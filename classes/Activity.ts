@@ -19,18 +19,19 @@ export interface Event {
 export class Activity {
     activity: Event[] = [];
 
-    public static useActivity(realtime: boolean = false): [Event[], BaseUser[], Content[], boolean, () => void, boolean] {
+    public static useActivity(limit: number = 35, realtime: boolean = false): [Event[], BaseUser[], Content[], boolean, () => void, boolean] {
         let [events, setEvents] = useState<Event[]>([]);
         let [users, setUsers] = useState<BaseUser[]>([]);
         let [content, setContent] = useState<Content[]>([]);
         const [fetchMore, setFetchMore] = useState<boolean>(true)
-        const [loading, setLoading] = useState<boolean>(true);
+        const [loading, setLoading] = useState<boolean>(false);
         const [more, setMore] = useState<boolean>(true);
 
         useEffect(() => {
             let aborter = new AbortController();
+            console.log(fetchMore)
 
-            if (fetchMore)
+            if (fetchMore && !loading)
                 (async () => {
                     try {
                         setLoading(true);
@@ -40,7 +41,7 @@ export class Activity {
                             signal: aborter.signal,
                             return: Activity,
                             data: {
-                                limit: 35,
+                                limit: limit,
                                 maxId: events?.[events?.length - 1]?.id || undefined,
                                 reverse: true,
                                 includeAnonymous: true
@@ -72,7 +73,7 @@ export class Activity {
                             setUsers(users);
                             setContent(content);
                             setEvents(events);
-                            setMore(res.activity.length % 35 === 0);
+                            setMore(res.activity.length % limit === 0);
                         }
                     } catch (e) {
                         if (!aborter.signal.aborted)

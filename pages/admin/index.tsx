@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { Category } from "../../classes";
 import { Dictionary } from "../../interfaces";
 import React from "react";
+import { CRUD } from "../../classes/Entity";
 
 export default (({
     setInfo,
@@ -26,16 +27,20 @@ export default (({
         (user == null || (user != null && !user.super)) && router.push("/")
     }, [user]);
 
-
-
     let selectedCategory: Category | undefined;
-    if (categories && selected != null) {
-        if (selected == -1) {
+    if (categories && selected != null)
+        if (selected == -1)
             selectedCategory = new Category();
-        } else {
+        else
             selectedCategory = categories.find(category => category.id == selected);
+
+    useEffect(() => {
+        if (selected != null && selectedCategory != null) {
+            setNewPerms(Object.assign({}, newPerms, {
+                [selected]: selectedCategory?.permissions
+            }));
         }
-    }
+    }, [selected, categories])
 
     async function UpdateCategory(data: Dictionary<string | number | boolean>) {
         setErrors([]);
@@ -43,23 +48,16 @@ export default (({
             name: data.name as string,
             description: data.description as string,
             parentId: parseInt(data.parentId as string || "0"),
-            permissions: {},
+            permissions: newPerms[selected as number],
             id: selected === -1 ? undefined : selected
         };
-
-        Object.keys(data).forEach(key => {
-            if (key.indexOf("-") != -1) {
-                const [user, value] = key.split("-");
-                newCategory.permissions![user] = (newCategory.permissions![user] || "") + (data[key] == "on" ? value : "");
-            }
-        });
 
         try {
             newCategory = await Category.Update(newCategory);
         } catch (e) {
             setErrors([e instanceof Error ? e.stack : e]);
         }
-        if(selected == -1)
+        if (selected == -1)
             setNewPerms(Object.assign({}, newPerms, {
                 "-1": {}
             }));
@@ -85,6 +83,27 @@ export default (({
             })
         }));
         newPermRef.current!.value = "";
+    }
+    function setPerm(user: number, permission: CRUD) {
+        let perms = newPerms[selected!][user].split("");
+        let idx = perms.indexOf(permission);
+        if(idx != -1)
+            perms.splice(idx, 1);
+        else
+            perms.push(permission);
+        
+        let nperms = (perms.indexOf(CRUD.Create) != -1 ? "c" : "")
+                    +(perms.indexOf(CRUD.Read)   != -1 ? "r" : "")
+                    +(perms.indexOf(CRUD.Update) != -1 ? "u" : "")
+                    +(perms.indexOf(CRUD.Delete) != -1 ? "d" : "");
+        
+        setNewPerms({
+            ...newPerms,
+            [selected!]: {
+                ...newPerms[selected!],
+                [user]: nperms
+            }
+        });
     }
 
     return <>
@@ -116,7 +135,7 @@ export default (({
                     </li>
                 </ul>
             </Cell>
-            {selected != null &&
+            {selected != null && selectedCategory != null &&
                 <Cell x={2} y={1} width={3} height={2}>
                     <Form onSubmit={UpdateCategory} key={selected}>
                         <label>
@@ -136,61 +155,40 @@ export default (({
                         </label>
                         Permissions:
                         <ul id="permissions">
-                            {Object.keys(selectedCategory!.permissions).map((user) =>
-                                <li key={user}>
-                                    {`${user == "0" ? "Everyone" : `UID #${user}`}: `}
-                                    <label>
-                                        C
-                                        <input type="checkbox" name={`${user}-c`} defaultChecked={(selectedCategory!.permissions[user].indexOf("c") != -1)} />
-                                    </label>
-                                    <label>
-                                        R
-                                        <input type="checkbox" name={`${user}-r`} defaultChecked={(selectedCategory!.permissions[user].indexOf("r") != -1)} />
-                                    </label>
-                                    <label>
-                                        U
-                                        <input type="checkbox" name={`${user}-u`} defaultChecked={(selectedCategory!.permissions[user].indexOf("u") != -1)} />
-                                    </label>
-                                    <label>
-                                        D
-                                        <input type="checkbox" name={`${user}-d`} defaultChecked={(selectedCategory!.permissions[user].indexOf("d") != -1)} />
-                                    </label>
-                                </li>
-                            )}
                             {newPerms[selectedCategory!.id] && Object.keys(newPerms[selectedCategory!.id]).map((user) =>
                                 <li key={user}>
                                     {`${user == "0" ? "Everyone" : `UID #${user}`}: `}
                                     <label>
                                         C
-                                        <input type="checkbox" name={`${user}-c`} defaultChecked={(newPerms[selectedCategory!.id][user].indexOf("c") != -1)} />
-                                    </label>
-                                    <label>
-                                        R
-                                        <input type="checkbox" name={`${user}-r`} defaultChecked={(newPerms[selectedCategory!.id][user].indexOf("r") != -1)} />
-                                    </label>
-                                    <label>
-                                        U
-                                        <input type="checkbox" name={`${user}-u`} defaultChecked={(newPerms[selectedCategory!.id][user].indexOf("u") != -1)} />
-                                    </label>
-                                    <label>
-                                        D
-                                        <input type="checkbox" name={`${user}-d`} defaultChecked={(newPerms[selectedCategory!.id][user].indexOf("d") != -1)} />
-                                    </label>
-                                </li>
-                            )}
-                        </ul>
-                        <input ref={newPermRef} type="number" placeholder="New permission UID..." />
-                        <button onClick={addPermission} type="button">Add new permission</button>
-                        <input type="submit" value={selected != -1 ? "Update Category" : "Add Category"} />
-                        {selected !== -1 && <button onClick={DeleteCategory} id="delete" type="button">Delete Category</button>}
-                        <div className="errors">
-                            {errors.join(", ")}
-                        </div>
-                    </Form>
-                </Cell>
-            }
-        </Grid>
-        <style jsx>{`
+                                        <input type="checkbox" name={`${user}-c`} checked={newPerms[selectedCategory!.id][user].indexOf("c") != -1} onChange={() => setPerm(+user, CRUD.Create)} />
+                                </label>
+                                <label>
+                                            R
+                                        <input type="checkbox" name={`${user}-r`} checked={(newPerms[selectedCategory!.id][user].indexOf("r") != -1)} onChange={() => setPerm(+user, CRUD.Read)} />
+                                        </label>
+                                        <label>
+                                            U
+                                        <input type="checkbox" name={`${user}-u`} checked={(newPerms[selectedCategory!.id][user].indexOf("u") != -1)} onChange={() => setPerm(+user, CRUD.Update)} />
+                                        </label>
+                                        <label>
+                                            D
+                                        <input type="checkbox" name={`${user}-d`} checked={(newPerms[selectedCategory!.id][user].indexOf("d") != -1)} onChange={() => setPerm(+user, CRUD.Delete)} />
+                                        </label>
+                            </li>
+                        )}
+                    </ul>
+                                <input ref={newPermRef} type="number" placeholder="New permission UID..." />
+                                <button onClick={addPermission} type="button">Add new permission</button>
+                                <input type="submit" value={selected != -1 ? "Update Category" : "Add Category"} />
+                    { selected !== -1 && <button onClick={DeleteCategory} id="delete" type="button">Delete Category</button>}
+                            <div className="errors">
+                                {errors.join(", ")}
+                            </div>
+                </Form>
+            </Cell>
+        }
+    </Grid>
+                <style jsx>{`
             :global(.cell) > ul {
                 margin-left: -1em;
                 font-size: 1.25em;
@@ -231,5 +229,5 @@ export default (({
                 margin-left: 1em;
             }
         `}</style>
-    </>;
+</>;
 }) as NextPage<PageProps>;

@@ -76,27 +76,31 @@ export default (({
     }
 
     function addPermission(evt: React.MouseEvent) {
+        console.log(newPerms, newPermRef.current!.value, selected);
         evt.preventDefault();
-        setNewPerms(Object.assign({}, newPerms, {
-            [selectedCategory!.id]: Object.assign({}, newPerms[selectedCategory!.id], {
+        setNewPerms({
+            ...newPerms,
+            [selected!]: {
+                ...newPerms[selected!] || {},
                 [newPermRef.current!.value]: "r"
-            })
-        }));
+            }
+        });
         newPermRef.current!.value = "";
     }
+
     function setPerm(user: number, permission: CRUD) {
         let perms = newPerms[selected!][user].split("");
         let idx = perms.indexOf(permission);
-        if(idx != -1)
+        if (idx != -1)
             perms.splice(idx, 1);
         else
             perms.push(permission);
-        
+
         let nperms = (perms.indexOf(CRUD.Create) != -1 ? "c" : "")
-                    +(perms.indexOf(CRUD.Read)   != -1 ? "r" : "")
-                    +(perms.indexOf(CRUD.Update) != -1 ? "u" : "")
-                    +(perms.indexOf(CRUD.Delete) != -1 ? "d" : "");
-        
+            + (perms.indexOf(CRUD.Read) != -1 ? "r" : "")
+            + (perms.indexOf(CRUD.Update) != -1 ? "u" : "")
+            + (perms.indexOf(CRUD.Delete) != -1 ? "d" : "");
+
         setNewPerms({
             ...newPerms,
             [selected!]: {
@@ -155,40 +159,40 @@ export default (({
                         </label>
                         Permissions:
                         <ul id="permissions">
-                            {newPerms[selectedCategory!.id] && Object.keys(newPerms[selectedCategory!.id]).map((user) =>
+                            {newPerms[selected!] && Object.keys(newPerms[selected!]).map((user) =>
                                 <li key={user}>
                                     {`${user == "0" ? "Everyone" : `UID #${user}`}: `}
                                     <label>
                                         C
-                                        <input type="checkbox" name={`${user}-c`} checked={newPerms[selectedCategory!.id][user].indexOf("c") != -1} onChange={() => setPerm(+user, CRUD.Create)} />
-                                </label>
-                                <label>
-                                            R
-                                        <input type="checkbox" name={`${user}-r`} checked={(newPerms[selectedCategory!.id][user].indexOf("r") != -1)} onChange={() => setPerm(+user, CRUD.Read)} />
-                                        </label>
-                                        <label>
-                                            U
-                                        <input type="checkbox" name={`${user}-u`} checked={(newPerms[selectedCategory!.id][user].indexOf("u") != -1)} onChange={() => setPerm(+user, CRUD.Update)} />
-                                        </label>
-                                        <label>
-                                            D
-                                        <input type="checkbox" name={`${user}-d`} checked={(newPerms[selectedCategory!.id][user].indexOf("d") != -1)} onChange={() => setPerm(+user, CRUD.Delete)} />
-                                        </label>
-                            </li>
-                        )}
-                    </ul>
-                                <input ref={newPermRef} type="number" placeholder="New permission UID..." />
-                                <button onClick={addPermission} type="button">Add new permission</button>
-                                <input type="submit" value={selected != -1 ? "Update Category" : "Add Category"} />
-                    { selected !== -1 && <button onClick={DeleteCategory} id="delete" type="button">Delete Category</button>}
-                            <div className="errors">
-                                {errors.join(", ")}
-                            </div>
-                </Form>
-            </Cell>
-        }
-    </Grid>
-                <style jsx>{`
+                                        <input type="checkbox" name={`${user}-c`} checked={newPerms[selected!][user].indexOf("c") != -1} onChange={() => setPerm(+user, CRUD.Create)} />
+                                    </label>
+                                    <label>
+                                        R
+                                        <input type="checkbox" name={`${user}-r`} checked={(newPerms[selected!][user].indexOf("r") != -1)} onChange={() => setPerm(+user, CRUD.Read)} />
+                                    </label>
+                                    <label>
+                                        U
+                                        <input type="checkbox" name={`${user}-u`} checked={(newPerms[selected!][user].indexOf("u") != -1)} onChange={() => setPerm(+user, CRUD.Update)} />
+                                    </label>
+                                    <label>
+                                        D
+                                        <input type="checkbox" name={`${user}-d`} checked={(newPerms[selected!][user].indexOf("d") != -1)} onChange={() => setPerm(+user, CRUD.Delete)} />
+                                    </label>
+                                </li>
+                            )}
+                        </ul>
+                        <input ref={newPermRef} type="number" placeholder="New permission UID..." />
+                        <button onClick={addPermission} type="button">Add new permission</button>
+                        <input type="submit" value={selected != -1 ? "Update Category" : "Add Category"} />
+                        {selected !== -1 && <button onClick={DeleteCategory} id="delete" type="button">Delete Category</button>}
+                        <div className="errors">
+                            {errors.join(", ")}
+                        </div>
+                    </Form>
+                </Cell>
+            }
+        </Grid>
+        <style jsx>{`
             :global(.cell) > ul {
                 margin-left: -1em;
                 font-size: 1.25em;
@@ -229,5 +233,5 @@ export default (({
                 margin-left: 1em;
             }
         `}</style>
-</>;
+    </>;
 }) as NextPage<PageProps>;

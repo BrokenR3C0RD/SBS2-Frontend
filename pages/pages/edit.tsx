@@ -421,8 +421,9 @@ export default (({
                     <p>
                         {isDragActive && "Drop here!"}
                         {!isDragActive && "Drag and drop images here, or click to open the file explorer."}
+                        Click an image to remove them from your page.
                     </p>
-                    {images.map((id) => <img className="page-image" src={`${API_ENTITY("File")}/raw/${id}?size=200`} key={id} onClick={(evt) => { evt.stopPropagation(); RemoveImage(id) }} />)}
+                    {images.map((id) => <img className="page-image" style={{ cursor: "pointer" }} src={`${API_ENTITY("File")}/raw/${id}?size=200`} key={id} onClick={(evt) => { evt.stopPropagation(); RemoveImage(id) }} />)}
                 </Cell>
                 <Cell x={1} y={5} width={2}>
                     <h2>Ready to post?</h2>

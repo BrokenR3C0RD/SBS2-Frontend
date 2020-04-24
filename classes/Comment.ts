@@ -7,7 +7,6 @@ import { API_ENTITY } from "../utils/Constants";
 import { BaseUser, FullUser } from "./User";
 import { Dictionary } from "../interfaces";
 
-
 function Wait(ms: number): Promise<void> {
     return new Promise((resolve) => {
         setTimeout(resolve, ms);
@@ -157,11 +156,14 @@ export class Comment extends Entity {
                             if (aborter.signal.aborted)
                                 return;
 
-                            if (resp.status === 400)
-                                break;
-
+                            if(resp.status == 408)
+                                continue;
                             if (resp.status === 200) {
-                                let newc: Comment[] = (await resp.json()).map((obj: Comment) => plainToClass(Comment, obj));
+                                let r = (await resp.json());
+                                if(r === null)
+                                    continue;
+
+                                let newc: Comment[] = r.map((obj: Comment) => plainToClass(Comment, obj));
 
                                 if (newc.length > 0) {
                                     setComments(
@@ -218,11 +220,14 @@ export class Comment extends Entity {
                             if (resp.status === 400)
                                 break;
                             
-                            if(resp.status === 524)
+                            if(resp.status === 408)
                                 continue;
 
                             if (resp.status === 200) {
                                 let newc = (await resp.json());
+                                if(newc === null)
+                                    continue;
+                                
                                 lastList = newc.slice().map((u: any) => u.userId);
                                 setList(lastList);
 

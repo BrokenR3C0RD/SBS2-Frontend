@@ -9,8 +9,8 @@ import { Category, Page, BaseUser } from "../classes";
 import "../styles/dark.css";
 import "../styles/global.css";
 import "../styles/light.css";
-import { API_ENTITY } from "../utils/Constants";
-import { useRequestPage } from "../utils/Request";
+// import { API_ENTITY } from "../utils/Constants";
+// import { useRequestPage } from "../utils/Request";
 import { Logout, useSettings, useUser, Variable } from "../utils/User";
 import dl from "damerau-levenshtein";
 import { Spinner } from "../components/Layout";
@@ -25,6 +25,11 @@ const App = (({
     const [, settings, mutateSettings] = useSettings();
 
     const [, tree] = Category.useCategoryTree();
+    const pageTree = tree?.find(category => category.name === "Pages");
+    const [, pages] = Page.usePages({
+        limit: 40,
+        type: "@page%"
+    });
 
     const [title, setTitle] = useState("");
     const [sidebar, setSidebar] = useState(false);
@@ -34,26 +39,26 @@ const App = (({
 
     const router = useRouter();
 
-    const { data: pages, loading: loadingPages, end, loadMore: loadMorePages } = useRequestPage({
-        url: API_ENTITY("Content"),
-        method: "GET",
-        data: {
-            reverse: true,
-            type: "@page%"
-        },
-        offset: 0,
-        limit: 10,
-        return: Page
-    }, (pages) => {
-        if (pages == null) {
-            return [<p>Loading...</p>];
-        } else {
-            return pages
-                .map(page => <li key={page.id}>
-                    <Link href="/pages/[pid]" as={`/pages/${page.id}`}><a>{page.name}</a></Link>
-                </li>);
-        }
-    }, []);
+    // const { data: pages, loading: loadingPages, end, loadMore: loadMorePages } = useRequestPage({
+    //     url: API_ENTITY("Content"),
+    //     method: "GET",
+    //     data: {
+    //         reverse: true,
+    //         type: "@page%"
+    //     },
+    //     offset: 0,
+    //     limit: 10,
+    //     return: Page
+    // }, (pages) => {
+    //     if (pages == null) {
+    //         return [<p>Loading...</p>];
+    //     } else {
+    //         return pages
+    //             .map(page => <li key={page.id}>
+    //                 <Link href="/pages/[pid]" as={`/pages/${page.id}`}><a>{page.name}</a></Link>
+    //             </li>);
+    //     }
+    // }, []);
 
     async function SwitchTheme() {
         console.log("Changing theme");
@@ -243,10 +248,22 @@ const App = (({
                 <li onClick={toggle} data-open="false">
                     <Link href="/pages/categories/[cid]" as={`/pages/categories/${tree?.find(page => page.name === "Pages")?.id}`}><a>Pages</a></Link>
                     <ul>
-                        <li key={-1}><Link href="/pages/edit"><a>Create a new page!</a></Link></li>
-                        {loadingPages && <p key={-3}>Loading pages...</p>}
-                        {pages}
-                        {!end && <button type="button" key={-2} onClick={loadMorePages}>Load more</button>}
+                        <li key={-1}><Link href="/pages/edit"><a>📝 Create a new page!</a></Link></li>
+                        {pageTree && pages && pageTree.children.map(function render(cat) {
+                            if (cat.children && cat.children.length == 0){
+                                return <li key={cat.id}><Link href="/pages/categories/[cid]" as={`/pages/categories/${cat.id}`}><a>{cat.name}</a></Link></li>;
+                            } else {
+                                return <li key={cat.id} data-open="false" onClick={toggle}>
+                                    <Link href="/pages/categories/[cid]" as={`/pages/categories/${cat.id}`}><a>{cat.name}</a></Link>
+                                    <ul>
+                                        {cat.children.map(render)}
+                                        {pages.filter(page => page.parentId == cat.id).map(page => <li key={page.id} className="link">
+                                            <Link href="/pages/[pid]" as={`/pages/${page.id}`}><a>{page.name}</a></Link>
+                                        </li>)}
+                                    </ul>
+                                </li>;
+                            }
+                        })}
                     </ul>
                 </li>
                 {/* <li onClick={toggle} data-open="false">

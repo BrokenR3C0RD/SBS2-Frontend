@@ -106,4 +106,8 @@ export class ParentCategory extends Category {
         }
         return null;
     }
+
+    public Flatten(): Category[] {
+        return this.children.reduce<Category[]>((acc, cat) => acc.concat(cat.Flatten()), []);
+    }
 }

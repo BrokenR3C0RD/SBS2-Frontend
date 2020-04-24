@@ -524,7 +524,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     box-shadow: 1px 1px 5px var(--shadow);
     padding: .5em;
     margin: .5em;
-    height: 340px;
+    height: 280px;
     transition: width .25s, height .25s, background-color .25s;
     position: relative;
 }
@@ -535,22 +535,22 @@ form input:not([type="checkbox"]), form button, form textarea {
 }
 
 .page-entry .page-photo-wrap {
-    height: 220px;
-    width: 400px;
+    height: 165px;
+    width: 300px;
     display: flex;
     background-color: var(--secondary-bg);
     margin-bottom: 1em;
 }
 
 .page-entry .page-photo {
-    max-height: 250px;
+    max-height: 165px;
     display: block;
     margin: auto;
 }
 
 .page-entry .page-name {
     display: block;
-    font-size: 1.75em;
+    font-size: 1.5em;
     padding-bottom: .5em;
     
     text-overflow: ellipsis;

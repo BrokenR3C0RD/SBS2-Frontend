@@ -261,9 +261,18 @@ export default (({
                     </>}
                     {page.type === "@page.resource" &&
                         <>
-                            <Cell x={1} y={2} width={3} height={2}>
+                            <Cell x={1} y={2} width={3} height={1 + (page.values.photos.length == 0 || page.values.photos === "0" ? 1 : 0)}>
                                 <BBCodeView code={page.content} markupLang={page.values.markupLang} />
                             </Cell>
+                            {page.values.photos && (page.values.photos?.trim()?.length > 0 && page.values.photos !== "0") && <Cell x={1} y={3} width={3} height={1}>
+                                <Gallery className="program-images" width="400px" height="240px" timer={2000}>
+                                    {
+                                        page.values.photos.split(",")
+                                            .filter(photo => photo != "")
+                                            .map((photo, i) => <img src={`${API_ENTITY("File")}/raw/${+photo}?size=400`} key={i} />)
+                                    }
+                                </Gallery>
+                            </Cell>}
                         </>
                     }
 
@@ -271,7 +280,7 @@ export default (({
                         <h2>Comments</h2>
                         {self && page.Permitted(self, CRUD.Create) && <Form onSubmit={PostComment}>
                             <Composer hidePreview markup={commentMarkup} code={commentCode} onChange={(code, markup) => { setCommentCode(code); setCommentMarkup(markup); }} ref={commentRef} />
-                            <input type="submit" value="Post Comment!" />
+                            <input type="submit" value="Post Comment!" style={{margin: "3px 2em", width: "calc(100% - 4em)", zIndex: 100}} />
                         </Form> || !self && <h3>Sign in to comment!</h3> || <h3>You can't post comments here!</h3>}
                         {
                             (() => {

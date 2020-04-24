@@ -218,7 +218,8 @@ export default (({
                 let id = await UploadFile(files[i]);
                 images.push(id);
             } catch (e) {
-                console.error("Failed to upload file: " + e.stack);
+                console.error("Failed to upload file: " + e.stack || e);
+                setErrors([e]);
             }
         }
         setImages(images.concat(uploadedImages));

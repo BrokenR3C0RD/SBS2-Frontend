@@ -111,7 +111,7 @@ export default (({
                         <h2>Wall:</h2>
                         {self && page.Permitted(self, CRUD.Create) && <Form onSubmit={PostComment}>
                             <Composer hidePreview markup={commentMarkup} code={commentCode} onChange={(code, markup) => { setCommentCode(code); setCommentMarkup(markup); }} ref={commentRef} />
-                            <input type="submit" value="Post to wall!" />
+                            <input type="submit" value="Post to wall!" style={{margin: "3px 2em", width: "calc(100% - 4em)", zIndex: 100}} />
                         </Form> || !self && <h3>Sign in to post to this user's wall!</h3> || <h3>You can't post to this user's wall!</h3>}
                         {page &&
                             (() => {

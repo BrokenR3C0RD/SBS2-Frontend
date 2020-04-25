@@ -184,17 +184,20 @@ export async function DeleteVariable(key: string): Promise<boolean> {
     return true;
 }
 
+let triedSettingUpload = false;
+
 export function useSettings(): [any, Dictionary<string | number | boolean> | undefined, () => void] {
     const [errors, data, mutate] = useRequest<Dictionary<string | number | boolean>>({
         url: `${API_USER_VARIABLE}/user_settings`,
         method: "GET"
     }, async (data: any) => JSON.parse(data));
 
-    if (data == null && typeof localStorage != "undefined" && (localStorage.getItem("sbs-auth") || localStorage.getItem("sbs-auth")) != null){
+    if (data == null && typeof localStorage != "undefined" && (localStorage.getItem("sbs-auth") || localStorage.getItem("sbs-auth")) != null && !triedSettingUpload){
         Variable("user_settings", JSON.stringify({
             theme: localStorage.getItem("sbs-theme"),
             SiteJS: ""
-        })).catch(() => {})
+        })).then(() => triedSettingUpload = false).catch(() => {});
+        triedSettingUpload = true
     }
 
     return [errors, data ?? {}, mutate];

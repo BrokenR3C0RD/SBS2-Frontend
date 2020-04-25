@@ -252,6 +252,10 @@ nav #user-info[data-open="true"] ul li a:hover {
     box-shadow: -3px 0 5px var(--shadow);
 }
 
+#sidebar ul>li>ul {
+    padding-left: 1em;
+}
+
 
 #sidebar ul {
     font-size: 1.25rem;
@@ -269,26 +273,18 @@ nav #user-info[data-open="true"] ul li a:hover {
     font-size: 1em;
 }
 
-#sidebar ul>li.link>a {
+#sidebar ul>li>a {
     color: var(--link-color);
-
 }
 
-#sidebar ul>li.link>a:hover {
+#sidebar ul>li>a:hover {
     color: var(--secondary-accent);
+    text-decoration: underline;
 }
 
 
 #sidebar ul>li {
     margin-bottom: .5em;
-}
-
-#sidebar ul>li>a {
-    color: var(--primary-text);
-}
-
-#sidebar ul>li>a:hover {
-    color: var(--primary-accent);
 }
 
 #sidebar ul>li[data-open]:before {
@@ -347,6 +343,10 @@ form input:not([type="checkbox"]), form button, form textarea {
     resize: vertical;
 }
 
+#content input:not([type="text"]), button, select {
+    cursor: pointer;
+}
+
 :root button, :root #content input[type="submit"], :root select {
     padding: .5em .3em;
     box-shadow: 1px 1px 4px var(--shadow);
@@ -363,6 +363,12 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 #content input[type="submit"], button {
     color: var(--primary-text);
+    transition: filter .1s;
+}
+
+#content input[type="submit"]:hover, button:hover {
+    color: var(--primary-text);
+    filter: invert(75%);
 }
 
 #content input[type="submit"]:active, button:active {
@@ -619,6 +625,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     text-align: center;
     border: 2px dotted var(--primary-accent);
     border-radius: 7px;
+    cursor: pointer;
 }
 
 .avatar-upload:hover {

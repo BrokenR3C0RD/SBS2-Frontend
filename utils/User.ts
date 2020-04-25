@@ -184,33 +184,32 @@ export async function DeleteVariable(key: string): Promise<boolean> {
     return true;
 }
 
-let triedSettingUpload = false;
-
 export function useSettings(): [any, Dictionary<string | number | boolean> | undefined, () => void] {
     const [errors, data, mutate] = useRequest<Dictionary<string | number | boolean>>({
         url: `${API_USER_VARIABLE}/user_settings`,
         method: "GET"
     }, async (data: any) => JSON.parse(data));
 
-    if (data == null && typeof localStorage != "undefined" && (localStorage.getItem("sbs-auth") || localStorage.getItem("sbs-auth")) != null && !triedSettingUpload){
-        Variable("user_settings", JSON.stringify({
-            theme: localStorage.getItem("sbs-theme"),
-            SiteJS: ""
-        })).then(() => triedSettingUpload = false).catch(() => {});
-        triedSettingUpload = true
-    }
+    useEffect(() => {
+        if (data == null && errors == null && (localStorage.getItem("sbs-auth") || localStorage.getItem("sbs-auth")) != null && !triedSettingUpload) {
+            Variable("user_settings", JSON.stringify({
+                theme: localStorage.getItem("sbs-theme"),
+                SiteJS: ""
+            }));
+        }
+    }, [data]);
 
     return [errors, data ?? {}, mutate];
 }
 
 interface SensitiveInfo {
     oldPassword: string,
-    username?:   string,
-    password?:   string,
-    email?:      string 
-} 
+    username?: string,
+    password?: string,
+    email?: string
+}
 
-export async function UpdateSenstiveInformation(newInfo: SensitiveInfo){
+export async function UpdateSenstiveInformation(newInfo: SensitiveInfo) {
     await DoRequest({
         url: API_USER_SENSITIVE,
         method: "POST",

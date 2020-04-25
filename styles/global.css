@@ -828,7 +828,8 @@ form input:not([type="checkbox"]), form button, form textarea {
 @media only screen and (max-width: 1280px) {
     #content {
         margin: 3em 1em;
-        width: calc(100% - 2em);
+        margin-right: calc(1em + 2px);
+        width: calc(100% - 2em - 2px);
     }
     nav #user-info {
         max-width: calc(50% - 6em);

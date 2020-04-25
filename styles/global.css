@@ -24,6 +24,7 @@ body {
 
 input {
     color: var(--input-color);
+    border-radius: 0;
 }
 
 nav a {
@@ -88,6 +89,7 @@ nav .search-container {
     position: relative;
     display: inline-block;
     width: 50%;
+    vertical-align: top;
 }
 
 nav .search-container input {

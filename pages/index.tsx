@@ -116,7 +116,7 @@ export default (({
                                 return null;
 
                             let c = contents.find(content => content.id == event.contentId);
-                            if (event.userId != -1 && event.action !== CRUD.Delete && c == null)
+                            if (event.userId != -1 && event.action !== CRUD.Delete && c == null || c?.type === "@user.page")
                                 return null;
 
                             let href = c ? `/${c.type.substr(1).split(".")[0]}s/[${c.type.substr(1, 1)}id]` : "";

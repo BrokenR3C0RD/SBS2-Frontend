@@ -115,7 +115,7 @@ export async function Confirm(key: string) {
         }
     });
 
-    if(result != null){
+    if (result != null) {
         localStorage.removeItem("sbs-auth")
         sessionStorage.setItem("sbs-auth", result);
     }
@@ -129,7 +129,7 @@ export async function Confirm(key: string) {
     let user = await DoRequest<FullUser>({
         url: API_USER_ME
     });
-    if(user == null)
+    if (user == null)
         return;
 
     // await Content.Update({
@@ -161,7 +161,7 @@ export async function GetVariableNames() {
 export async function Variable(key: string): Promise<string | null>
 export async function Variable(key: string, value: string): Promise<boolean>
 export async function Variable(key: string, value?: string): Promise<string | null | boolean> {
-    if(value){
+    if (value) {
         await DoRequest({
             url: `${API_USER_VARIABLE}/${key}`,
             method: "POST",
@@ -185,16 +185,17 @@ export async function DeleteVariable(key: string): Promise<boolean> {
 }
 
 export function useSettings(): [any, Dictionary<string | number | boolean> | undefined, () => void] {
-    const [errors, data, mutate] = useRequest<Dictionary<string | number | boolean>> ({
+    const [errors, data, mutate] = useRequest<Dictionary<string | number | boolean>>({
         url: `${API_USER_VARIABLE}/user_settings`,
         method: "GET"
     }, async (data: any) => JSON.parse(data));
 
-    if(data == null && typeof localStorage != "undefined")
+    if (data == null && typeof localStorage != "undefined" && (localStorage.getItem("sbs-auth") || localStorage.getItem("sbs-auth")) != null){
         Variable("user_settings", JSON.stringify({
             theme: localStorage.getItem("sbs-theme"),
             SiteJS: ""
-        }));
+        })).catch(() => {})
+    }
 
-    return [ errors, data ?? {}, mutate];
+    return [errors, data ?? {}, mutate];
 }

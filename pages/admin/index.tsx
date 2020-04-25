@@ -49,7 +49,8 @@ export default (({
             description: data.description as string,
             parentId: parseInt(data.parentId as string || "0"),
             permissions: newPerms[selected as number],
-            id: selected === -1 ? undefined : selected
+            id: selected === -1 ? undefined : selected,
+            values: selectedCategory ? selectedCategory.values : {}
         };
 
         try {

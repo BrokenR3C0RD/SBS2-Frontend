@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import useSWR, { mutate } from "swr";
 import { isEmail, isUUID } from "validator";
 import { FullUser, UserCredential } from "../classes";
-import { API_USER_LOGIN, API_USER_ME, API_USER_REGISTER, API_USER_REGISTER_CONFIRM, API_USER_REGISTER_SENDEMAIL, API_USER_VARIABLE } from "./Constants";
+import { API_USER_LOGIN, API_USER_ME, API_USER_REGISTER, API_USER_REGISTER_CONFIRM, API_USER_REGISTER_SENDEMAIL, API_USER_VARIABLE, API_USER_SENSITIVE } from "./Constants";
 import { DoRequest, useRequest } from "./Request";
 import { Dictionary } from "../interfaces";
 
@@ -198,4 +198,20 @@ export function useSettings(): [any, Dictionary<string | number | boolean> | und
     }
 
     return [errors, data ?? {}, mutate];
+}
+
+interface SensitiveInfo {
+    oldPassword: string,
+    username?:   string,
+    password?:   string,
+    email?:      string 
+} 
+
+export async function UpdateSenstiveInformation(newInfo: SensitiveInfo){
+    await DoRequest({
+        url: API_USER_SENSITIVE,
+        method: "POST",
+        data: newInfo
+    });
+    mutate(API_USER_ME);
 }

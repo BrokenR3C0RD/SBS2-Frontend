@@ -156,11 +156,11 @@ export class Comment extends Entity {
                             if (aborter.signal.aborted)
                                 return;
 
-                            if(resp.status == 408)
+                            if (resp.status == 408 || resp.status == 204)
                                 continue;
                             if (resp.status === 200) {
                                 let r = (await resp.json());
-                                if(r === null)
+                                if (r === null)
                                     continue;
 
                                 let newc: Comment[] = r.map((obj: Comment) => plainToClass(Comment, obj));
@@ -191,7 +191,7 @@ export class Comment extends Entity {
                         } catch (e) {
                             if (!aborter.signal.aborted)
                                 console.error("An error occurred while polling for comments:" + (e && e.stack ? e.stack : e));
-                            
+
                             await Wait(2500);
                         }
                     }
@@ -219,15 +219,15 @@ export class Comment extends Entity {
 
                             if (resp.status === 400)
                                 break;
-                            
-                            if(resp.status === 408)
+
+                            if (resp.status == 408 || resp.status == 204)
                                 continue;
 
                             if (resp.status === 200) {
                                 let newc = (await resp.json());
-                                if(newc === null)
+                                if (newc === null)
                                     continue;
-                                
+
                                 lastList = newc.slice().map((u: any) => u.userId);
                                 setList(lastList);
 

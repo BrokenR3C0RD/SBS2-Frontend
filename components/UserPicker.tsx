@@ -5,7 +5,8 @@ import dl from "damerau-levenshtein";
 export default (({
     max = Infinity,
     values = [],
-    onChange = () => { }
+    onChange = () => { },
+    disabled = false
 }) => {
     const [possibilities, setPossibilities] = useState<BaseUser[]>([]);
     const [users, setUsers] = useState<BaseUser[]>([]);
@@ -70,25 +71,28 @@ export default (({
             setSelected((selected + possibilities.length - 1) % possibilities.length);
         } else if (evt.key == "ArrowDown") {
             setSelected((selected + 1) % possibilities.length);
-        } else if(evt.key === "Enter"){
+        } else if (evt.key === "Enter") {
             evt.preventDefault();
-            if(possibilities.length > 0)
+            if (possibilities.length > 0)
                 addUser(possibilities[selected]);
         }
     }
 
     return <div className="user-pick">
         <ul className="picked">
-            {users.map(user => <li key={user.id} onClick={() => removeUser(user)}>{user.username}</li>)}
+            {users.map(user => <li key={user.id} onClick={() => !disabled && removeUser(user)}>{user.username}</li>)}
         </ul>
 
-        <input type="text" onChange={findUser} ref={inputRef} placeholder="Fill in a user's name" disabled={users.length >= max} onKeyDown={handleSelectionControl} />
-        <ul className="possibilities">
-            {possibilities.map((user, i) => <li key={user.id} onClick={() => addUser(user)} data-selected={i == selected}>{user.username}</li>)}
-        </ul>
+        {!disabled && <>
+            <input type="text" onChange={findUser} ref={inputRef} placeholder="Fill in a user's name" disabled={users.length >= max} onKeyDown={handleSelectionControl} />
+            <ul className="possibilities">
+                {possibilities.map((user, i) => <li key={user.id} onClick={() => addUser(user)} data-selected={i == selected}>{user.username}</li>)}
+            </ul>
+        </>}
     </div>
 }) as React.FunctionComponent<{
     max?: number,
     values?: number[],
-    onChange?: (values: number[]) => void
+    onChange?: (values: number[]) => void,
+    disabled?: boolean
 }>;

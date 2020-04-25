@@ -104,7 +104,7 @@ export default (({
                                     </>;
                                 }
                                 break;
-                            case CRUD.Update:
+                            case CRUD.Update:           // Some content was updated
                                 if (event.userId == event.contentId && event.userId == self?.id) {
                                     content = <i>
                                         You edited your profile.
@@ -121,7 +121,7 @@ export default (({
                                     </>;
                                 }
                                 break;
-                            case CRUD.Delete:
+                            case CRUD.Delete:          // Something was deleted :(
                                 content = <>
                                     <Link href="/user/[uid]" as={`/user/${user!.id}`}><a>
                                         {user!.username}

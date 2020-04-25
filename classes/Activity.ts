@@ -60,7 +60,6 @@ export class Activity {
                         if (res) {
                             events = events.concat(res.activity);
                             comments = res.comments;
-                            console.log(comments);
 
                             let newcontent = res
                                 .activity

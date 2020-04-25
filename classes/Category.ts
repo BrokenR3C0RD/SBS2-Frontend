@@ -42,6 +42,9 @@ export class Category extends AccessControlledEntity {
     parentId: number = 0;
 
     @IsObject()
+    values: Dictionary<string> = {};
+
+    @IsObject()
     permissions: Dictionary<string> = {};
 
     public static async GetByIDs(ids: number[]): Promise<Category[]> {

@@ -4,7 +4,7 @@ import { PageProps, Dictionary } from "../interfaces";
 import { Grid, Cell } from "../components/Layout";
 import { useRouter } from "next/router";
 import Form from "../components/Form";
-import { useSettings, Variable, UpdateUser } from "../utils/User";
+import { useSettings, Variable, UpdateUser, UpdateSenstiveInformation } from "../utils/User";
 import { useDropzone } from "react-dropzone";
 import { UploadFile, DoRequest } from "../utils/Request";
 import { API_ENTITY } from "../utils/Constants";
@@ -21,6 +21,7 @@ export default (({
     const [pageMarkup, setPageMarkup] = useState<string>("12y");
     const [uploaded, setUploaded] = useState<boolean>(false);
     const [errors, setErrors] = useState<string>();
+    const [sensErrors, setSensErrors] = useState<string>();
     const [uploadErrors, setUploadErrors] = useState<string>();
     const [pageErrors, setPageErrors] = useState<string>();
 
@@ -94,15 +95,35 @@ export default (({
             });
             mutate();
             await Router.replace("/user/[uid]", `/user/${user!.id}`);
-        } catch(e){
+        } catch (e) {
             console.log("Updating userpage failed: " + e.stack || e.toString());
             setPageErrors(e.toString());
         }
     }
 
+    async function UpdateUserInfo(data: Dictionary<string | number | boolean>) {
+        try {
+            setSensErrors("");
+            if(data["old_password"] == "")
+                throw "You must provide your current password!";
+            
+            await UpdateSenstiveInformation({
+                oldPassword: data["old_password"] as string,
+                password: (data["new_password"] as string || undefined),
+                username: (data["username"] as string || undefined),
+                email: (data["new_email"] as string || undefined)
+            });
+
+            await Router.push("/");
+        } catch(e){
+            console.log("Updating sensitive info failed: " + e.stack || e.toString());
+            setSensErrors(e.toString());
+        }
+    }
+
     return <>
         <Grid
-            rows={["1fr", "1fr"]}
+            rows={["1fr", "1fr", "1fr"]}
             cols={["1fr", "1fr"]}
             gapX="2em"
             gapY="2em"
@@ -144,6 +165,28 @@ export default (({
                 </Form>
             </Cell>
             <Cell x={1} y={2} width={2}>
+                <h2>Change password/username/email</h2>
+                <p>
+                    You must enter your current password to change anything here.
+                </p>
+                <Form onSubmit={UpdateUserInfo}>
+                    <input type="password" name="old_password" placeholder="Current Password (required)" required />
+                    <br />
+                    <input type="password" name="new_password" placeholder="New password" />
+                    <br />
+                    <input type="text" name="username" placeholder="New username" />
+                    <ul>
+                        <li>You can only have 3 unique usernames per month (sliding window)</li>
+                        <li>You can freely switch back to a previous username that you've had within the past month at any time.</li>
+                    </ul>
+                    <input type="email" name="new_email" placeholder="New email" />
+                    <input type="submit" value="Update!" />
+                    <p className="errors">
+                        {sensErrors}
+                    </p>
+                </Form>
+            </Cell>
+            <Cell x={1} y={3} width={2}>
                 <h2>User page</h2>
                 <Composer code={pageCode} markup={pageMarkup} onChange={(code, markup) => { setPageCode(code); setPageMarkup(markup); }} />
                 <button onClick={UpdatePage}>Update!</button>

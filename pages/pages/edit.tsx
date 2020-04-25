@@ -342,10 +342,9 @@ export default (({
                         {keyInfo !== undefined && <>
                             <h2>Editors:</h2>
                             <p><b>
-                                Note: Editors can edit your page at any time. This includes adding/removing other editors. They cannot delete your page, but they can
-                                make it difficult for other people to access it. Only add editors if you trust them.
+                                Note: Editors can edit your page at any time. Only add editors if you trust them.
                             </b></p>
-                            <UserPicker values={perms} onChange={setPerms} />
+                            <UserPicker values={perms} onChange={setPerms} disabled={user == null || (!user.super && (origPages != null && origPages[0].createUserId !== user.id))} />
                             <label>
                                 <input type="checkbox" name="commenting" checked={commenting} onChange={() => setCommenting(!commenting)} />
                                 <b> Enable public comments.</b> Editors can always comment on your pages.

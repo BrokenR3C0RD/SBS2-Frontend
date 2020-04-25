@@ -343,7 +343,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     resize: vertical;
 }
 
-#content input:not([type="text"]), button, select {
+#content input[type="checkbox"], input[type="submit"], input[type="radio"], button, select {
     cursor: pointer;
 }
 

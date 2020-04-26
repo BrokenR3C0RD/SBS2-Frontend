@@ -180,7 +180,7 @@ export default (({
                                 </a></Link>
                             </>}
                             {` • `}
-                            <b>Category: </b><Link href="/pages/categories/[cid]" as={`/pages/categories/${page.parentId}`}>{category[0]?.name}</Link>
+                            <b>Category: </b>{category[0] ? <Link href="/pages/categories/[cid]" as={`/pages/categories/${page.parentId}`}><a>{category[0]?.name}</a></Link> : "Private"}
                         </div>
                     </Cell>
                     {page.type === "@page.program" && <>

@@ -224,11 +224,6 @@ const tags = {
     }),
     table: node => ({
         tag: "table",
-        attrs: {
-            style: cssPropertiesToString({
-                borderWidth: +(node.attrs!["border"] || 0)
-            })
-        },
         content: node.content
     }),
     th: node => ({

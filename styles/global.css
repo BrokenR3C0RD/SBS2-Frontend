@@ -825,107 +825,6 @@ form input:not([type="checkbox"]), form button, form textarea {
     box-shadow: 1px 1px 5px var(--shadow);
 }
 
-@media only screen and (max-width: 1280px) {
-    #content {
-        margin: 3em 1em;
-        margin-right: calc(1em + 2px);
-        width: calc(100% - 2em - 2px);
-    }
-    nav #user-info {
-        max-width: calc(50% - 6em);
-    }
-    nav #show-sidebar {
-        display: block;
-        float: right;
-        width: 1.5em;
-        height: 1.5em;
-        margin-right: .5em;
-        transition: transform .3s;
-    }
-    nav #show-sidebar[data-open="true"] {
-        transform: rotate(90deg);
-    }
-    nav #show-sidebar:hover {
-        filter: drop-shadow(0px 0px 10px white);
-        cursor: pointer;
-    }
-    nav #show-sidebar:active {
-        filter: invert(75%);
-    }
-    #sidebar:not([data-open="true"]) {
-        margin-right: -15em;
-    }
-    #sidebar {
-        width: 15em;
-        overflow-x: hidden;
-    }
-    footer {
-        margin-left: 0;
-        width: 100%;
-    }
-    nav, #sidebar {
-        font-size: 1.5em;
-    }
-}
-
-@media only screen and (max-width: 1280px) and (min-width: 800px) {
-    #sidebar {
-        transition: margin-right .3s;
-    }
-}
-
-@media only screen and (max-width: 800px) {
-    nav #user-info #user-name {
-        display: none;
-    }
-    nav #user-info .user-avatar {
-        margin-right: 0;
-    }
-    #sidebar {
-        width: 120%;
-        margin-right: -20%;
-        transition: margin-right .3s;
-    }
-    #sidebar:not([data-open="true"]) {
-        margin-right: -120%;
-    }
-    .grid {
-        display: block;
-    }
-    .cell {
-        margin-bottom: 1em;
-    }
-    .left, .right {
-        float: none;
-        width: 100%!important;
-    }
-    .composer {
-        display: block;
-    }
-    .composer .composer-editor {
-        height: 18em;
-    }
-}
-
-@media only screen and (max-width: 480px) {
-    nav #nav-brand img {
-        width: 1.75em;
-        padding: 0 .125em;
-        text-align: center;
-    }
-    nav #user-info {
-        display: inline-block;
-        padding-left: .25em;
-    }
-    nav .search-container #results {
-        width: 100vw;
-        left: 0;
-    }
-    .cell, .composer {
-        padding: .5em;
-    }
-}
-
 .bbcode-view {
     color: var(--primary-text);
     white-space: pre-line;
@@ -941,12 +840,24 @@ form input:not([type="checkbox"]), form button, form textarea {
     margin-bottom: 0em;
 }
 
+.bbcode-view table {
+    box-shadow: 2px 2px 5px var(--shadow);
+}
+
+.bbcode-view table, .bbcode-view th, .bbcode-view td {
+    border: 1px solid var(--primary-text);
+    border-collapse: collapse;
+    padding: .25em;
+}
+
 .bbcode-view .spoiler {
     background-color: var(--secondary-bg);
+}
+.bbcode-view .spoiler .spoiler-open {
     width: max-content;
 }
 
-.bbcode-view .spoiler .spoiler-open[data-open="true"][data-open="true"] {
+.bbcode-view .spoiler .spoiler-open[data-open="true"] {
     filter: invert(25%);
 }
 
@@ -956,6 +867,7 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 .bbcode-view .spoiler .spoiler-open[data-open="true"]+.spoiler-content {
     display: block;
+    max-width: 100%;
     padding-bottom: 1em;
     border-bottom: 2px solid var(--secondary-accent);
 }
@@ -1109,9 +1021,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     display: inline-block;
     font-size: 1em;
     vertical-align: top;
-
 }
-
 
 .comment .buttons button {
     display: inline-block;
@@ -1275,4 +1185,110 @@ form input:not([type="checkbox"]), form button, form textarea {
     -moz-transform: rotate(315deg) translate(0, -35px) scale(0.1);
     transform: rotate(315deg) translate(0, -35px) scale(0.1);
     opacity: 0.1;
+}
+
+@media only screen and (max-width: 1280px) {
+    #content {
+        margin: 3em 1em;
+        margin-right: calc(1em + 2px);
+        width: calc(100% - 2em - 2px);
+    }
+    nav #user-info {
+        max-width: calc(50% - 6em);
+    }
+    nav #show-sidebar {
+        display: block;
+        float: right;
+        width: 1.5em;
+        height: 1.5em;
+        margin-right: .5em;
+        transition: transform .3s;
+    }
+    nav #show-sidebar[data-open="true"] {
+        transform: rotate(90deg);
+    }
+    nav #show-sidebar:hover {
+        filter: drop-shadow(0px 0px 10px white);
+        cursor: pointer;
+    }
+    nav #show-sidebar:active {
+        filter: invert(75%);
+    }
+    #sidebar:not([data-open="true"]) {
+        margin-right: -15em;
+    }
+    #sidebar {
+        width: 15em;
+        overflow-x: hidden;
+    }
+    footer {
+        margin-left: 0;
+        width: 100%;
+    }
+    nav, #sidebar {
+        font-size: 1.5em;
+    }
+}
+
+@media only screen and (max-width: 1280px) and (min-width: 800px) {
+    #sidebar {
+        transition: margin-right .3s;
+    }
+}
+
+@media only screen and (max-width: 800px) {
+    nav #user-info #user-name {
+        display: none;
+    }
+    nav #user-info .user-avatar {
+        margin-right: 0;
+    }
+    #sidebar {
+        width: 120%;
+        margin-right: -20%;
+        transition: margin-right .3s;
+    }
+    #sidebar:not([data-open="true"]) {
+        margin-right: -120%;
+    }
+    .grid {
+        display: block;
+    }
+    .cell {
+        margin-bottom: 1em;
+    }
+    .left, .right {
+        float: none;
+        width: 100%!important;
+    }
+    .composer {
+        display: block;
+    }
+    .composer .composer-editor {
+        height: 18em;
+    }
+    .comment .buttons {
+        display: block;
+        margin-left: .5em;
+        font-size: 1.25em;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    nav #nav-brand img {
+        width: 1.75em;
+        padding: 0 .125em;
+        text-align: center;
+    }
+    nav #user-info {
+        display: inline-block;
+        padding-left: .25em;
+    }
+    nav .search-container #results {
+        width: 100vw;
+        left: 0;
+    }
+    .cell, .composer {
+        padding: .5em;
+    }
 }

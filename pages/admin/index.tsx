@@ -114,7 +114,7 @@ export default (({
     return <>
         <Grid
             rows={["fit-content(1fr)", "fit-content(1fr)"]}
-            cols={["25%", "12.5%", "12.5%", "25%"]}
+            cols={["25%", "25%", "25%", "25%"]}
             gapX="1em"
             gapY="1em"
             style={{

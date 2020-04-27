@@ -640,7 +640,6 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 .composer {
     width: 100%;
-    padding: 0 2em;
     display: flex;
 }
 
@@ -1000,6 +999,7 @@ form input:not([type="checkbox"]), form button, form textarea {
 .comment {
     width: 100%;
     padding: 1em 0;
+    padding-left: 1em;
     position: relative;
 }
 
@@ -1027,15 +1027,11 @@ form input:not([type="checkbox"]), form button, form textarea {
     margin-bottom: 0;
 }
 
-.comment .gear[data-open="true"] + .buttons {
-    display: block;
-}
 
 .comment .buttons {
-    display: none;
-    margin-left: .5em;
-    font-size: 1.25em;
-    min-height: 1.25em;
+    display: inline-block;
+    font-size: 1em;
+    min-height: 1em;
 }
 
 .comment .buttons button {
@@ -1044,10 +1040,10 @@ form input:not([type="checkbox"]), form button, form textarea {
     box-shadow: none;
     padding: 0;
     vertical-align: middle;
-    padding-left: .5em;
     cursor: pointer;
     margin: 0;
     opacity: .5;
+    padding-left: .5em;
     transition: opacity .2s;
 }
 
@@ -1078,16 +1074,19 @@ form input:not([type="checkbox"]), form button, form textarea {
 }
 
 .comment .editdate {
-    display: inline-block;
-    vertical-align: top;
+    display: block;
+    font-size: .75em;
     color: var(--primary-accent);
-    margin-left: 1em;
+    margin-left: 1rem;
 }
 .comment .comment-content {
     display: inline-block;
     word-break: break-word;
-    max-width: calc(100% - 3em);
+    max-width: calc(100% - 2em);
     width: 100%;
+
+    border-right: 2px solid transparent;
+    transition: border-right .2s;
 }
 
 .comment-listeners {

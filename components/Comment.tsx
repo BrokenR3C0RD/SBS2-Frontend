@@ -87,6 +87,10 @@ const Comments = (({
                             <span className="username">
                                 <Link href="/user/[uid]" as={`/user/${user.id}`}><a>{user.username}</a></Link>
                             </span>
+                            <div className="buttons">
+                                {self && comment.Permitted(self, CRUD.Update) && <button type="button" style={{ textAlign: "center" }} onClick={() => EditComment(comment.id)}><span className="iconify" data-icon="fe:pencil" data-inline="true"></span></button>}
+                                {self && comment.Permitted(self, CRUD.Delete) && <button type="button" style={{ color: "lightcoral", }} onClick={() => { DeleteComment(comment.id) }}><span className="iconify" data-icon="ic:baseline-delete" data-inline="true"></span></button>}
+                            </div>
 
                             <span className="editdate">
                                 {((comment.editDate.valueOf() - comment.createDate.valueOf()) >= 2000) ? "Edited " : "Posted "} {moment(comment.editDate).fromNow()}
@@ -103,13 +107,6 @@ const Comments = (({
                                     </div>
                                 </Form> || <DisplayMarkup code={comment.content["t"]} markupLang={comment.content["m"]} />
                             }
-                        </div>
-                        {self && (comment.Permitted(self, CRUD.Update) || comment.Permitted(self, CRUD.Delete) || self.super) &&
-                            <button className="gear" type="button" onClick={(evt) => evt.currentTarget.dataset.open = evt.currentTarget.dataset.open == "true" ? "false" : "true"}><span className="iconify" data-icon="octicon:gear" data-inline="true"></span></button>
-                        }
-                        <div className="buttons">
-                            {self && comment.Permitted(self, CRUD.Update) && <button type="button" style={{ textAlign: "center" }} onClick={() => EditComment(comment.id)}><span className="iconify" data-icon="fe:pencil" data-inline="true"></span></button>}
-                            {self && comment.Permitted(self, CRUD.Delete) && <button type="button" style={{ color: "lightcoral", }} onClick={() => { DeleteComment(comment.id) }}><span className="iconify" data-icon="ic:baseline-delete" data-inline="true"></span></button>}
                         </div>
                     </div>
                 </div>

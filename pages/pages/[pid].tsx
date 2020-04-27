@@ -1,19 +1,18 @@
 import { NextPage } from "next";
 import Link from "next/link";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { PageProps, Dictionary } from "../../interfaces";
-import { Grid, Cell, Gallery, Spinner } from "../../components/Layout";
-import Form from "../../components/Form";
-import { Page, ProgramPage, BaseUser, Comment, Category } from "../../classes";
+import { Grid, Cell, Gallery } from "../../components/Layout";
+import { Page, ProgramPage, BaseUser, Category, Comment } from "../../classes";
 import { useRouter } from "next/router";
 import BBCodeView from "../../components/DisplayMarkup";
 import Moment from "moment";
 import { CRUD } from "../../classes/Entity";
 import { GetSBAPIInfo, KeyInfo } from "../../utils/SBAPI";
-import Composer from "../../components/Composer";
-import moment from "moment";
-import { useInView } from "react-intersection-observer";
 import { API_ENTITY } from "../../utils/Constants";
+import { Comments } from "../../components/Comment";
+import Composer from "../../components/Composer";
+import Form from "../../components/Form";
 
 function size(number: number): string {
     const suffixes = ["KB", "MB", "GB"];
@@ -46,23 +45,7 @@ export default (({
         ids: [cid]
     })
 
-
     useEffect(() => setInfo(page?.name || "", []), [pages]);
-
-    const [comments, commentUsers, listeners, fetching, fetchMoreComments] = Comment.useComments(pages, self != null);
-    const [ref, inView] = useInView();
-
-    const [commentId, setCommentId] = useState<number>(0);
-    const [commentCode, setCommentCode] = useState<string>("");
-    const [commentMarkup, setCommentMarkup] = useState<string>("12y");
-    const commentRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (inView)
-            fetchMoreComments();
-
-    }, [inView]);
-
 
     const [, users] = BaseUser.useUser({
         ids: [page?.createUserId as number, page?.editUserId as number]
@@ -78,39 +61,23 @@ export default (({
         Router.push("/");
     }
 
-    async function PostComment(data: Dictionary<string | boolean | number>) {
-        let commentText = data["composer-code"] as string;
-        let markup = data["markup-lang"] as string;
+    const [commentCode, setCommentCode] = useState<string>("");
+    const [commentMarkup, setCommentMarkup] = useState<string>("12y");
+
+    async function PostComment() {
+        if (commentCode.trim().length == 0)
+            return;
 
         await Comment.Update({
             parentId: page!.id,
-            id: (commentId === 0 ? undefined : commentId),
             content: {
-                t: commentText,
-                m: markup
+                t: commentCode,
+                m: commentMarkup
             }
         });
 
         setCommentCode("");
         setCommentMarkup("12y");
-        setCommentId(0);
-    }
-
-    async function EditComment(id: number) {
-        let comment = comments.find(comment => comment.id == id);
-
-        setCommentCode(comment?.content?.t || "");
-        setCommentMarkup(comment?.content?.m || "12y");
-        setCommentId(comment?.id || 0);
-
-        commentRef.current!.scrollIntoView(true);
-    }
-
-    async function DeleteComment(id: number) {
-        if (!confirm("Are you sure you want to delete this comment?"))
-            return;
-
-        await Comment.Delete(comments.find(comment => comment.id == id)!);
     }
 
     useEffect(() => {
@@ -278,59 +245,15 @@ export default (({
 
                     <Cell x={1} y={4} width={3}>
                         <h2>Comments</h2>
-                        {self && page.Permitted(self, CRUD.Create) && <Form onSubmit={PostComment}>
-                            <Composer hidePreview markup={commentMarkup} code={commentCode} onChange={(code, markup) => { setCommentCode(code); setCommentMarkup(markup); }} ref={commentRef} />
-                            <input type="submit" value="Post Comment!" style={{margin: "3px 2em", width: "calc(100% - 4em)", zIndex: 100}} />
-                        </Form> || !self && <h3>Sign in to comment!</h3> || <h3>You can't post comments here!</h3>}
-                        {
-                            (() => {
-                                let listeningUsers = listeners.map(listener => {
-                                    let user = commentUsers.find(user => user.id == listener);
-                                    return user!;
-                                }).filter(user => user != null && user.id != self?.id);
-
-                                let message = `${listeningUsers.slice(0, 2).map(user => user.username).join(", ")} and ${listeningUsers.length - 3} other${listeningUsers.length != 1 ? "s" : ""} are`;
-                                if (listeningUsers.length == 0) {
-                                    return null;
-                                } else if (listeningUsers.length == 1) {
-                                    message = `${listeningUsers[0].username} is`;
-                                } else if (listeningUsers.length <= 3) {
-                                    message = `${listeningUsers.slice(0, listeningUsers.length - 1).map(user => user.username).join(", ")} and ${listeningUsers[listeningUsers.length - 1].username} are`;
-                                }
-
-                                return <h4>{message} currently viewing!</h4>
-                            })()
-                        }
-                        {
-                            comments.slice().reverse().map((comment, idx) => {
-                                let user = commentUsers.find(user => user.id == comment.createUserId);
-                                if (user == null) return null;
-
-                                return <div className="comment" key={comment.id} ref={comments.length - 1 == idx && !fetching ? ref : undefined}>
-                                    <img src={user.GetAvatarURL(64)} className="avatar" />
-                                    <div className="comment-body">
-                                        <div className="user-info">
-                                            <span className="username">
-                                                <Link href="/user/[uid]" as={`/user/${user.id}`}><a>{user.username}</a></Link>
-                                            </span>
-
-                                            <span className="editdate">
-                                                {((comment.editDate.valueOf() - comment.createDate.valueOf()) >= 2000) ? "Edited " : "Posted "} {moment(comment.editDate).fromNow()}
-                                            </span>
-                                            <div className="buttons">
-                                                {self && comment.Permitted(self, CRUD.Update) && <button type="button" style={{ textAlign: "center" }} onClick={() => EditComment(comment.id)}><span className="iconify" data-icon="fe:pencil" data-inline="true"></span></button>}
-                                                {self && comment.Permitted(self, CRUD.Delete) && <button type="button" style={{ color: "lightcoral", }} onClick={() => { DeleteComment(comment.id) }}><span className="iconify" data-icon="ic:baseline-delete" data-inline="true"></span></button>}
-                                            </div>
-                                        </div>
-
-                                        <div className="comment-content">
-                                            <BBCodeView code={comment.content["t"]} markupLang={comment.content["m"]} />
-                                        </div>
-                                    </div>
+                        {self && page.Permitted(self, CRUD.Create) && <div className="comment-post">
+                            <Form onSubmit={PostComment}>
+                                <Composer hidePreview code={commentCode} markup={commentMarkup} onChange={(code, markup) => { setCommentCode(code); setCommentMarkup(markup); }} />
+                                <div className="edit-buttons">
+                                    <button type="submit"><span className="iconify" data-icon="mdi:send" data-inline="true"></span></button>
                                 </div>
-                            })
-                        }
-                        {fetching && <Spinner />}
+                            </Form>
+                        </div>}
+                        <Comments parent={page} reverse self={self} />
                     </Cell>
                 </>
             }

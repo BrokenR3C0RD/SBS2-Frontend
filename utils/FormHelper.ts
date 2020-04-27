@@ -17,7 +17,7 @@ export function FormHelper(evt: React.FormEvent, callback: (data: Dictionary) =>
         data[ele.name] = ele.value;
     }
 
-    let submitButtons = target.querySelectorAll("input[type=\"submit\"]") as NodeListOf<HTMLInputElement>;
+    let submitButtons = target.querySelectorAll("[type=\"submit\"]") as NodeListOf<HTMLInputElement | HTMLButtonElement>;
     submitButtons.forEach((button) => { button.disabled = true });
     callback(data)
         .then(() => submitButtons.forEach((button) => { button.disabled = false; }))

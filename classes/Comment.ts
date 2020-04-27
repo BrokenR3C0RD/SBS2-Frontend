@@ -170,7 +170,6 @@ export class Comment extends Entity {
                                         newc = newc
                                             .concat(comments.map(comment => newc.find(c => c.id == comment.id) || comment))
                                             .reduce<Comment[]>((acc, comment) => acc.findIndex(c => c.id == comment.id) == -1 ? acc.concat([comment]) : acc, [])
-                                            .filter(comment => !comment.deleted)
                                             .sort((a, b) => a.id - b.id)
                                     );
                                     let newUsers = (newc as Comment[])
@@ -262,7 +261,7 @@ export class Comment extends Entity {
             }
         }, [parent, didInit, comments, fetchMore, listeners]);
 
-        return [comments, users, listeners, (!didInit) || fetchMore, () => !noMore && setFetchMore(true)];
+        return [comments.filter(comment => !comment.deleted), users, listeners, (!didInit) || fetchMore, () => !noMore && setFetchMore(true)];
     }
 
     public static async Update(comment: Partial<Comment>): Promise<Comment> {

@@ -1002,25 +1002,40 @@ form input:not([type="checkbox"]), form button, form textarea {
     padding: 1em 0;
     position: relative;
 }
+
 .comment .avatar {
     display: inline-block;
+    vertical-align: top;
     box-shadow: 2px 2px 5px var(--shadow);
 }
+
 .comment .comment-body {
     display: inline-block;
     vertical-align: top;
     max-width: calc(100% - 4em);
-    width: max-content;
+    width: 100%;
 }
 
 .comment .user-info {
     display: inline-block;
 }
 
-.comment .buttons {
+.comment .gear {
     display: inline-block;
-    font-size: 1em;
-    vertical-align: top;
+    background-color: transparent;
+    box-shadow: none;
+    margin-bottom: 0;
+}
+
+.comment .gear[data-open="true"] + .buttons {
+    display: block;
+}
+
+.comment .buttons {
+    display: none;
+    margin-left: .5em;
+    font-size: 1.25em;
+    min-height: 1.25em;
 }
 
 .comment .buttons button {
@@ -1034,6 +1049,23 @@ form input:not([type="checkbox"]), form button, form textarea {
     margin: 0;
     opacity: .5;
     transition: opacity .2s;
+}
+
+.comment .comment-edit {
+    margin-top: 2em;
+}
+
+.edit-buttons {
+    margin-top: 5px;
+    margin-right: 2em;
+    text-align: right;
+}
+
+.edit-buttons button {
+    display: inline-block;
+    width: 4em;
+    height: 2em;
+    margin-bottom: 0;
 }
 
 .comment .buttons button:hover {
@@ -1052,8 +1084,32 @@ form input:not([type="checkbox"]), form button, form textarea {
     margin-left: 1em;
 }
 .comment .comment-content {
-    display: block;
+    display: inline-block;
     word-break: break-word;
+    max-width: calc(100% - 3em);
+    width: 100%;
+}
+
+.comment-listeners {
+    list-style: none;
+    display: inline-block;
+    width: 100%;
+    padding: 0;
+}
+
+.comment-listeners li {
+    display: inline-block;
+}
+
+.comment-listeners {
+    list-style: none;
+    display: inline-block;
+    width: 100%;
+    padding: 0;
+}
+
+.comment-listeners li img{
+    width: 2em;
 }
 
 #hideout {
@@ -1266,11 +1322,6 @@ form input:not([type="checkbox"]), form button, form textarea {
     }
     .composer .composer-editor {
         height: 18em;
-    }
-    .comment .buttons {
-        display: block;
-        margin-left: .5em;
-        font-size: 1.25em;
     }
 }
 

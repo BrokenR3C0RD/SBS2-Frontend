@@ -114,7 +114,7 @@ export default (({
     return <>
         <Grid
             rows={["fit-content(1fr)", "fit-content(1fr)"]}
-            cols={["25%", "25%", "25%", "25%"]}
+            cols={["1fr", "1fr"]}
             gapX="1em"
             gapY="1em"
             style={{
@@ -123,7 +123,7 @@ export default (({
                 right: 0
             }}
         >
-            <Cell x={1} y={1} width={1} height={2}>
+            <Cell x={1} y={1} height={2}>
                 <h2>Categories:</h2>
                 <ul>
                     {categoryTree && (categoryTree.map(
@@ -141,7 +141,7 @@ export default (({
                 </ul>
             </Cell>
             {selected != null && selectedCategory != null &&
-                <Cell x={2} y={1} width={3} height={2}>
+                <Cell x={2} y={1} height={2}>
                     <Form onSubmit={UpdateCategory} key={selected}>
                         <label>
                             Name:
@@ -194,6 +194,14 @@ export default (({
             }
         </Grid>
         <style jsx>{`
+            ul {
+                list-style: none;
+                padding: 0 1em;
+            }
+            ul li:before {
+                content: "+ ";
+                font-weight: bold;
+            }
             :global(.cell) > ul {
                 margin-left: -1em;
                 font-size: 1.25em;

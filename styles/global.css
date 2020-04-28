@@ -621,6 +621,11 @@ form input:not([type="checkbox"]), form button, form textarea {
     float: right;
 }
 
+div.comments-list {
+    overflow-y: hidden;
+    max-height: 100%;
+}
+
 .page-entry {
     display: inline-block;
     background-color: var(--secondary-accent);

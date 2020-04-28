@@ -27,7 +27,7 @@ const Comments = (({
 
     useEffect(() => {
         if (inView) {
-            loadMore()
+            loadMore();
         }
     }, [inView]);
 
@@ -88,7 +88,7 @@ const Comments = (({
             })}
         </ul>
         <ScrollableFeed className="comments-list" changeDetectionFilter={() => autoScroll}>
-            {reverse && fetching && <Spinner />}
+            {!reverse && fetching && <Spinner />}
             {
                 comments.slice().map((comment, idx) => {
                     let user = users.find(user => user.id == comment.createUserId);
@@ -126,7 +126,7 @@ const Comments = (({
                     </div>
                 })
             }
-            {!reverse && fetching && <Spinner />}
+            {reverse && fetching && <Spinner />}
         </ScrollableFeed>
     </div>;
 }) as React.FunctionComponent<{

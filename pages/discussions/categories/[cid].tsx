@@ -143,7 +143,7 @@ export default (({
 
                                 return <div className="resource-entry" key={discussion.id} ref={i == discussions.length - 1 && more ? ref : undefined}>
                                     <span className="page-name">
-                                        <Link href="/discussions/[pid]" as={`/discussions/${discussion.id}`}>
+                                        <Link href="/discussions/[did]" as={`/discussions/${discussion.id}`}>
                                             {discussion.name}
                                         </Link>
                                     </span>

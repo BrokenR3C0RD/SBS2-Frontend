@@ -58,22 +58,22 @@ export class Comment extends Entity {
 
     public static useComments(parent: Entity[] | null, realtime: boolean = true): [Comment[], BaseUser[], number[], boolean, () => void] {
         // Since this is using long polling, which is a VERY special case, we're giving up on even TRYING to reuse useRequest
-        const [comments, setComments] = useState<Comment[]>([]);
-        const [users, setUsers] = useState<BaseUser[]>([]);
-        const [didInit, setDidInit] = useState<boolean>(false);
-        const [lastParent, setLastParent] = useState<Entity>();
-        const [fetchMore, setFetchMore] = useState<boolean>(false);
-        const [noMore, setNoMore] = useState<boolean>(false);
-        const [listeners, setListeners] = useState<number[]>([]);
-        const [list, setList] = useState<number[]>([]);
+        let [comments, setComments] = useState<Comment[]>([]);
+        let [users, setUsers] = useState<BaseUser[]>([]);
+        let [didInit, setDidInit] = useState<boolean>(false);
+        let [lastParent, setLastParent] = useState<number>(0);
+        let [fetchMore, setFetchMore] = useState<boolean>(false);
+        let [noMore, setNoMore] = useState<boolean>(false);
+        let [listeners, setListeners] = useState<number[]>([]);
+        let [list, setList] = useState<number[]>([]);
 
         useEffect(() => {
             if (parent == null || parent[0] == null)
                 return;
 
-            if (lastParent !== parent[0]) {
+            if (lastParent !== parent[0].id) {
                 setComments([]);
-                setLastParent(parent[0]);
+                setLastParent(parent[0].id);
                 setDidInit(false);
                 setFetchMore(false);
                 setNoMore(false);
@@ -91,7 +91,7 @@ export class Comment extends Entity {
                     let newc: Comment[] = (await Comment.GetComments(parent[0].id) || comments).reverse();
                     if (newc.length > 0)
                         setComments(
-                            newc
+                            comments = newc
                         );
 
                     let newUsers = (newc as Comment[])
@@ -101,7 +101,7 @@ export class Comment extends Entity {
 
                     if (newUsers.length >= 0)
                         setUsers(
-                            users.concat(await BaseUser.GetByIDs(newUsers))
+                            users = users.concat(await BaseUser.GetByIDs(newUsers))
                         );
 
                     setDidInit(true);
@@ -115,7 +115,7 @@ export class Comment extends Entity {
                     let newc: Comment[] = (await Comment.GetComments(parent[0].id, true, comments.length, 20) || []).reverse();
                     if (newc.length > 0)
                         setComments(
-                            newc = newc
+                            comments = newc = newc
                                 .concat(comments.map(comment => newc.find(c => c.id == comment.id) || comment))
                                 .reduce<Comment[]>((acc, comment) => acc.findIndex(c => c.id == comment.id) == -1 ? acc.concat([comment]) : acc, [])
                                 .filter(comment => !comment.deleted)
@@ -129,7 +129,7 @@ export class Comment extends Entity {
 
                     if (newUsers.length >= 0)
                         setUsers(
-                            users.concat(await BaseUser.GetByIDs(newUsers))
+                            users = users.concat(await BaseUser.GetByIDs(newUsers))
                         );
 
                     setFetchMore(false);
@@ -167,7 +167,7 @@ export class Comment extends Entity {
 
                                 if (newc.length > 0) {
                                     setComments(
-                                        newc = newc
+                                        comments = newc = newc
                                             .concat(comments.map(comment => newc.find(c => c.id == comment.id) || comment))
                                             .reduce<Comment[]>((acc, comment) => acc.findIndex(c => c.id == comment.id) == -1 ? acc.concat([comment]) : acc, [])
                                             .sort((a, b) => a.id - b.id)
@@ -179,9 +179,8 @@ export class Comment extends Entity {
 
                                     if (newUsers.length > 0)
                                         setUsers(
-                                            users.concat(await BaseUser.GetByIDs(newUsers))
+                                            users = users.concat(await BaseUser.GetByIDs(newUsers))
                                         );
-
                                     break;
                                 }
                             } else {
@@ -232,7 +231,7 @@ export class Comment extends Entity {
 
                                 newc = newc.filter((u: any) => listeners.indexOf(u.userId) === -1);
                                 if (newc.length > 0) {
-                                    setListeners(newc.filter((info: any) => info.contentListenId == lastParent.id).map((info: any) => info.userId));
+                                    setListeners(newc.filter((info: any) => info.contentListenId == parent[0]!.id).map((info: any) => info.userId));
                                     let newUsers = (newc as any[])
                                         .map(listener => listener.userId as number)
                                         .filter(listener => users.findIndex(user => user.id == listener) == -1)
@@ -259,7 +258,7 @@ export class Comment extends Entity {
             return () => {
                 aborter.abort();
             }
-        }, [parent, didInit, comments, fetchMore, listeners]);
+        }, [lastParent, didInit, fetchMore]);
 
         return [comments.filter(comment => !comment.deleted), users, listeners, (!didInit) || fetchMore, () => !noMore && setFetchMore(true)];
     }

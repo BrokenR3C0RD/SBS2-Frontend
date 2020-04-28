@@ -227,6 +227,11 @@ nav #user-info .user-avatar {
     overflow-y: auto;
     flex-grow: 1;
     overscroll-behavior: none;
+
+}
+
+.discussion-comments .comments-list > :nth-last-child(2) {
+    padding-bottom: 2em;
 }
 
 .discussion-view .discussion-input {
@@ -1085,7 +1090,7 @@ div.comments-list {
 
 .comment {
     width: 100%;
-    padding: 1em 0;
+    padding: .5em 0;
     padding-left: 1em;
     position: relative;
 }

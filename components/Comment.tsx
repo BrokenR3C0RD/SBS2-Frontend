@@ -15,7 +15,8 @@ const Comments = (({
     reverse = false,
     self,
     className = "comments",
-    autoScroll = false
+    autoScroll = false,
+    merge = false
 }) => {
     const [ref, inView] = useInView();
 
@@ -34,6 +35,20 @@ const Comments = (({
     let comments = rawComments.slice();
     if (reverse)
         comments = comments.reverse();
+        
+    if(merge)
+        comments = comments
+        .slice()
+        .reduce((acc, comment) => {
+            let lastComment = acc[acc.length - 1];
+            if(lastComment && lastComment.createUserId == comment.createUserId && comment.content["m"] == lastComment.content["m"]) {
+                acc = acc.slice(0, acc.length - 1);
+                acc.push(lastComment.Merge(comment));
+            } else {
+                acc.push(comment);
+            }
+            return acc;
+        }, [] as Comment[]);
 
 
     async function EditComment(id: number) {
@@ -107,7 +122,7 @@ const Comments = (({
                                 </div>
 
                                 <span className="editdate">
-                                    {((comment.editDate.valueOf() - comment.createDate.valueOf()) >= 2000) ? "Edited " : "Posted "} {moment(comment.editDate).fromNow()}
+                                    {moment(comment.editDate).calendar()} {((comment.editDate.valueOf() - comment.createDate.valueOf()) >= 2000) ? " (edited)" : ""}
                                 </span>
                             </div>
 
@@ -134,7 +149,8 @@ const Comments = (({
     reverse?: boolean,
     self?: FullUser,
     className?: string,
-    autoScroll?: boolean
+    autoScroll?: boolean,
+    merge?: boolean
 }>
 
 export { Comments }

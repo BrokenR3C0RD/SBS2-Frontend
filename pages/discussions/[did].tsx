@@ -56,6 +56,7 @@ export default (({
         if (commentCode.trim().length == 0)
             return;
 
+        setCommentCode("");
         await Comment.Update({
             parentId: discussion!.id,
             content: {
@@ -63,14 +64,11 @@ export default (({
                 m: commentMarkup
             }
         });
-
-        setCommentCode("");
     }
 
     function handleEnter(evt: React.KeyboardEvent<HTMLTextAreaElement>) {
         if (evt.key === "Enter" && !evt.shiftKey) {
             evt.preventDefault();
-            evt.currentTarget.value = "";
             PostComment();
         }
     }
@@ -120,7 +118,7 @@ export default (({
                         </div>
                     </Cell>
                     <Cell x={1} y={2} width={3} className="discussion-view">
-                        <Comments className="discussion-comments" parent={discussion} self={self} autoScroll />
+                        <Comments className="discussion-comments" parent={discussion} self={self} autoScroll merge />
                         {self && discussion.Permitted(self, CRUD.Create) && (<Form onSubmit={PostComment} className="discussion-input">
                             {!useComposer && <textarea value={commentCode} onChange={(evt) => setCommentCode(evt.currentTarget.value)} onKeyPress={handleEnter} />}
                             {useComposer && <Composer hidePreview code={commentCode} markup={commentMarkup} onChange={(code, markup) => { setCommentCode(code); setCommentMarkup(markup); }} />}

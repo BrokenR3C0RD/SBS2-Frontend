@@ -42,6 +42,22 @@ export class Comment extends Entity {
         return (this.createUserId == user.id || (user.super)) && (perm == CRUD.Update || perm == CRUD.Delete);
     }
 
+    public Merge(comment: Comment): Comment {
+        let c = plainToClass(Comment, {
+            content: JSON.stringify(this.content),
+            parentId: this.parentId,
+            createUserId: this.createUserId,
+            editUserId: this.editUserId,
+            deleted: this.deleted,
+            id: this.id,
+            createDate: this.createDate,
+            editDate: this.editDate
+        });
+        
+        c.content["t"] += "\n" + comment.content["t"];
+        return c;
+    }
+
     public static async GetComments(parentId: number, reverse: boolean = true, skip: number = 0, limit: number = 20, createEnd?: Date): Promise<Comment[] | null> {
         return (await DoRequest<Comment[]>({
             url: API_ENTITY("Comment"),

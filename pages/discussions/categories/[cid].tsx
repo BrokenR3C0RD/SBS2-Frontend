@@ -65,6 +65,9 @@ export default (({
             values: {
                 markupLang
             },
+            permissions: {
+                "0": "cr"
+            },
             type: "@discussion"
         });
 

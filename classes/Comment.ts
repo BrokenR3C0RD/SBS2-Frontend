@@ -215,7 +215,7 @@ export class Comment extends Entity {
                             });
                             if (aborter.signal.aborted)
                                 return;
-
+                            
                             if (resp.status === 400)
                                 break;
 

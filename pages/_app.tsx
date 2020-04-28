@@ -26,6 +26,7 @@ const App = (({
 
     const [, tree] = Category.useCategoryTree();
     const pageTree = tree?.find(category => category.name === "Pages");
+    const discussionTree = tree?.find(category => category.name === "Discussions");
 
     const [title, setTitle] = useState("");
     const [sidebar, setSidebar] = useState(false);
@@ -238,11 +239,6 @@ const App = (({
                         </ul>
                     </>
                 )}
-                {user == null && (
-                    <>
-                        <Link href="/login"><a>Login</a></Link>
-                    </>
-                )}
             </div>
         </nav>
         <div id="sidebar" data-open={sidebar}>
@@ -250,6 +246,11 @@ const App = (({
                 <li>
                     <Link href="/"><a>Home</a></Link>
                 </li>
+                {user == null && (
+                    <li>
+                        <Link href="/login"><a>Login</a></Link>
+                    </li>
+                )}
                 <li onClick={toggle} data-open="false">
                     <Link href="/pages/categories/[cid]" as={`/pages/categories/${tree?.find(page => page.name === "Pages")?.id}`}><a>Pages</a></Link>
                     <ul>
@@ -268,23 +269,25 @@ const App = (({
                         })}
                     </ul>
                 </li>
-                {/* <li onClick={toggle} data-open="false">
-                    Discussions
+                <li onClick={toggle} data-open="false">
+                    <Link href="/discussions/categories/[cid]" as={`/discussions/categories/${tree?.find(page => page.name === "Discussions")?.id}`}><a>Discussions</a></Link>
                     <ul>
-                        {tree && tree.filter(c => [PAGE_CATEGORY, USER_PAGE_CATEGORY].indexOf(c.id) == -1).map(function render(cat) {
-                            if (cat.children && cat.children.filter(c => [PAGE_CATEGORY, USER_PAGE_CATEGORY].indexOf(c.id) == -1).length == 0) {
-                                return <li key={cat.id}><Link href="/categories/[cid]" as={`/categories/${cat.id}`}><a>{cat.name}</a></Link></li>;
+                        {discussionTree && discussionTree.children.map(function render(cat) {
+                            if (cat.children && cat.children.length == 0) {
+                                return <li key={cat.id}><Link href="/discussions/categories/[cid]" as={`/discussions/categories/${cat.id}`}><a>{cat.name}</a></Link></li>;
                             } else {
                                 return <li key={cat.id} data-open="false" onClick={toggle}>
-                                    <Link href="/categories/[cid]" as={`/categories/${cat.id}`}><a>{cat.name}</a></Link>
+                                    <Link href="/discussions/categories/[cid]" as={`/discussions/categories/${cat.id}`}><a>{cat.name}</a></Link>
                                     <ul>
-                                        {cat.children.filter(c => [PAGE_CATEGORY, USER_PAGE_CATEGORY].indexOf(c.id) == -1).map(render)}
+                                        {cat.children.map(render)}
                                     </ul>
                                 </li>;
                             }
                         })}
                     </ul>
-                </li> */}
+                </li>
+
+
                 {user && user.super &&
                     <li>
                         <Link href="/admin"><a>Admin Panel</a></Link>

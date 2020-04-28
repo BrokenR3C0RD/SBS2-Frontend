@@ -69,12 +69,12 @@ const Comments = (({
     const [firstUpdate, setFirstUpdate] = useState(true);
 
     useEffect(() => {
-        if(firstUpdate && !fetching && comments && users && listeners){
+        if(autoScroll && firstUpdate && !fetching && comments && users && listeners){
             setFirstUpdate(false);
             let list = document.querySelector(".comments-list")!;
             list.scrollTop = list.scrollHeight;
         }
-    }, [firstUpdate, comments, users, listeners, fetching])
+    }, [firstUpdate, comments, users, listeners, fetching, autoScroll])
 
     return <div className={className}>
         <ul className="comment-listeners">

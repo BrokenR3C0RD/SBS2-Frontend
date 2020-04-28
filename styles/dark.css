@@ -14,6 +14,34 @@
     --background-tile: url("/res/img/tiles_dark.png");
     --link-color: #99b;
     --shadow: rgba(0, 0, 0, 0.5);
+
+    /* THIS IS THE SBHIGHLIGHT SECTION */
+    /*
+      NOTE: "function" means "built-in function OR VARIABLE"
+      (actual functions use the "statement" classname)
+      This is for backwards compatibility with the old CSS.
+      old SBhighlight couldn't tell functions and variables apart,
+      and "function" was used for all builtins.
+    */
+    /* some vars duplicate color because that's how i want default */
+    --highlight-bg: #000000;
+    --highlight-text: #eeeeee;
+    --highlight-string: #59ee79;
+    --highlight-number: #f359ab;
+    --highlight-keyword: #2494f0;
+    --highlight-question: #2494f0;
+    --highlight-kwoperator: #2494f0;
+    --highlight-tostep: #2494f0;
+    --highlight-constant: #aeb5c2;
+    --highlight-comment: #a1f198;
+    --highlight-label: #f4963e;
+    --highlight-variable: #fbf4cb;
+    --highlight-builtin: #8d7ff5;
+    --highlight-statement: #7ff5ef;
+    --highlight-defname: #7ff5ef;
+    --highlight-backslash: #777777;
+    --highlight-operator: #eeeeee;
+    --highlight-equals: #eeeeee;
 }
 
 :root[data-theme="dark"] #content input:not([type="checkbox"]):not([type="submit"]), :root[data-theme="dark"] textarea {

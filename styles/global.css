@@ -988,7 +988,7 @@ div.comments-list {
 }
 
 .bbcode-view code {
-    font-family: 'Courier New', Courier, monospace, "SMILEBASIC";
+    font-family: monospace, "SMILEBASIC";
     font-size: 1em;
     display: inline;
     white-space: pre-wrap;
@@ -996,8 +996,8 @@ div.comments-list {
 
 .bbcode-view code:not([data-inline]) {
     display: block;
-    background: black;
-    color: white;
+    background-color: var(--highlight-bg);
+    color: var(--highlight-text);
     padding: .5em;
     box-shadow: 2px 2px 5px var(--shadow);
     margin-bottom: 1em;
@@ -1333,6 +1333,34 @@ h2.crumbs {
     transform: rotate(315deg) translate(0, -35px) scale(0.1);
     opacity: 0.1;
 }
+
+/* == Apply Highlighter Colors == */
+.bbcode-view code:not([data-inline]) span.keyword {
+    font-weight: bold;
+    color: var(--highlight-keyword);
+}
+.bbcode-view code:not([data-inline]) span.question {
+    font-weight: bold;
+    color: var(--highlight-question);
+}
+.bbcode-view code:not([data-inline]) span.to-step {
+    font-weight: bold;
+    color: var(--highlight-tostep);
+}
+.bbcode-view code:not([data-inline]) span.string { color: var(--highlight-string); }
+.bbcode-view code:not([data-inline]) span.number { color: var(--highlight-number); }
+.bbcode-view code:not([data-inline]) span.constant { color: var(--highlight-constant); }
+.bbcode-view code:not([data-inline]) span.label { color: var(--highlight-label); }
+.bbcode-view code:not([data-inline]) span.variable { color: var(--highlight-variable); }
+.bbcode-view code:not([data-inline]) span.comment { color: var(--highlight-comment); }
+.bbcode-view code:not([data-inline]) span.statement { color: var(--highlight-statement); }
+.bbcode-view code:not([data-inline]) span.function { color: var(--highlight-builtin); }
+.bbcode-view code:not([data-inline]) span.name { color: var(--highlight-defname); }
+.bbcode-view code:not([data-inline]) span.whitespace { color: var(--highlight-backslash); }
+.bbcode-view code:not([data-inline]) span.operator { color: var(--highlight-operator); }
+.bbcode-view code:not([data-inline]) span.word-operator { color: var(--highlight-kwoperator); }
+.bbcode-view code:not([data-inline]) span.equals { color: var(--highlight-equals); }
+/* ==== */
 
 @media only screen and (max-width: 1280px) {
     #content {

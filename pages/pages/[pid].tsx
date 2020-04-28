@@ -176,7 +176,7 @@ export default (({
                                     <tr id="pubkey">
                                         <td>Public key</td>
                                         <td style={{
-                                            textDecoration: (keyInfo !== null && "available" in keyInfo! && !(keyInfo?.available)) ? "line-through" : undefined
+                                            textDecoration: (keyInfo !== null && "available" in (keyInfo === undefined ? {} : keyInfo) && !(keyInfo?.available)) ? "line-through" : undefined
                                         }} title={page.values.key}>{page.values.key}</td>
                                     </tr>
                                     <tr>

@@ -22,6 +22,14 @@ body {
 }
 
 
+[data-minimize="true"] {
+    display: none;
+}
+
+[data-minimize="false"] {
+    margin-top: 1em;
+}
+
 input {
     color: var(--input-color);
     border-radius: 0;
@@ -184,6 +192,66 @@ nav #user-info .user-avatar {
     padding: .5em;
     background-color: var(--shadow);
     font-weight: bold;
+}
+
+.cell.discussion-view {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+.discussion-comments {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex-grow: 1;
+    width: 100%;
+    overflow: hidden;
+}
+
+.discussion-comments .comment-listeners {
+    margin: 0;
+    padding: .25em;
+    width: 100%;
+    background-color: var(--secondary-bg);
+    flex-grow: 1;
+}
+
+.discussion-comments .comments-list {
+    overflow-y: auto;
+    flex-grow: 1;
+    overscroll-behavior: none;
+}
+
+.discussion-view .discussion-input {
+    width: 100%;
+    min-height: min-content;
+    flex-grow: 1;
+    margin: 0;
+    display: flex;
+}
+
+.discussion-view .discussion-input textarea {
+    resize: none;
+    margin: 0;
+    height: 5em;
+}
+
+.discussion-view .discussion-input .composer {
+    height: 100%;
+}
+
+.discussion-view .discussion-input button {
+    width: 7em;
+    height: 50%;
+    margin: 0;
+}
+
+.discussion-view .discussion-input .edit-buttons {
+    width: 7em;
+    height: 100%;
 }
 
 nav #user-info #user-name {
@@ -640,7 +708,11 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 .composer {
     width: 100%;
+    resize: vertical;
+    overflow: hidden;
     display: flex;
+    min-height: 15em;
+    box-shadow: 1px 1px 5px var(--shadow);
 }
 
 .composer .composer-commands {
@@ -652,7 +724,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     width: 100%;
     vertical-align: top;
     background-color: var(--secondary-bg);
-    height: 100%;
+    height: max-content;
 }
 
 .composer .composer-commands li {
@@ -683,6 +755,7 @@ form input:not([type="checkbox"]), form button, form textarea {
 }
 
 .composer .composer-editor {
+    flex-grow: 1;
     background-color: var(--primary-bg);
     color: var(--input-color);
     width: 100%;
@@ -690,8 +763,6 @@ form input:not([type="checkbox"]), form button, form textarea {
     padding: 1em 1em;
     overflow: auto;
     resize: none;
-    height: 100%;
-    min-height: 15em;
     outline: none;
 }
 
@@ -704,7 +775,6 @@ form input:not([type="checkbox"]), form button, form textarea {
     min-width: 50%;
     display: flex;
     flex-direction: column-reverse;
-    min-height: 100%;
     position: relative;
     flex-grow: 1;
     box-shadow: 2px 2px 5px var(--shadow);
@@ -724,7 +794,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     text-align: center;
 }
 
-.composer .composer-editorwrapper:after {
+.composer:not([data-previewhidden="true"]) .composer-editorwrapper:after {
     position: absolute;
     content: "Source";
     color: var(--secondary-accent);
@@ -735,22 +805,24 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 .composer .composer-preview {
     width: 100%;
+    min-height: 15em;
     height: 100%;
     border-left: 1px solid var(--primary-accent);
     box-shadow: 2px 2px 5px var(--shadow);
     overflow-y: auto;
     overflow-x: hidden;
     white-space: pre-wrap;
+    max-height: 100%;
     word-break: break-word;
     position: relative;
 }
 
 .composer .composer-previewwrapper {
-    min-width: 50%;
-    height: 20em;
+    flex-grow: .5;
+    min-height: 15em;
+    max-height: 100%;
     width: 100%;
     position: relative;
-    flex-grow: 1;
 }
 
 .composer .composer-previewwrapper:after {
@@ -1040,7 +1112,7 @@ form input:not([type="checkbox"]), form button, form textarea {
 }
 
 .comment .comment-edit {
-    margin-top: 2em;
+    margin-left: 1em;
 }
 
 .edit-buttons {
@@ -1081,13 +1153,6 @@ form input:not([type="checkbox"]), form button, form textarea {
     transition: border-right .2s;
 }
 
-.comment-listeners {
-    list-style: none;
-    display: inline-block;
-    width: 100%;
-    padding: 0;
-}
-
 .comment-listeners li {
     display: inline-block;
 }
@@ -1096,12 +1161,28 @@ form input:not([type="checkbox"]), form button, form textarea {
     list-style: none;
     display: inline-block;
     width: 100%;
-    padding: 0;
+    padding: .5em;
+    background-color: var(--secondary-bg);
 }
 
 .comment-listeners li img{
     width: 2em;
 }
+
+h2.crumbs {
+    margin: 0;
+    width: calc(100% - 2rem);
+    display: inline-block;
+}
+
+.topbutton {
+    width: 2em;
+    height: 2em;
+    display: inline-block;
+    vertical-align: top;
+    margin: 0;
+}
+
 
 #hideout {
     display: none;
@@ -1298,7 +1379,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     #sidebar:not([data-open="true"]) {
         margin-right: -120%;
     }
-    .grid {
+    .grid:not([data-always]) {
         display: block;
     }
     .cell {
@@ -1309,10 +1390,7 @@ form input:not([type="checkbox"]), form button, form textarea {
         width: 100%!important;
     }
     .composer {
-        display: block;
-    }
-    .composer .composer-editor {
-        height: 18em;
+        flex-direction: column;
     }
 }
 

@@ -41,7 +41,7 @@ export default (({
                             return null;
 
                         let cusers = comment.userIds.map(id => users.find(user => user.id == id)).filter(user => (user != null));
-                        if(cusers.length == 0)
+                        if (cusers.length == 0)
                             return null;
 
                         let href = `/${c.type.substr(1).split(".")[0]}s/[${c.type.substr(1, 1)}id]`;
@@ -56,11 +56,13 @@ export default (({
 
                         return <li key={"c" + comment.parentId}>
                             <div className="imgs">
-                                {cusers.slice(0, 4).map(user => <Link href="/user/[uid]" as={`/user/${user!.id}`}><img src={user!.GetAvatarURL(64)} title={user!.username} /></Link>)}
+                                {cusers.slice(0, 4).map(user => <Link href="/user/[uid]" as={`/user/${user!.id}`}><a><img src={user!.GetAvatarURL(64)} title={user!.username} /></a></Link>)}
                             </div>
                             <div className="content">
                                 <span>{comment.count} comment{pl(comment.count)} on <Link href={href} as={as}>
-                                    {c.name}
+                                    <a>
+                                        {c.name}
+                                    </a>
                                 </Link></span>
                                 <span className="time">{Moment(comment.lastDate).fromNow()}</span>
                             </div>

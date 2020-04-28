@@ -7,14 +7,15 @@ const Grid = (({
     gapX = "0",
     gapY = "0",
     style = {},
-    className = ""
+    className = "",
+    always = false
 }) => {
     return <div className={`grid ${className}`} style={Object.assign({}, {
         gridTemplateColumns: cols.join(" "),
         gridTemplateRows: rows.join(" "),
         gridRowGap: gapY,
         gridColumnGap: gapX
-    }, style)}>
+    }, style)} {...{ "data-always": always ? "data-always" : undefined}}>
         {children}
     </div>
 }) as React.FunctionComponent<{
@@ -23,6 +24,7 @@ const Grid = (({
     gapX?: string,
     gapY?: string,
     style?: React.CSSProperties,
+    always?: boolean,
     className?: string
 }>;
 

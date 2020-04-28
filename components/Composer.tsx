@@ -127,11 +127,6 @@ export default React.forwardRef(({
                     <BBCodeView className="composer-preview" code={ccode} markupLang={cmarkup} />
                 </div>
             }
-            {!preview && <style jsx>{`
-                .composer .composer-editor {
-                    min-height: 7.5em;
-                }
-            `}</style>}
         </div>
     );
 }) as React.FunctionComponent<{

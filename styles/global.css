@@ -9,6 +9,10 @@
     background-color: var(--scroll-thumb);
 }
 
+:root {
+    --nav-height: 1.5rem;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -1335,6 +1339,9 @@ h2.crumbs {
 }
 
 @media only screen and (max-width: 1280px) {
+    :root {
+        --nav-height: 2.25rem;
+    }
     #content {
         margin: 3em 1em;
         margin-right: calc(1em + 2px);
@@ -1401,7 +1408,7 @@ h2.crumbs {
     .grid:not([data-always]) {
         display: block;
     }
-    .cell {
+    .grid:not([data-always]) .cell {
         margin-bottom: 1em;
     }
     .left, .right {

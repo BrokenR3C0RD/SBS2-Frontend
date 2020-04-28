@@ -102,9 +102,12 @@ const App = (({
         });
     }, []);
 
-    const setInfo = (title: string, selected: number[]) => {
+    const [footer, setFooter] = useState(false);
+
+    const setInfo = (title: string, selected: number[], hideFooter: boolean = false) => {
         setTitle(title);
         setSelected(selected);
+        setFooter(hideFooter);
     }
 
     function updateSideBar() {
@@ -310,12 +313,12 @@ const App = (({
             <Component {...pageProps} setInfo={setInfo} user={user ? user : undefined} />
         </div>
         {!loaded && <Spinner />}
-        <footer>
+        {!footer && <footer>
             <div style={{ float: "left", height: "2em" }}>
                 &copy; 2020 SmileBASIC Source
             </div>
             <button onClick={SwitchTheme} data-theme={typeof document !== "undefined" && document.documentElement.dataset.theme} style={{ float: "right", height: "2em", verticalAlign: "top", padding: "0" }}><span className="iconify" data-icon={"mdi:electric-switch" + ((typeof document !== "undefined" && document.documentElement.dataset.theme) === "dark" ? "-closed" : "")} data-inline="false"></span></button>
-        </footer>
+        </footer>}
     </>;
 }) as NextPage<AppProps>;
 

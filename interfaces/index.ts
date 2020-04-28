@@ -1,7 +1,7 @@
 import { FullUser } from "../classes";
 
 export type PageProps<T = {}> = {
-    setInfo: (title: string, selected: number[]) => void,
+    setInfo: (title: string, selected: number[], hideFooter?: boolean) => void,
     user?: FullUser
 } & T;
 

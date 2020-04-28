@@ -33,8 +33,8 @@ export default (({
     const [, tree] = Category.useCategoryTree();
 
     const [useComposer, setUseComposer] = useState<boolean>(false);
-    let [minimize, setMinimize] = useState<boolean>(false);
-    useEffect(() => setInfo(discussion?.name || "", []), [discussions]);
+    let [minimize, setMinimize] = useState<boolean>(true);
+    useEffect(() => setInfo(discussion?.name || "", [], true), [discussions]);
 
     if (tree && discussion) {
         let root = tree.find(category => category.name == "Discussions")!;
@@ -67,8 +67,8 @@ export default (({
         setCommentCode("");
     }
 
-    function handleEnter(evt: React.KeyboardEvent<HTMLTextAreaElement>){
-        if(evt.key === "Enter" && !evt.shiftKey){
+    function handleEnter(evt: React.KeyboardEvent<HTMLTextAreaElement>) {
+        if (evt.key === "Enter" && !evt.shiftKey) {
             evt.preventDefault();
             evt.currentTarget.value = "";
             PostComment();
@@ -77,14 +77,16 @@ export default (({
 
     return <>
         <Grid
-            rows={["min-content", "calc(100vh - 3em)"]}
+            rows={["min-content", "1fr"]}
             cols={["max-content", "1fr", "1fr"]}
             gapX="1em"
-            gapY="1em"
+            gapY="0"
             style={{
-                width: "100%"
+                width: "100%",
+                height: "calc(100vh - var(--nav-height) - 2em)"
             }}
             always // Cheap hack
+            className="discussions-grid"
         >
             {(!tree || !discussions) && <Cell x={1} y={1} width={3}>
                 <h1>Loading...</h1>
@@ -121,7 +123,7 @@ export default (({
                         <Comments className="discussion-comments" parent={discussion} self={self} autoScroll />
                         {self && discussion.Permitted(self, CRUD.Create) && (<Form onSubmit={PostComment} className="discussion-input">
                             {!useComposer && <textarea value={commentCode} onChange={(evt) => setCommentCode(evt.currentTarget.value)} onKeyPress={handleEnter} />}
-                            {useComposer && <Composer hidePreview code={commentCode} markup={commentMarkup} onChange={(code, markup) => {setCommentCode(code); setCommentMarkup(markup); }} /> }
+                            {useComposer && <Composer hidePreview code={commentCode} markup={commentMarkup} onChange={(code, markup) => { setCommentCode(code); setCommentMarkup(markup); }} />}
                             <div className="discussion-buttons">
                                 <button type="submit"><span className="iconify" data-icon="mdi:send" data-inline="true"></span></button>
                                 <button type="button" onClick={() => setUseComposer(!useComposer)}><span className="iconify" data-icon="bytesize:compose" data-inline="true"></span></button>
@@ -136,6 +138,12 @@ export default (({
                 </Cell>
             </>
             }
+
+            <style jsx global>{`
+                #content {
+                    margin-bottom: 0;
+                }
+            `}</style>
         </Grid>
     </>
 }) as NextPage<PageProps>;

@@ -734,8 +734,12 @@ form input:not([type="checkbox"]), form button, form textarea {
 }
 
 .composer .composer-commands li.text {
-    width: max-content;
+    width: 100%;
+    text-align: center;
     background-color: black;
+    color: white;
+    white-space: pre-wrap;
+    word-break: break-word;
     font-family: monospace;
     box-shadow: 1px 1px 5px var(--shadow);
     display: inline-block;

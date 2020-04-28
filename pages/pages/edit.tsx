@@ -95,7 +95,8 @@ export default (({
     const [compat, setCompat] = useState<Dictionary<boolean>>({
         o3ds: false,
         n3ds: false,
-        wiiu: false
+        wiiu: false,
+        switch: false
     });
     const [supported, setSupported] = useState<string[]>([
         "o3ds", "n3ds", "wiiu"
@@ -113,7 +114,7 @@ export default (({
 
     async function SubmitPage(data: Dictionary<string | boolean | number>) {
         setErrors([]);
-        if (programPage && keyInfo == null) {
+        if (programPage && keyInfo === undefined) {
             return setErrors(["You need to provide a key!"]);
         }
 
@@ -122,13 +123,13 @@ export default (({
             name: info["title"] as string,
             content: info["composer-code"] as string,
             values: programPage ? {
-                key: keyInfo!.path,
-                originalAuthor: info["translatedfor"] as string,
+                key: keyInfo?.path || key as string,
+                originalAuthor: data["translatedfor"] as string,
                 supported: JSON.stringify({
-                    o3ds: keyInfo!.extInfo.console !== "Switch" && supported.indexOf("o3ds") !== -1 ? compat["o3ds"] : undefined,
-                    n3ds: keyInfo!.extInfo.console !== "Switch" && supported.indexOf("n3ds") !== -1 ? compat["n3ds"] : undefined,
-                    wiiu: keyInfo!.extInfo.console !== "Switch" && supported.indexOf("wiiu") !== -1 ? compat["wiiu"] : undefined,
-                    switch: keyInfo!.extInfo.console === "Switch" ? false : undefined
+                    o3ds: keyInfo?.extInfo.console  !== "Switch" && supported.indexOf("o3ds") !== -1 ? compat["o3ds"] : undefined,
+                    n3ds: keyInfo?.extInfo.console  !== "Switch" && supported.indexOf("n3ds") !== -1 ? compat["n3ds"] : undefined,
+                    wiiu: keyInfo?.extInfo.console  !== "Switch" && supported.indexOf("wiiu") !== -1 ? compat["wiiu"] : undefined,
+                    switch: keyInfo?.extInfo.console === "Switch" ? false : keyInfo === null && supported.indexOf("switch") !== -1 ? compat["switch"] : undefined,
                 }),
                 markupLang: info["markup-lang"] as string,
                 photos: images.join(","),
@@ -138,9 +139,9 @@ export default (({
                     size: keyInfo?.size,
                     uploaded: keyInfo?.uploaded,
                     extInfo: {
-                        project_name: keyInfo?.extInfo.project_name,
-                        project_description: keyInfo?.extInfo.project_description,
-                        console: keyInfo.extInfo.console
+                        project_name: keyInfo?.extInfo?.project_name,
+                        project_description: keyInfo?.extInfo?.project_description,
+                        console: keyInfo.extInfo?.console
                     }
                 }) : origPages?.[0]?.values?.keyinfo || ""
             } : {
@@ -297,7 +298,7 @@ export default (({
                         {keyInfo !== undefined &&
                             <input type="text" name="title" placeholder="Title" autoComplete="off" required value={title} onChange={(evt) => setTitle(evt.currentTarget.value)} style={{ fontSize: "1.5em" }} />
                         }
-                        {keyInfo !== undefined && keyInfo?.extInfo?.console === "3DS" && <>
+                        {keyInfo !== undefined && keyInfo?.extInfo?.console !== "Switch" && <>
                             <h3>Supported devices</h3>
                             <table>
                                 <tr>
@@ -333,9 +334,17 @@ export default (({
                                         Wii U:{` `}
                                     </td>
                                     <td>
-                                        <input type="checkbox" name="supports_wiiu" onChange={evt => { evt.currentTarget.checked ? compat["wiiu"] = false : delete compat["wiiu"]; setCompat(compat); }} />
+                                        <input type="checkbox" name="supports_wiiu" checked={supported.indexOf("wiiu") !== -1} onChange={evt => setSupported(evt.currentTarget.checked ? supported.concat(["wiiu"]) : supported.filter(v => v != "wiiu"))} />
                                     </td>
                                 </tr>
+                                {keyInfo == null && <tr>
+                                    <td>
+                                        Switch:{` `}
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" name="supports_switch" checked={supported.indexOf("switch") !== -1} onChange={evt => setSupported(evt.currentTarget.checked ? supported.concat(["switch"]) : supported.filter(v => v != "switch"))} />
+                                    </td>
+                                </tr>}
                             </table>
                         </>}
                         <br />
@@ -434,7 +443,7 @@ export default (({
                     {user != null && (origPages && !origPages[0].Permitted(user, CRUD.Update)) && <p>You don't have permission to edit this page!</p>}
                     {code.length < 2 && <p>You must provide a description!</p>}
                     {category == 0 && <p>You must choose a category for your program!</p>}
-                    <input type="submit" value="Post!" disabled={(programPage && keyInfo == null) || user == null || (origPages && !origPages[0].Permitted(user, CRUD.Update)) || code.length < 2 || category == 0 || false} />
+                    <input type="submit" value="Post!" disabled={(programPage && keyInfo === undefined) || user == null || (origPages && !origPages[0].Permitted(user, CRUD.Update)) || code.length < 2 || category == 0 || false} />
                     <br />
                     <h3>Advanced</h3>
                     <input type="text" name="keywords" value={keywords.join(" ")} onChange={(evt) => setKeywords(evt.currentTarget.value.split(/ /g))} placeholder="Keywords (space separated)" />

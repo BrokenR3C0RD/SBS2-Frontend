@@ -643,25 +643,15 @@ form input:not([type="checkbox"]), form button, form textarea {
     display: flex;
 }
 
-.composer[data-previewhidden="true"] .composer-commands * {
-    transition: opacity .25s linear;
-    opacity: 0
-}
-
-.composer .composer-editor:focus+.composer-commands *, .composer[data-previewhidden="true"] .composer-commands:hover * {
-    opacity: 1;
-}
-
 .composer .composer-commands {
     top: 1px;
     list-style: none;
     margin: 0 auto;
     text-align: center;
     padding: 0;
-    min-height: 3em;
     width: 100%;
     vertical-align: top;
-    background-color: var(--primary-bg);
+    background-color: var(--secondary-bg);
     height: 100%;
 }
 
@@ -718,6 +708,8 @@ form input:not([type="checkbox"]), form button, form textarea {
     position: relative;
     flex-grow: 1;
     box-shadow: 2px 2px 5px var(--shadow);
+    border: 2px solid transparent;
+    transition: border .2s;
 }
 
 .composer .composer-editorwrapper .composer-dropping {

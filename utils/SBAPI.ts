@@ -43,6 +43,6 @@ export async function GetSBAPIInfo(key: string, filename?: string): Promise<KeyI
         return info;
     } catch(e){
         console.error("An error occurred while loading information from SBAPI: " + e.stack);
-        return null;
+        throw e;
     }
 }

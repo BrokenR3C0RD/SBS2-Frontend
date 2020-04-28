@@ -733,6 +733,16 @@ form input:not([type="checkbox"]), form button, form textarea {
     line-height: 2em;
 }
 
+.composer .composer-commands li.text {
+    width: max-content;
+    background-color: black;
+    font-family: monospace;
+    box-shadow: 1px 1px 5px var(--shadow);
+    display: inline-block;
+    padding: 0 .5em;
+    margin-right: 1em;
+}
+
 .composer .composer-commands li button, .composer .composer-commands li select {
     background-color: var(--secondary-bg);
     color: var(--primary-text);

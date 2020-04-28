@@ -3,6 +3,7 @@ import BBCodeView from "./DisplayMarkup";
 import { UploadFile } from "../utils/Request";
 import { useDropzone } from "react-dropzone";
 import { API_ENTITY } from "../utils/Constants";
+import Link from "next/link";
 
 export default React.forwardRef(({
     code = "",
@@ -92,29 +93,36 @@ export default React.forwardRef(({
                 </div>}
                 <textarea ref={areaRef} value={ccode} className="composer-editor" onInput={updatePreview} onKeyDown={handleKeys} autoCapitalize="off" autoComplete="off" autoCorrect="off" autoSave="off" data-enable-grammarly="false" name="composer-code" onChange={(evt) => onChange(evt.currentTarget.value, markup)}></textarea>
                 <ul className="composer-commands" onClick={(evt) => evt.currentTarget == evt.target && areaRef.current!.focus()}>
-                    <li><button onClick={insertTag("b")} type="button" title="Bold"><b>B</b></button></li>
-                    <li><button onClick={insertTag("i")} type="button" title="Italics"><i>I</i></button></li>
-                    <li><button onClick={insertTag("u")} type="button" title="Underline"><u>U</u></button></li>
-                    <li><button onClick={insertTag("s")} type="button" title="Strikethrough"><s>S</s></button></li>
-                    <li><button onClick={insertTag("sup")} type="button" title="Superscript">X<sup>s</sup></button></li>
-                    <li><button onClick={insertTag("sub")} type="button" title="Subscript">X<sub>s</sub></button></li>
-                    <li><button onClick={insertTag("h1")} type="button" title="Heading 1">H1</button></li>
-                    <li><button onClick={insertTag("h2")} type="button" title="Heading 2">H2</button></li>
-                    <li><button onClick={insertTag("h3")} type="button" title="Heading 3">H3</button></li>
-                    <li><button onClick={insertTag("align=left")} type="button" title="Align left"><span className="iconify" data-icon="oi-align-left" data-inline="true"></span></button></li>
-                    <li><button onClick={insertTag("align=center")} type="button" title="Align center"><span className="iconify" data-icon="oi-align-center" data-inline="true"></span></button></li>
-                    <li><button onClick={insertTag("align=right")} type="button" title="Align right"><span className="iconify" data-icon="oi-align-right" data-inline="true"></span></button></li>
-                    <li><button onClick={insertTag("url=")} type="button" title="Link"><span className="iconify" data-icon="oi:link-intact" data-inline="true"></span></button></li>
-                    <li><button onClick={insertTag("anchor=")} type="button" title="Anchor"><span className="iconify" data-icon="vaadin:anchor" data-inline="true"></span></button></li>
-                    <li><button onClick={insertTag("img")} type="button" title="Image"><span className="iconify" data-icon="oi:image" data-inline="true"></span></button></li>
-                    <li><button onClick={() => { inputRef.current?.click() }} type="button"><span className="iconify" data-icon="mdi:cloud-upload-outline" data-inline="true"></span></button></li>
-                    <li><button onClick={insertTag("list")} type="button" title="List"><span className="iconify" data-icon="oi:list" data-inline="true"></span></button></li>
-                    <li><button onClick={insertTag("poll")} disabled type="button" title="Poll"><span className="iconify" data-icon="mdi-poll" data-inline="true"></span></button></li>
-                    <li><button onClick={insertTag("code")} type="button" title="Code"><span className="iconify" data-icon="bx:bx-code" data-inline="true"></span></button></li>
-                    <li><button onClick={insertTag("spoiler")} type="button" title="Spoiler"><span className="iconify" data-icon="dashicons:hidden" data-inline="true"></span></button></li>
-                    <li><button onClick={insertTag("youtube")} type="button" title="YouTube"><span className="iconify" data-icon="ant-design:youtube-filled" data-inline="true"></span></button></li>
-                    <li><button onClick={insertTag("quote")} type="button" title="Quote"><span className="iconify" data-icon="oi:double-quote-serif-left" data-inline="true"></span></button></li>
-                    <li><button onClick={insertTag("table", "\n [tr]\n  [th]Table Heading 1[/th]\n  [th]Table Heading 2[/th]\n [/tr]\n[tr]\n  [td]Data1[/td]\n  [td]Data2[/td]\n [/tr]\n")} type="button" title="Table"><span className="iconify" data-icon="mdi:table" data-inline="true"></span></button></li>
+                    {cmarkup == "bbcode" && <>
+                        <li><button onClick={insertTag("b")} type="button" title="Bold"><b>B</b></button></li>
+                        <li><button onClick={insertTag("i")} type="button" title="Italics"><i>I</i></button></li>
+                        <li><button onClick={insertTag("u")} type="button" title="Underline"><u>U</u></button></li>
+                        <li><button onClick={insertTag("s")} type="button" title="Strikethrough"><s>S</s></button></li>
+                        <li><button onClick={insertTag("sup")} type="button" title="Superscript">X<sup>s</sup></button></li>
+                        <li><button onClick={insertTag("sub")} type="button" title="Subscript">X<sub>s</sub></button></li>
+                        <li><button onClick={insertTag("h1")} type="button" title="Heading 1">H1</button></li>
+                        <li><button onClick={insertTag("h2")} type="button" title="Heading 2">H2</button></li>
+                        <li><button onClick={insertTag("h3")} type="button" title="Heading 3">H3</button></li>
+                        <li><button onClick={insertTag("align=left")} type="button" title="Align left"><span className="iconify" data-icon="oi-align-left" data-inline="true"></span></button></li>
+                        <li><button onClick={insertTag("align=center")} type="button" title="Align center"><span className="iconify" data-icon="oi-align-center" data-inline="true"></span></button></li>
+                        <li><button onClick={insertTag("align=right")} type="button" title="Align right"><span className="iconify" data-icon="oi-align-right" data-inline="true"></span></button></li>
+                        <li><button onClick={insertTag("url=")} type="button" title="Link"><span className="iconify" data-icon="oi:link-intact" data-inline="true"></span></button></li>
+                        <li><button onClick={insertTag("anchor=")} type="button" title="Anchor"><span className="iconify" data-icon="vaadin:anchor" data-inline="true"></span></button></li>
+                        <li><button onClick={insertTag("img")} type="button" title="Image"><span className="iconify" data-icon="oi:image" data-inline="true"></span></button></li>
+                        <li><button onClick={() => { inputRef.current?.click() }} type="button"><span className="iconify" data-icon="mdi:cloud-upload-outline" data-inline="true"></span></button></li>
+                        <li><button onClick={insertTag("list")} type="button" title="List"><span className="iconify" data-icon="oi:list" data-inline="true"></span></button></li>
+                        <li><button onClick={insertTag("poll")} disabled type="button" title="Poll"><span className="iconify" data-icon="mdi-poll" data-inline="true"></span></button></li>
+                        <li><button onClick={insertTag("code")} type="button" title="Code"><span className="iconify" data-icon="bx:bx-code" data-inline="true"></span></button></li>
+                        <li><button onClick={insertTag("spoiler")} type="button" title="Spoiler"><span className="iconify" data-icon="dashicons:hidden" data-inline="true"></span></button></li>
+                        <li><button onClick={insertTag("youtube")} type="button" title="YouTube"><span className="iconify" data-icon="ant-design:youtube-filled" data-inline="true"></span></button></li>
+                        <li><button onClick={insertTag("quote")} type="button" title="Quote"><span className="iconify" data-icon="oi:double-quote-serif-left" data-inline="true"></span></button></li>
+                        <li><button onClick={insertTag("table", "\n [tr]\n  [th]Table Heading 1[/th]\n  [th]Table Heading 2[/th]\n [/tr]\n[tr]\n  [td]Data1[/td]\n  [td]Data2[/td]\n [/tr]\n")} type="button" title="Table"><span className="iconify" data-icon="mdi:table" data-inline="true"></span></button></li>
+                    </>}
+                    {cmarkup == "12y" && <>
+                        <li className="text">
+                            *bold* /italic/ _underline_  ~strike~ !embedurl `code` <Link href="/pages/[pid]" as="/pages/765"><a>[More]</a></Link>
+                        </li>
+                    </>}
                     <li><select name="markup-lang" value={cmarkup} onChange={(evt) => { setMarkup(evt.currentTarget.value); onChange(ccode, evt.currentTarget.value) }} title="Markup language">
                         <option value="12y">12-Y-Markup</option>
                         <option value="bbcode">BBCode</option>
@@ -122,12 +130,13 @@ export default React.forwardRef(({
                     {hidePreview && <li><button onClick={() => { setPreview(!preview); areaRef.current!.focus() }} type="button" title="Show Preview">{preview ? "<" : ">"}</button></li>}
                 </ul>
             </div>
-            {preview &&
+            {
+                preview &&
                 <div className="composer-previewwrapper">
                     <BBCodeView className="composer-preview" code={ccode} markupLang={cmarkup} />
                 </div>
             }
-        </div>
+        </div >
     );
 }) as React.FunctionComponent<{
     onChange?: (value: string, markup: string) => any,

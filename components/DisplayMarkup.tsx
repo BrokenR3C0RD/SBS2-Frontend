@@ -260,6 +260,10 @@ export default (({
                 onlyAllowTags: Object.keys(tags)
             })
         }} />);
+    } else if(markupLang == "plaintext"){
+        return (<div className={`bbcode-view ${className}`}>
+            {code}
+        </div>);
     } else {
         return <h1>Unknown markup lang {markupLang}</h1>
     }

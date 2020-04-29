@@ -126,6 +126,7 @@ export default React.forwardRef(({
                     <li><select name="markup-lang" value={cmarkup} onChange={(evt) => { setMarkup(evt.currentTarget.value); onChange(ccode, evt.currentTarget.value) }} title="Markup language">
                         <option value="12y">12-Y-Markup</option>
                         <option value="bbcode">BBCode</option>
+                        <option value="plaintext">Plaintext</option>
                     </select></li>
                     {hidePreview && <li><button onClick={() => { setPreview(!preview); areaRef.current!.focus() }} type="button" title="Show Preview">{preview ? "<" : ">"}</button></li>}
                 </ul>

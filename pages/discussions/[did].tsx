@@ -50,7 +50,7 @@ export default (({
     }
 
     let [commentCode, setCommentCode] = useState("");
-    const [commentMarkup, setCommentMarkup] = useState("12y");
+    const [commentMarkup, setCommentMarkup] = useState("plaintext");
 
 
     async function PostComment() {

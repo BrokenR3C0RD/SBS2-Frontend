@@ -9,6 +9,10 @@
     background-color: var(--scroll-thumb);
 }
 
+:root {
+    --nav-height: 1.5rem;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -214,7 +218,8 @@ nav #user-info .user-avatar {
 .discussion-comments .comment-listeners {
     margin: 0;
     padding: .25em;
-    width: 100%;
+    min-height: 2em;
+    max-width: calc(100% - 2.75em);
     background-color: var(--secondary-bg);
     flex-grow: 1;
 }
@@ -223,6 +228,16 @@ nav #user-info .user-avatar {
     overflow-y: auto;
     flex-grow: 1;
     overscroll-behavior: none;
+}
+
+.discussion-comments .comments-list > :nth-last-child(2) {
+    padding-bottom: 2em;
+}
+
+.discussion-view .topbutton {
+    position: absolute;
+    right: .25em;
+    top: .25em;
 }
 
 .discussion-view .discussion-input {
@@ -619,11 +634,6 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 .resource-entry .page-time {
     float: right;
-}
-
-div.comments-list {
-    overflow-y: hidden;
-    max-height: 100%;
 }
 
 .page-entry {
@@ -1081,7 +1091,7 @@ div.comments-list {
 
 .comment {
     width: 100%;
-    padding: 1em 0;
+    padding: .5em 0;
     padding-left: 1em;
     position: relative;
 }
@@ -1335,6 +1345,9 @@ h2.crumbs {
 }
 
 @media only screen and (max-width: 1280px) {
+    :root {
+        --nav-height: 2.25rem;
+    }
     #content {
         margin: 3em 1em;
         margin-right: calc(1em + 2px);
@@ -1401,7 +1414,7 @@ h2.crumbs {
     .grid:not([data-always]) {
         display: block;
     }
-    .cell {
+    .grid:not([data-always]) .cell {
         margin-bottom: 1em;
     }
     .left, .right {

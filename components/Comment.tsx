@@ -15,25 +15,58 @@ const Comments = (({
     reverse = false,
     self,
     className = "comments",
-    autoScroll = false
+    autoScroll = false,
+    merge = false
 }) => {
-    const [ref, inView] = useInView();
+    const [ref, inView] = useInView({
+        threshold: 1
+    });
 
     const [commentCode, setCommentCode] = useState<string>("");
     const [commentMarkup, setCommentMarkup] = useState<string>("12y");
     const [commentId, setCommentId] = useState<number>(0);
 
     const [rawComments, users, listeners, fetching, loadMore] = Comment.useComments([parent], self != null);
+    
+    const [preparingScroll, setPreparingScroll] = useState<boolean>(false);
+    const [lastPos, setLastPos] = useState<number>(0);
 
     useEffect(() => {
-        if (inView) {
+        if (inView && !preparingScroll) {
             loadMore();
+            setLastPos(document.querySelector(".comments-list")!.scrollHeight - document.querySelector(".comments-list")!.scrollTop);
+
+            setPreparingScroll(true);
         }
     }, [inView]);
+
+    useEffect(() => {
+        if(preparingScroll && fetching) {
+            document.querySelector(".comments-list")!.scrollTop = document.querySelector(".comments-list")!.scrollHeight - lastPos;
+        }
+        if(preparingScroll && !fetching){
+            setPreparingScroll(false);
+        }
+    });
+
 
     let comments = rawComments.slice();
     if (reverse)
         comments = comments.reverse();
+        
+    if(merge)
+        comments = comments
+        .slice()
+        .reduce((acc, comment) => {
+            let lastComment = acc[acc.length - 1];
+            if(lastComment && lastComment.createUserId == comment.createUserId && comment.content["m"] == lastComment.content["m"]) {
+                acc = acc.slice(0, acc.length - 1);
+                acc.push(lastComment.Merge(comment));
+            } else {
+                acc.push(comment);
+            }
+            return acc;
+        }, [] as Comment[]);
 
 
     async function EditComment(id: number) {
@@ -88,7 +121,6 @@ const Comments = (({
             })}
         </ul>
         <ScrollableFeed className="comments-list" changeDetectionFilter={() => autoScroll}>
-            {!reverse && fetching && <Spinner />}
             {
                 comments.slice().map((comment, idx) => {
                     let user = users.find(user => user.id == comment.createUserId);
@@ -107,7 +139,7 @@ const Comments = (({
                                 </div>
 
                                 <span className="editdate">
-                                    {((comment.editDate.valueOf() - comment.createDate.valueOf()) >= 2000) ? "Edited " : "Posted "} {moment(comment.editDate).fromNow()}
+                                    {moment(comment.editDate).calendar()} {((comment.editDate.valueOf() - comment.createDate.valueOf()) >= 2000) ? " (edited)" : ""}
                                 </span>
                             </div>
 
@@ -134,7 +166,8 @@ const Comments = (({
     reverse?: boolean,
     self?: FullUser,
     className?: string,
-    autoScroll?: boolean
+    autoScroll?: boolean,
+    merge?: boolean
 }>
 
 export { Comments }

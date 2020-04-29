@@ -1,106 +1,154 @@
 import { NextPage } from "next";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { PageProps } from "../../interfaces";
 import { Grid, Cell } from "../../components/Layout";
-import { Category, ParentCategory } from "../../classes";
+import { Category, Discussion, BaseUser, Comment } from "../../classes";
 import { useRouter } from "next/router";
+import Moment from "moment";
+import DisplayMarkup from "../../components/DisplayMarkup";
+import { Comments } from "../../components/Comment";
+import { CRUD } from "../../classes/Entity";
+import Form from "../../components/Form";
+import Composer from "../../components/Composer";
 
 export default (({
     setInfo,
+    user: self
 }) => {
-    useEffect(() => setInfo("Page", [1]), []);
     const Router = useRouter();
 
-
-    const { cid } = Router.query;
-    const [, categories] = Category.useCategory({
-        ids: [+cid]
+    const { did } = Router.query;
+    const [, discussions] = Discussion.useDiscussion({
+        ids: [+did]
     });
+    let discussion = discussions?.[0];
+    let textRef = useRef<HTMLTextAreaElement>(null);
+
+    const [, users] = BaseUser.useUser({
+        ids: [discussion?.createUserId as number, discussion?.editUserId as number]
+    });
+    let user = users?.find(user => user.id == discussion?.createUserId)
+    let editUser = users?.find(user => user.id == discussion?.editUserId);
+
     const [, tree] = Category.useCategoryTree();
 
-    const category = (categories?.[0] as Category | undefined);
-    let crumbs: ParentCategory[] = [];
-    if (category && tree) {
-        for (let i = 0; i < tree.length; i++) {
-            if (tree[i].id == category.id) {
-                crumbs = [tree[i]];
-                break;
-            }
+    const [useComposer, setUseComposer] = useState<boolean>(false);
+    let [minimize, setMinimize] = useState<boolean>(true);
+    useEffect(() => setInfo(discussion?.name || "", [], true), [discussions]);
 
-            let res = tree[i].GetTreeLocation(category.id);
-            if (res != null) {
-                crumbs = [tree[i]].concat(res);
-                break;
+    if (tree && discussion) {
+        let root = tree.find(category => category.name == "Discussions")!;
+        if (root.id == discussion.parentId) {
+        } else {
+            let c = root!.GetTreeLocation(discussion.parentId);
+            if (c == null)
+                discussion = undefined;
+            else {
             }
         }
     }
 
-    let children: ParentCategory[] = crumbs?.[crumbs?.length - 1]?.children || [];
+    let [commentCode, setCommentCode] = useState("");
+    const [commentMarkup, setCommentMarkup] = useState("plaintext");
 
-    useEffect(() => setInfo(category?.name || "", []), [categories]);
 
-    /*const [ref, inView] = useInView();
+    async function PostComment() {
+        if(textRef.current){
+            commentCode = textRef.current.value;
+            textRef.current.value = "";
+        }
+            
+        if (commentCode.trim().length == 0)
+            return;
 
-    useEffect(() => {
-        if (inView)
-            fetchMoreComments();
+        setCommentCode("");
 
-    }, [inView])*/
+        await Comment.Update({
+            parentId: discussion!.id,
+            content: {
+                t: commentCode,
+                m: commentMarkup
+            }
+        });
+    }
+
+    function handleEnter(evt: React.KeyboardEvent<HTMLTextAreaElement>) {
+        if (evt.key === "Enter" && !evt.shiftKey) {
+            evt.preventDefault();
+            PostComment();
+        }
+    }
 
     return <>
         <Grid
-            rows={["min-content", "min-content", "1fr", "min-content"]}
+            rows={["min-content", "1fr"]}
             cols={["max-content", "1fr", "1fr"]}
-            gapX="2em"
-            gapY="2em"
+            gapX="1em"
+            gapY="0"
             style={{
-                width: "100%"
+                width: "100%",
+                height: "calc(100vh - var(--nav-height) - 2em)"
             }}
+            always // Cheap hack
+            className="discussions-grid"
         >
-            {(!categories || (categories!.length != 0 && !tree)) && <Cell x={1} y={1} width={3}>
+            {(!tree || !discussions) && <Cell x={1} y={1} width={3}>
                 <h1>Loading...</h1>
             </Cell>}
-            {category && tree &&
+            {tree && discussion && user && editUser &&
                 <>
-
-                    <Cell x={1} y={1} width={3}>
-                        <h1 className="crumbs">
-                            {`Categories: `}
-                            {crumbs.map((crumb, i) => {
-                                if (crumbs.length - 1 === i) {
-                                    return <>{crumb.name}</>;
-                                } else {
-                                    return <><Link href="/categories/[cid]" as={`/categories/${crumb.id}`}><a>{crumb.name}</a></Link>{` > `}</>;
-                                }
-                            })}
-                        </h1>
+                    <Cell x={1} y={1} width={3} data-minimize={minimize}>
+                        <h2 className="crumbs">
+                            {discussion.name}
+                        </h2>
+                        <div>
+                            <div id="page-info">
+                                <span><b>{`Author: `}</b>
+                                    <Link href="/user/[uid]" as={`/user/${user.id}`}><a>
+                                        <img src={user.GetAvatarURL(32)} className="info-avatar" />
+                                        {user.username}
+                                    </a></Link></span>
+                                {` • `}
+                                <span><b>Created: </b>{Moment(discussion.createDate).fromNow()}</span>
+                                {(discussion.editDate.valueOf() - discussion.createDate.valueOf()) >= 2000 && <span>
+                                    {` • `}
+                                    <b>Last edited: </b>{Moment(discussion.editDate).fromNow()} by <Link href="/user/[uid]" as={`/user/${editUser.id}`}><a>
+                                        <img src={editUser.GetAvatarURL(32)} className="info-avatar" />
+                                        {editUser.username}
+                                    </a></Link>
+                                </span>}
+                            </div>
+                            <br />
+                            <DisplayMarkup markupLang={discussion.values.markupLang} code={discussion.content} />
+                        </div>
                     </Cell>
-                    {children && children.length > 0 &&
-                        <Cell x={1} y={2} width={3}>
-                            <h2>Subcategories</h2>
-                            <ul className="category-list">
-                                {children.map(child => {
-                                    return (<li key={child.id}>
-                                        <Link href="/categories/[cid]" as={`/categories/${child.id}`}><a>{child.name}</a></Link>
-                                        <p>
-                                            {child.description}
-                                        </p>
-                                    </li>)
-                                })}
-                            </ul>
-                        </Cell>
-                    }
-                    <Cell x={1} y={3} width={3}>
-                        <h2>Discussions</h2>
+                    <Cell x={1} y={2} width={3} className="discussion-view">
+                        <button type="button" className="topbutton" onClick={() => setMinimize(!minimize)}><span className="iconify" data-icon="icomoon-free:shrink2" data-inline="true"></span></button>
+                        <Comments className="discussion-comments" parent={discussion} self={self} autoScroll merge />
+                        {self && discussion.Permitted(self, CRUD.Create) && (<Form onSubmit={PostComment} className="discussion-input">
+                            {!useComposer && <textarea ref={textRef} onKeyPress={handleEnter} />}
+                            {useComposer && <Composer hidePreview code={commentCode} markup={commentMarkup} onChange={(code, markup) => { setCommentCode(code); setCommentMarkup(markup); }} />}
+                            <div className="discussion-buttons">
+                                <button type="submit"><span className="iconify" data-icon="mdi:send" data-inline="true"></span></button>
+                                <button type="button" onClick={() => setUseComposer(!useComposer)}><span className="iconify" data-icon="bytesize:compose" data-inline="true"></span></button>
+                            </div>
+                        </Form>)}
                     </Cell>
                 </>
             }
-            {categories && (categories.length == 0) &&
+            {discussions && (discussion == null) && <>
                 <Cell x={1} y={1} width={3}>
-                    <h1>This category doesn't exist!</h1>
+                    <h1>This discussion doesn't exist!</h1>
                 </Cell>
+            </>
             }
+
+            <style jsx global>{`
+                #content {
+                    margin-bottom: 0;
+                }
+            `}</style>
         </Grid>
     </>
 }) as NextPage<PageProps>;

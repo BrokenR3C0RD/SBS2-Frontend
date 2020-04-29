@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { PageProps } from "../../interfaces";
 import { Grid, Cell } from "../../components/Layout";
 import { Category, Discussion, BaseUser, Comment } from "../../classes";
@@ -23,6 +23,7 @@ export default (({
         ids: [+did]
     });
     let discussion = discussions?.[0];
+    let textRef = useRef<HTMLTextAreaElement>(null);
 
     const [, users] = BaseUser.useUser({
         ids: [discussion?.createUserId as number, discussion?.editUserId as number]
@@ -48,15 +49,21 @@ export default (({
         }
     }
 
-    const [commentCode, setCommentCode] = useState("");
+    let [commentCode, setCommentCode] = useState("");
     const [commentMarkup, setCommentMarkup] = useState("12y");
 
 
     async function PostComment() {
+        if(textRef.current){
+            commentCode = textRef.current.value;
+            textRef.current.value = "";
+        }
+            
         if (commentCode.trim().length == 0)
             return;
 
         setCommentCode("");
+
         await Comment.Update({
             parentId: discussion!.id,
             content: {
@@ -91,12 +98,11 @@ export default (({
             </Cell>}
             {tree && discussion && user && editUser &&
                 <>
-                    <Cell x={1} y={1} width={3}>
+                    <Cell x={1} y={1} width={3} data-minimize={minimize}>
                         <h2 className="crumbs">
                             {discussion.name}
                         </h2>
-                        <button type="button" className="topbutton" onClick={() => setMinimize(!minimize)}><span className="iconify" data-icon="icomoon-free:shrink2" data-inline="true"></span></button>
-                        <div data-minimize={minimize}>
+                        <div>
                             <div id="page-info">
                                 <span><b>{`Author: `}</b>
                                     <Link href="/user/[uid]" as={`/user/${user.id}`}><a>
@@ -118,9 +124,10 @@ export default (({
                         </div>
                     </Cell>
                     <Cell x={1} y={2} width={3} className="discussion-view">
+                        <button type="button" className="topbutton" onClick={() => setMinimize(!minimize)}><span className="iconify" data-icon="icomoon-free:shrink2" data-inline="true"></span></button>
                         <Comments className="discussion-comments" parent={discussion} self={self} autoScroll merge />
                         {self && discussion.Permitted(self, CRUD.Create) && (<Form onSubmit={PostComment} className="discussion-input">
-                            {!useComposer && <textarea value={commentCode} onChange={(evt) => setCommentCode(evt.currentTarget.value)} onKeyPress={handleEnter} />}
+                            {!useComposer && <textarea ref={textRef} onKeyPress={handleEnter} />}
                             {useComposer && <Composer hidePreview code={commentCode} markup={commentMarkup} onChange={(code, markup) => { setCommentCode(code); setCommentMarkup(markup); }} />}
                             <div className="discussion-buttons">
                                 <button type="submit"><span className="iconify" data-icon="mdi:send" data-inline="true"></span></button>

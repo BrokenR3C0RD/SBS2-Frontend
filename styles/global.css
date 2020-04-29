@@ -218,7 +218,8 @@ nav #user-info .user-avatar {
 .discussion-comments .comment-listeners {
     margin: 0;
     padding: .25em;
-    width: 100%;
+    min-height: 2em;
+    max-width: calc(100% - 2.75em);
     background-color: var(--secondary-bg);
     flex-grow: 1;
 }
@@ -227,11 +228,16 @@ nav #user-info .user-avatar {
     overflow-y: auto;
     flex-grow: 1;
     overscroll-behavior: none;
-
 }
 
 .discussion-comments .comments-list > :nth-last-child(2) {
     padding-bottom: 2em;
+}
+
+.discussion-view .topbutton {
+    position: absolute;
+    right: .25em;
+    top: .25em;
 }
 
 .discussion-view .discussion-input {
@@ -628,11 +634,6 @@ form input:not([type="checkbox"]), form button, form textarea {
 
 .resource-entry .page-time {
     float: right;
-}
-
-div.comments-list {
-    overflow-y: hidden;
-    max-height: 100%;
 }
 
 .page-entry {

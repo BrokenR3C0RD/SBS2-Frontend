@@ -18,19 +18,37 @@ const Comments = (({
     autoScroll = false,
     merge = false
 }) => {
-    const [ref, inView] = useInView();
+    const [ref, inView] = useInView({
+        threshold: 1
+    });
 
     const [commentCode, setCommentCode] = useState<string>("");
     const [commentMarkup, setCommentMarkup] = useState<string>("12y");
     const [commentId, setCommentId] = useState<number>(0);
 
     const [rawComments, users, listeners, fetching, loadMore] = Comment.useComments([parent], self != null);
+    
+    const [preparingScroll, setPreparingScroll] = useState<boolean>(false);
+    const [lastPos, setLastPos] = useState<number>(0);
 
     useEffect(() => {
-        if (inView) {
+        if (inView && !preparingScroll) {
             loadMore();
+            setLastPos(document.querySelector(".comments-list")!.scrollHeight - document.querySelector(".comments-list")!.scrollTop);
+
+            setPreparingScroll(true);
         }
     }, [inView]);
+
+    useEffect(() => {
+        if(preparingScroll && fetching) {
+            document.querySelector(".comments-list")!.scrollTop = document.querySelector(".comments-list")!.scrollHeight - lastPos;
+        }
+        if(preparingScroll && !fetching){
+            setPreparingScroll(false);
+        }
+    });
+
 
     let comments = rawComments.slice();
     if (reverse)
@@ -103,7 +121,6 @@ const Comments = (({
             })}
         </ul>
         <ScrollableFeed className="comments-list" changeDetectionFilter={() => autoScroll}>
-            {!reverse && fetching && <Spinner />}
             {
                 comments.slice().map((comment, idx) => {
                     let user = users.find(user => user.id == comment.createUserId);

@@ -72,7 +72,7 @@ export class Comment extends Entity {
         }))?.map(comment => plainToClass(Comment, comment)) || null;
     }
 
-    public static useComments(parent: Entity[] | null, realtime: boolean = true): [Comment[], BaseUser[], number[], boolean, () => void] {
+    public static useComments(parent: Entity[] | null, realtime: boolean = true): [Comment[], BaseUser[], number[], boolean, () => void, boolean] {
         // Since this is using long polling, which is a VERY special case, we're giving up on even TRYING to reuse useRequest
         let [comments, setComments] = useState<Comment[]>([]);
         let [users, setUsers] = useState<BaseUser[]>([]);
@@ -276,7 +276,7 @@ export class Comment extends Entity {
             }
         }, [lastParent, didInit, fetchMore]);
 
-        return [comments.filter(comment => !comment.deleted), users, listeners, (!didInit) || fetchMore, () => !noMore && setFetchMore(true)];
+        return [comments.filter(comment => !comment.deleted), users, listeners, (!didInit) || fetchMore, () => !noMore && setFetchMore(true), !noMore];
     }
 
     public static async Update(comment: Partial<Comment>): Promise<Comment> {

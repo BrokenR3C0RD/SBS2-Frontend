@@ -77,7 +77,6 @@ export default (({
     }
 
     function addPermission(evt: React.MouseEvent) {
-        console.log(newPerms, newPermRef.current!.value, selected);
         evt.preventDefault();
         setNewPerms({
             ...newPerms,

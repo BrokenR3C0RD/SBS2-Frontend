@@ -106,7 +106,7 @@ export default (({
         }
     }
 
-    const isPage = ("" + page?.type).indexOf("page") == 0 || ("" + page?.type).indexOf("page") == 1;
+    const isPage = true;
 
     return <>
         <Grid
@@ -163,7 +163,7 @@ export default (({
                                 {keyInfo && keyInfo.extInfo.project_name || keyInfo && `【${keyInfo.filename.substr(1)}】`}
                             </h2>
                             {page.values.photos &&
-                                <Gallery className="program-images" width="400px" height="240px" timer={2000}>
+                                <Gallery className="program-images" width="400px" height="240px" timer={0}>
                                     {
                                         page.values.photos.split(",")
                                             .filter(photo => photo != "")
@@ -231,7 +231,7 @@ export default (({
                                 <BBCodeView code={page.content} markupLang={page.values.markupLang} />
                             </Cell>
                             {page.values.photos && (page.values.photos?.trim()?.length > 0 && page.values.photos !== "0") && <Cell x={1} y={3} width={3} height={1}>
-                                <Gallery className="program-images" width="400px" height="240px" timer={2000}>
+                                <Gallery className="program-images" width="400px" height="240px" timer={0}>
                                     {
                                         page.values.photos.split(",")
                                             .filter(photo => photo != "")

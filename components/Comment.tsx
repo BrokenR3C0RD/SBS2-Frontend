@@ -4,11 +4,11 @@ import { Comment, FullUser, Content } from "../classes";
 import Link from "next/link";
 import moment from "moment";
 import { useInView } from "react-intersection-observer";
-import ScrollableFeed from "react-scrollable-feed";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Spinner } from "./Layout";
 import Composer from "./Composer";
 import Form from "./Form";
+import ResizeObserver from "resize-observer-polyfill";
 
 const Comments = (({
     parent,
@@ -35,10 +35,9 @@ const Comments = (({
         if (inView && !preparingScroll) {
             loadMore();
             setLastPos(document.querySelector(".comments-list")!.scrollHeight - document.querySelector(".comments-list")!.scrollTop);
-
             setPreparingScroll(true);
         }
-    }, [inView]);
+    }, [inView, preparingScroll, fetching]);
 
     useEffect(() => {
         if(preparingScroll && fetching) {
@@ -109,6 +108,25 @@ const Comments = (({
         }
     }, [firstUpdate, comments, users, listeners, fetching, autoScroll])
 
+
+    const divRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if(autoScroll && divRef){
+            let resizeObserver = new ResizeObserver((entries) => {
+                let entry = entries[0].target;
+                if(entry.scrollTop >= (entry.scrollHeight - entry.clientHeight * 5/4)){
+                    entry.scrollTo({
+                        top: entry.scrollHeight - entry.clientHeight,
+                        left: 0,
+                        behavior: "smooth"
+                    });
+                }
+            });
+            resizeObserver.observe(divRef.current!);
+            return () => resizeObserver.disconnect();
+        }
+    });
+
     return <div className={className}>
         <ul className="comment-listeners">
             {listeners.map(listener => {
@@ -120,7 +138,7 @@ const Comments = (({
                 </li>
             })}
         </ul>
-        <ScrollableFeed className="comments-list" changeDetectionFilter={() => autoScroll}>
+        <div className="comments-list" ref={divRef}>
             {
                 comments.slice().map((comment, idx) => {
                     let user = users.find(user => user.id == comment.createUserId);
@@ -159,7 +177,7 @@ const Comments = (({
                 })
             }
             {reverse && fetching && <Spinner />}
-        </ScrollableFeed>
+        </div>
     </div>;
 }) as React.FunctionComponent<{
     parent: Content,

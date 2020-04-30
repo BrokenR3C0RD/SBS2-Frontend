@@ -218,10 +218,8 @@ nav #user-info .user-avatar {
 .discussion-comments .comment-listeners {
     margin: 0;
     padding: .25em;
-    min-height: 2em;
     max-width: calc(100% - 2.75em);
     background-color: var(--secondary-bg);
-    flex-grow: 1;
 }
 
 .discussion-comments .comments-list {
@@ -230,7 +228,7 @@ nav #user-info .user-avatar {
     overscroll-behavior: none;
 }
 
-.discussion-comments .comments-list > :nth-last-child(2) {
+.discussion-comments .comments-list > :last-child {
     padding-bottom: 2em;
 }
 
@@ -620,6 +618,17 @@ form input:not([type="checkbox"]), form button, form textarea {
     box-shadow: 1px 1px 5px var(--shadow);
     padding: .5em;
     margin-bottom: .5em;
+}
+
+.resource-entry button {
+    float: left;
+    margin-right: 1em;
+}
+
+.resource-entry button:disabled {
+    box-shadow: none;
+    filter: none;
+    cursor: default;
 }
 
 .resource-entry .page-name {
@@ -1020,7 +1029,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     transition: max-width .5s ease-in-out;
 }
 
-.bbcode-view img:focus, .bbcode-view img:hover {
+.bbcode-view img:focus {
     max-width: 100%;
 }
 
@@ -1089,31 +1098,33 @@ form input:not([type="checkbox"]), form button, form textarea {
     margin-bottom: 2em;
 }
 
-.comment {
+div.comment {
     width: 100%;
     padding: .5em 0;
     padding-left: 1em;
     position: relative;
 }
 
-.comment .avatar {
+div.comment .avatar {
     display: inline-block;
     vertical-align: top;
     box-shadow: 2px 2px 5px var(--shadow);
+    width: 3em;
+    height: 3em;
 }
 
-.comment .comment-body {
+div.comment .comment-body {
     display: inline-block;
     vertical-align: top;
     max-width: calc(100% - 4em);
     width: 100%;
 }
 
-.comment .user-info {
+div.comment .user-info {
     display: inline-block;
 }
 
-.comment .gear {
+div.comment .gear {
     display: inline-block;
     background-color: transparent;
     box-shadow: none;
@@ -1121,13 +1132,13 @@ form input:not([type="checkbox"]), form button, form textarea {
 }
 
 
-.comment .buttons {
+div.comment .buttons {
     display: inline-block;
     font-size: 1em;
     min-height: 1em;
 }
 
-.comment .buttons button {
+div.comment .buttons button {
     display: inline-block;
     background-color: transparent;
     box-shadow: none;
@@ -1140,7 +1151,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     transition: opacity .2s;
 }
 
-.comment .comment-edit {
+div.comment .comment-edit {
     margin-left: 1em;
 }
 
@@ -1157,22 +1168,24 @@ form input:not([type="checkbox"]), form button, form textarea {
     margin-bottom: 0;
 }
 
-.comment .buttons button:hover {
+div.comment .buttons button:hover {
     opacity: 1;
 }
 
-.comment .username {
-    vertical-align: top;
+div.comment .username {
+    vertical-align: middle;
     margin-left: 1em;
 }
 
-.comment .editdate {
-    display: block;
+div.comment .editdate {
+    display: inline-block;
     font-size: .75em;
+    vertical-align: baseline;
     color: var(--primary-accent);
     margin-left: 1rem;
 }
-.comment .comment-content {
+
+div.comment .comment-content {
     display: inline-block;
     word-break: break-word;
     max-width: calc(100% - 2em);

@@ -240,6 +240,18 @@ const tags = {
         tag: "td",
         attrs: {},
         content: node.content
+    }),
+    youtube: node => ({
+        tag: "iframe",
+        attrs: {
+            type: "text/html",
+            width: "480",
+            height: "270",
+            src: `//www.youtube-nocookie.com/embed/${/(?:https?:\/\/)?(?:www\.)?youtu\.?be(?:\.com)?\/?.*(?:watch|embed)?(?:.*v=|v\/|\/)([\w\-_]+)\&?/.exec(node.content.toString() || "")?.[1]}`,
+            allowfullscreen: "allowfullscreen",
+            frameborder: "0"
+        },
+        content: []
     })
 } as (Dictionary<((node: TagNode) => TagNode)>)
 

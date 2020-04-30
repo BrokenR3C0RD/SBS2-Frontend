@@ -26,18 +26,18 @@ const Comments = (({
     const [commentMarkup, setCommentMarkup] = useState<string>("12y");
     const [commentId, setCommentId] = useState<number>(0);
 
-    const [rawComments, users, listeners, fetching, loadMore] = Comment.useComments([parent], self != null);
+    const [rawComments, users, listeners, fetching, loadMore, more] = Comment.useComments([parent], self != null);
     
     const [preparingScroll, setPreparingScroll] = useState<boolean>(false);
     const [lastPos, setLastPos] = useState<number>(0);
 
     useEffect(() => {
-        if (inView && !preparingScroll) {
+        if (inView && !preparingScroll && more) {
             loadMore();
             setLastPos(document.querySelector(".comments-list")!.scrollHeight - document.querySelector(".comments-list")!.scrollTop);
             setPreparingScroll(true);
         }
-    }, [inView, preparingScroll, fetching]);
+    }, [inView, preparingScroll]);
 
     useEffect(() => {
         if(preparingScroll && fetching) {
@@ -66,7 +66,6 @@ const Comments = (({
             }
             return acc;
         }, [] as Comment[]);
-
 
     async function EditComment(id: number) {
         let comment = comments.find(comment => comment.id == id);

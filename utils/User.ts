@@ -191,7 +191,7 @@ export function useSettings(): [any, Dictionary<string | number | boolean> | und
     }, async (data: any) => JSON.parse(data));
 
     useEffect(() => {
-        if (data == null && errors == null && (localStorage.getItem("sbs-auth") || localStorage.getItem("sbs-auth")) != null) {
+        if (data === null && errors == null && (localStorage.getItem("sbs-auth") || localStorage.getItem("sbs-auth")) != null) {
             Variable("user_settings", JSON.stringify({
                 theme: localStorage.getItem("sbs-theme"),
                 SiteJS: ""

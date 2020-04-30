@@ -114,7 +114,6 @@ const Comments = (({
         if(autoScroll && divRef){
             let resizeObserver = new ResizeObserver((entries) => {
                 let entry = entries[0].target;
-                console.log(entry);
                 if(entry.scrollTop >= (entry.scrollHeight - entry.clientHeight * 5/4)){
                     entry.scrollTo({
                         top: entry.scrollHeight - entry.clientHeight,

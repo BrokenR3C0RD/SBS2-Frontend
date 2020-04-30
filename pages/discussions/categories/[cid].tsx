@@ -90,8 +90,6 @@ export default (({
         ids: category?.PinnedContent(true) || [0]
     });
 
-    console.log(pinned);
-
     async function PinDiscussion(id: number) {
         let pinned: number[] = category?.PinnedContent() || [];
         if (pinned.indexOf(id) == -1) {

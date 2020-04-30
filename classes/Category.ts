@@ -119,7 +119,6 @@ export class ParentCategory extends Category {
             .split(",")
             .map(n => +n)
             .filter(n => !isNaN(n));
-        console.log(pinned);
 
         if (only)
             if (pinned.length == 0)

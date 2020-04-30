@@ -308,7 +308,6 @@ const App = (({
                         }
                         {discussionTree && pinnedDiscussions && discussionTree.children.map(function render(cat) {
                             let pinned = pinnedDiscussions.filter(discussion => discussion.parentId == cat.id);
-                            console.log(pinned);
 
                             if (cat.children && cat.children.length == 0 && pinned.length == 0) {
                                 return <li key={cat.id}><Link href="/discussions/categories/[cid]" as={`/discussions/categories/${cat.id}`}><a>{cat.name}</a></Link></li>;

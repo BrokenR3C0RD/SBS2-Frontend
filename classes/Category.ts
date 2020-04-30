@@ -47,57 +47,9 @@ export class Category extends AccessControlledEntity {
     @IsObject()
     permissions: Dictionary<string> = {};
 
-    public static async GetByIDs(ids: number[]): Promise<Category[]> {
-        return (await Entity
-            .GetByIDs(ids, "Category"))
-            .map(entity => plainToClass(Category, entity));
-    }
+    public children: Category[] = [];
 
-    public static async Search(query: SearchQuery): Promise<Category[]> {
-        return (await Entity
-            .Search({
-                ...query
-            }, "User"))
-            .map(entity => plainToClass(Category, entity));
-    }
-
-    public static useCategory(query: SearchQuery): [any, Category[] | null, () => void] {
-        return Entity.useEntity(query, "Category", async (e) => plainToClass(Category, e)) as [any, Category[] | null, () => void];
-    }
-
-    public static useCategoryTree(): [any, ParentCategory[] | null, () => void] {
-        const [err, categories, mutate] = Entity.useEntity({}, "Category", async (e) => plainToClass(ParentCategory, e))
-        const [categoryTree, setCategoryTree] = useState<ParentCategory[]>();
-
-        useEffect(() => {
-            if (categories)
-                setCategoryTree(treeify<ParentCategory>(categories as ParentCategory[], "id", "parentId", "children"));
-        }, [categories]);
-
-        return [err, categoryTree || null, mutate];
-    }
-
-    public static async Update(category: Partial<Category>): Promise<Category> {
-        return (await DoRequest({
-            url: `${API_ENTITY("Category")}${typeof category.id == "number" ? `/${category.id}` : ""}`,
-            method: typeof category.id == "number" ? "PUT" : "POST",
-            data: category,
-            return: Category
-        }))!;
-    }
-    public static async Delete(category: Category): Promise<boolean> {
-        await DoRequest({
-            url: `${API_ENTITY("Category")}/${category.id}`,
-            method: "DELETE"
-        });
-        return true;
-    }
-}
-
-export class ParentCategory extends Category {
-    public children: ParentCategory[] = [];
-
-    public GetTreeLocation(cid: number): ParentCategory[] | null {
+    public GetTreeLocation(cid: number): Category[] | null {
         let idx = this.children.find(cat => cat.id == cid);
         if (idx != null)
             return [idx];
@@ -131,5 +83,51 @@ export class ParentCategory extends Category {
             return [0];
         else
             return pinned;
+    }
+
+    public static async GetByIDs(ids: number[]): Promise<Category[]> {
+        return (await Entity
+            .GetByIDs(ids, "Category"))
+            .map(entity => plainToClass(Category, entity));
+    }
+
+    public static async Search(query: SearchQuery): Promise<Category[]> {
+        return (await Entity
+            .Search({
+                ...query
+            }, "User"))
+            .map(entity => plainToClass(Category, entity));
+    }
+
+    public static useCategory(query: SearchQuery): [any, Category[] | null, () => void] {
+        return Entity.useEntity(query, "Category", async (e) => plainToClass(Category, e)) as [any, Category[] | null, () => void];
+    }
+
+    public static useCategoryTree(): [any, Category[] | null, () => void] {
+        const [err, categories, mutate] = Entity.useEntity({}, "Category", async (e) => plainToClass(Category, e))
+        const [categoryTree, setCategoryTree] = useState<Category[]>();
+
+        useEffect(() => {
+            if (categories)
+                setCategoryTree(treeify<Category>(categories as Category[], "id", "parentId", "children"));
+        }, [categories]);
+
+        return [err, categoryTree || null, mutate];
+    }
+
+    public static async Update(category: Partial<Category>): Promise<Category> {
+        return (await DoRequest({
+            url: `${API_ENTITY("Category")}${typeof category.id == "number" ? `/${category.id}` : ""}`,
+            method: typeof category.id == "number" ? "PUT" : "POST",
+            data: category,
+            return: Category
+        }))!;
+    }
+    public static async Delete(category: Category): Promise<boolean> {
+        await DoRequest({
+            url: `${API_ENTITY("Category")}/${category.id}`,
+            method: "DELETE"
+        });
+        return true;
     }
 }

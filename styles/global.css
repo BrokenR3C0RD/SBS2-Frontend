@@ -1029,7 +1029,7 @@ form input:not([type="checkbox"]), form button, form textarea {
     transition: max-width .5s ease-in-out;
 }
 
-.bbcode-view img:focus, .bbcode-view img:hover {
+.bbcode-view img:focus {
     max-width: 100%;
 }
 

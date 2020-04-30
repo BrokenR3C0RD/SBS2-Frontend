@@ -37,21 +37,8 @@ export default (({
     let [minimize, setMinimize] = useState<boolean>(true);
     useEffect(() => setInfo(discussion?.name || "", [], true), [discussions]);
 
-    if (tree && discussion) {
-        let root = tree.find(category => category.name == "Discussions")!;
-        if (root.id == discussion.parentId) {
-        } else {
-            let c = root!.GetTreeLocation(discussion.parentId);
-            if (c == null)
-                discussion = undefined;
-            else {
-            }
-        }
-    }
-
     let [commentCode, setCommentCode] = useState("");
     const [commentMarkup, setCommentMarkup] = useState("plaintext");
-
 
     async function PostComment() {
         if(textRef.current){
@@ -131,7 +118,10 @@ export default (({
                             {useComposer && <Composer hidePreview code={commentCode} markup={commentMarkup} onChange={(code, markup) => { setCommentCode(code); setCommentMarkup(markup); }} />}
                             <div className="discussion-buttons">
                                 <button type="submit"><span className="iconify" data-icon="mdi:send" data-inline="true"></span></button>
-                                <button type="button" onClick={() => setUseComposer(!useComposer)}><span className="iconify" data-icon="bytesize:compose" data-inline="true"></span></button>
+                                <button type="button" onClick={() => setUseComposer(!useComposer)}><span className="iconify" data-icon="bytesize:compose" data-inline="true"></span>
+                                {` `}
+                                {commentMarkup !== "plaintext" ? commentMarkup : ""}
+                                </button>
                             </div>
                         </Form>)}
                     </Cell>

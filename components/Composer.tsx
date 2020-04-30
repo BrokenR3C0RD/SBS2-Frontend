@@ -45,7 +45,9 @@ export default React.forwardRef(({
         const area = evt.currentTarget;
         let pos = area.selectionStart;
 
-        if (evt.key == "Tab") {
+        if(markup !== "bbcode"){
+            return;
+        } else if (evt.key == "Tab") {
             evt.preventDefault();
             area.value = area.value.substr(0, pos) + " ".repeat(4) + area.value.substr(pos);
             area.selectionStart = pos + 4;

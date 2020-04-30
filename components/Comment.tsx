@@ -4,8 +4,7 @@ import { Comment, FullUser, Content } from "../classes";
 import Link from "next/link";
 import moment from "moment";
 import { useInView } from "react-intersection-observer";
-import ScrollableFeed from "react-scrollable-feed";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Spinner } from "./Layout";
 import Composer from "./Composer";
 import Form from "./Form";
@@ -35,7 +34,6 @@ const Comments = (({
         if (inView && !preparingScroll) {
             loadMore();
             setLastPos(document.querySelector(".comments-list")!.scrollHeight - document.querySelector(".comments-list")!.scrollTop);
-
             setPreparingScroll(true);
         }
     }, [inView]);
@@ -109,6 +107,20 @@ const Comments = (({
         }
     }, [firstUpdate, comments, users, listeners, fetching, autoScroll])
 
+
+    const divRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if(autoScroll && divRef){
+            if(divRef.current!.scrollTop >= (divRef.current!.scrollHeight - divRef.current!.clientHeight * 5/4)){
+                divRef.current!.scrollTo({
+                    top: divRef.current!.scrollHeight,
+                    left: 0,
+                    behavior: "smooth"
+                });
+            }
+        }
+    });
+
     return <div className={className}>
         <ul className="comment-listeners">
             {listeners.map(listener => {
@@ -120,7 +132,7 @@ const Comments = (({
                 </li>
             })}
         </ul>
-        <ScrollableFeed className="comments-list" changeDetectionFilter={() => autoScroll}>
+        <div className="comments-list" ref={divRef}>
             {
                 comments.slice().map((comment, idx) => {
                     let user = users.find(user => user.id == comment.createUserId);
@@ -159,7 +171,7 @@ const Comments = (({
                 })
             }
             {reverse && fetching && <Spinner />}
-        </ScrollableFeed>
+        </div>
     </div>;
 }) as React.FunctionComponent<{
     parent: Content,

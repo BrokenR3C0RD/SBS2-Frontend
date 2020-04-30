@@ -14,7 +14,7 @@ import Composer from "../../../components/Composer";
 
 export default (({
     setInfo,
-    user
+    user: self
 }) => {
     useEffect(() => setInfo("", []), []);
     const Router = useRouter();
@@ -53,7 +53,7 @@ export default (({
         }
     }
 
-    async function CreateDiscussion(data: Dictionary<string | boolean | number>){
+    async function CreateDiscussion(data: Dictionary<string | boolean | number>) {
         let title = data["title"] as string;
         let content = data["composer-code"] as string;
         let markupLang = data["markup-lang"] as string;
@@ -85,6 +85,23 @@ export default (({
             fetchMoreComments();
 
     }, [inView])*/
+
+    const [, pinned] = Discussion.useDiscussion({
+        ids: category?.PinnedContent(true) || [0]
+    });
+
+    console.log(pinned);
+
+    async function PinDiscussion(id: number) {
+        let pinned: number[] = category?.PinnedContent() || [];
+        if (pinned.indexOf(id) == -1) {
+            pinned.push(id);
+        } else {
+            pinned.splice(pinned.indexOf(id), 1);
+        }
+        category!.values.pinned = pinned.filter(n => n != 0).join(",");
+        await Category.Update(category!);
+    }
 
     return <>
         <Grid
@@ -118,24 +135,55 @@ export default (({
                             {category.description}
                         </p>
                     </Cell>
-                    {children && children.length > 0 &&
+                    {children && pinned && (children.length > 0 || pinned.length > 0) &&
                         <Cell x={1} y={2} width={3}>
-                            <h2>Subcategories</h2>
-                            <ul className="category-list">
-                                {children.map(child => {
-                                    return (<li key={child.id}>
-                                        <Link href="/discussions/categories/[cid]" as={`/discussions/categories/${child.id}`}><a>{child.name}</a></Link>
-                                        <p>
-                                            {child.description}
-                                        </p>
-                                    </li>)
-                                })}
-                            </ul>
+                            {children.length > 0 && <>
+                                <h2>Subcategories</h2>
+                                <ul className="category-list">
+                                    {children.map(child => {
+                                        return (<li key={child.id}>
+                                            <Link href="/discussions/categories/[cid]" as={`/discussions/categories/${child.id}`}><a>{child.name}</a></Link>
+                                            <p>
+                                                {child.description}
+                                            </p>
+                                        </li>)
+                                    })}
+                                </ul>
+                                <br/>
+                            </>}
+                            {pinned.length > 0 && <>
+                                <h2>Pinned content:</h2>
+                                {pinned.map((discussion, i) => {
+                                    let user = users.find(user => user.id == discussion.createUserId);
+                                    if (!user)
+                                        return null;
+
+                                    // let img = page.values.photos?.split(",")?.[0];
+                                    return <div className="resource-entry" key={discussion.id} ref={i == discussions.length - 1 && more ? ref : undefined}>
+                                        {/* <img src={img ? `${API_ENTITY("File")}/raw/${+img}?size=200` : "/res/img/logo.svg"} className="page-photo" /> */}
+                                        <span className="page-name">
+                                            <button type="button" onClick={() => PinDiscussion(discussion.id)} disabled={!self || !category?.Permitted(self, CRUD.Update)}>
+                                                {pinned.findIndex(p => discussion.id == p.id) != -1 ? `📌` : `📍`}
+                                            </button>
+                                            <Link href="/pages/[pid]" as={`/pages/${discussion.id}`}>
+                                                {discussion.name}
+                                            </Link>
+                                        </span>
+                                        <span className="page-author">
+                                            <Link href="/user/[uid]" as={`/user/${user.id}`}><a>{user.username}</a></Link>
+                                        </span>
+                                        <span className="page-time">
+                                            {moment(discussion.editDate).fromNow()}
+                                        </span>
+                                    </div>
+                                })
+                                }
+                            </>}
                         </Cell>
                     }
                     <Cell x={1} y={3} width={3}>
                         <h2>Discussions</h2>
-                        {discussions && users &&
+                        {discussions && users && pinned &&
                             discussions.map((discussion, i) => {
                                 let user = users.find(user => user.id == discussion.createUserId);
                                 if (!user)
@@ -143,6 +191,9 @@ export default (({
 
                                 return <div className="resource-entry" key={discussion.id} ref={i == discussions.length - 1 && more ? ref : undefined}>
                                     <span className="page-name">
+                                        <button type="button" onClick={() => PinDiscussion(discussion.id)} disabled={!self || !category?.Permitted(self, CRUD.Update)}>
+                                            {pinned.findIndex(p => discussion.id == p.id) != -1 ? `📌` : `📍`}
+                                        </button>
                                         <Link href="/discussions/[did]" as={`/discussions/${discussion.id}`}>
                                             {discussion.name}
                                         </Link>
@@ -158,12 +209,12 @@ export default (({
                         }
                         {loading && <Spinner />}
                     </Cell>
-                    {user && category.Permitted(user, CRUD.Create) && <Cell x={1} y={4} width={3}>
+                    {self && category.Permitted(self, CRUD.Create) && <Cell x={1} y={4} width={3}>
                         <h2>Create a discussion</h2>
                         <Form onSubmit={CreateDiscussion}>
                             <input type="text" name="title" placeholder="Title" />
                             <Composer />
-                            <br/>
+                            <br />
                             <input type="submit" value="Post discussion!" />
                         </Form>
                     </Cell>}

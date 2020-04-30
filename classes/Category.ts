@@ -1,4 +1,4 @@
-import {IsInt,  IsString,  IsOptional, IsObject} from "class-validator";
+import { IsInt, IsString, IsOptional, IsObject } from "class-validator";
 import { Entity, AccessControlledEntity } from "./Entity";
 import { Dictionary, SearchQuery } from "../interfaces";
 import { plainToClass } from "class-transformer";
@@ -70,7 +70,7 @@ export class Category extends AccessControlledEntity {
         const [categoryTree, setCategoryTree] = useState<ParentCategory[]>();
 
         useEffect(() => {
-            if(categories)
+            if (categories)
                 setCategoryTree(treeify<ParentCategory>(categories as ParentCategory[], "id", "parentId", "children"));
         }, [categories]);
 
@@ -99,12 +99,12 @@ export class ParentCategory extends Category {
 
     public GetTreeLocation(cid: number): ParentCategory[] | null {
         let idx = this.children.find(cat => cat.id == cid);
-        if(idx != null)
+        if (idx != null)
             return [idx];
-        
-        for(let i = 0; i < this.children.length; i++){
+
+        for (let i = 0; i < this.children.length; i++) {
             let res = this.children[i].GetTreeLocation(cid);
-            if(res != null)
+            if (res != null)
                 return [this.children[i]].concat(res);
         }
         return null;
@@ -112,5 +112,25 @@ export class ParentCategory extends Category {
 
     public Flatten(): Category[] {
         return this.children.reduce<Category[]>((acc, cat) => acc.concat(cat.Flatten()), []);
+    }
+
+    public PinnedContent(only: boolean = false): number[] | null {
+        let pinned = (this.values["pinned"] || "")
+            .split(",")
+            .map(n => +n)
+            .filter(n => !isNaN(n));
+        console.log(pinned);
+
+        if (only)
+            if (pinned.length == 0)
+                return [0];
+            else
+                return pinned;
+
+        pinned = pinned.concat(this.children.reduce<number[]>((acc, child) => acc.concat(child.PinnedContent() || []), []));
+        if (pinned.length == 0)
+            return [0];
+        else
+            return pinned;
     }
 }

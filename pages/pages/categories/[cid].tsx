@@ -7,10 +7,12 @@ import { Category, ParentCategory, Page } from "../../../classes";
 import { useRouter } from "next/router";
 import { useInView } from "react-intersection-observer";
 import moment from "moment";
+import { CRUD } from "../../../classes/Entity";
 // import { API_ENTITY } from "../../../utils/Constants";
 
 export default (({
     setInfo,
+    user: self
 }) => {
     useEffect(() => setInfo("", []), []);
     const Router = useRouter();
@@ -50,6 +52,10 @@ export default (({
         }
     }
 
+    const [, pinned] = Page.usePage({
+        ids: category?.PinnedContent(true) || [0]
+    });
+
     let children: ParentCategory[] = crumbs?.[crumbs?.length - 1]?.children || [];
 
     useEffect(() => setInfo(category?.name || "", []), [tree]);
@@ -61,6 +67,17 @@ export default (({
             fetchMoreComments();
 
     }, [inView])*/
+
+    async function PinPage(id: number) {
+        let pinned: number[] = category?.PinnedContent() || [];
+        if (pinned.indexOf(id) == -1) {
+            pinned.push(id);
+        } else {
+            pinned.splice(pinned.indexOf(id), 1);
+        }
+        category!.values.pinned = pinned.filter(n => n != 0).join(",");
+        await Category.Update(category!);
+    }
 
     return <>
         <Grid
@@ -95,24 +112,52 @@ export default (({
                         </p>
                         <Link href={`/pages/edit?cid=${cid}`}><a>Create a page here!</a></Link>
                     </Cell>
-                    {children && children.length > 0 &&
+                    {children && pinned && (children.length > 0 || pinned.length > 0) &&
                         <Cell x={1} y={2} width={3}>
-                            <h2>Subcategories</h2>
-                            <ul className="category-list">
-                                {children.map(child => {
-                                    return (<li key={child.id}>
-                                        <Link href="/pages/categories/[cid]" as={`/pages/categories/${child.id}`}><a>{child.name}</a></Link>
-                                        <p>
-                                            {child.description}
-                                        </p>
-                                    </li>)
+                            {children.length > 0 && <><h2>Subcategories</h2>
+                                <ul className="category-list">
+                                    {children.map(child => {
+                                        return (<li key={child.id}>
+                                            <Link href="/pages/categories/[cid]" as={`/pages/categories/${child.id}`}><a>{child.name}</a></Link>
+                                            <p>
+                                                {child.description}
+                                            </p>
+                                        </li>)
+                                    })}
+                                </ul>
+                                <br />
+                            </>}
+                            {pinned.length > 0 && <><h2>Pinned content:</h2>
+                                {pinned.map((page, i) => {
+                                    let user = users.find(user => user.id == page.createUserId);
+                                    if (!user)
+                                        return null;
+
+                                    // let img = page.values.photos?.split(",")?.[0];
+                                    return <div className="resource-entry" key={page.id} ref={i == pages.length - 1 && more ? ref : undefined}>
+                                        {/* <img src={img ? `${API_ENTITY("File")}/raw/${+img}?size=200` : "/res/img/logo.svg"} className="page-photo" /> */}
+                                        <span className="page-name">
+                                            <button type="button" onClick={() => PinPage(page.id)} disabled={!self || !category?.Permitted(self, CRUD.Update)}>
+                                                {pinned.findIndex(p => page.id == p.id) != -1 ? `📌` : `📍`}
+                                            </button>
+                                            <Link href="/pages/[pid]" as={`/pages/${page.id}`}>
+                                                {page.name}
+                                            </Link>
+                                        </span>
+                                        <span className="page-author">
+                                            <Link href="/user/[uid]" as={`/user/${user.id}`}><a>{user.username}</a></Link>
+                                        </span>
+                                        <span className="page-time">
+                                            {moment(page.editDate).fromNow()}
+                                        </span>
+                                    </div>
                                 })}
-                            </ul>
+                            </>}
                         </Cell>
                     }
                     <Cell x={1} y={3} width={3}>
                         <h2>Pages</h2>
-                        {pages && users &&
+                        {pages && users && pinned &&
                             pages.map((page, i) => {
                                 let user = users.find(user => user.id == page.createUserId);
                                 if (!user)
@@ -122,6 +167,9 @@ export default (({
                                 return <div className="resource-entry" key={page.id} ref={i == pages.length - 1 && more ? ref : undefined}>
                                     {/* <img src={img ? `${API_ENTITY("File")}/raw/${+img}?size=200` : "/res/img/logo.svg"} className="page-photo" /> */}
                                     <span className="page-name">
+                                        <button type="button" onClick={() => PinPage(page.id)} disabled={!self || !category?.Permitted(self, CRUD.Update)}>
+                                            {pinned.findIndex(p => page.id == p.id) != -1 ? `📌` : `📍`}
+                                        </button>
                                         <Link href="/pages/[pid]" as={`/pages/${page.id}`}>
                                             {page.name}
                                         </Link>

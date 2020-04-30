@@ -13,6 +13,7 @@ import { API_ENTITY } from "../../utils/Constants";
 import { Comments } from "../../components/Comment";
 import Composer from "../../components/Composer";
 import Form from "../../components/Form";
+import "resize-observer-polyfill";
 
 function size(number: number): string {
     const suffixes = ["KB", "MB", "GB"];
@@ -106,7 +107,7 @@ export default (({
         }
     }
 
-    const isPage = ("" + page?.type).indexOf("page") == 0 || ("" + page?.type).indexOf("page") == 1;
+    const isPage = true;
 
     return <>
         <Grid

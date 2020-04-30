@@ -8,6 +8,7 @@ import { useEffect, useState, useRef } from "react";
 import { Spinner } from "./Layout";
 import Composer from "./Composer";
 import Form from "./Form";
+import ResizeObserver from "resize-observer-polyfill";
 
 const Comments = (({
     parent,
@@ -111,13 +112,19 @@ const Comments = (({
     const divRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         if(autoScroll && divRef){
-            if(divRef.current!.scrollTop >= (divRef.current!.scrollHeight - divRef.current!.clientHeight * 5/4)){
-                divRef.current!.scrollTo({
-                    top: divRef.current!.scrollHeight,
-                    left: 0,
-                    behavior: "smooth"
-                });
-            }
+            let resizeObserver = new ResizeObserver((entries) => {
+                let entry = entries[0].target;
+                console.log(entry);
+                if(entry.scrollTop >= (entry.scrollHeight - entry.clientHeight * 5/4)){
+                    entry.scrollTo({
+                        top: entry.scrollHeight - entry.clientHeight,
+                        left: 0,
+                        behavior: "smooth"
+                    });
+                }
+            });
+            resizeObserver.observe(divRef.current!);
+            return () => resizeObserver.disconnect();
         }
     });
 

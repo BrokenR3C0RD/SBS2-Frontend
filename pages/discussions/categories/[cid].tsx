@@ -163,7 +163,7 @@ export default (({
                                             <button type="button" onClick={() => PinDiscussion(discussion.id)} disabled={!self || !category?.Permitted(self, CRUD.Update)}>
                                                 {pinned.findIndex(p => discussion.id == p.id) != -1 ? `📌` : `📍`}
                                             </button>
-                                            <Link href="/pages/[pid]" as={`/pages/${discussion.id}`}>
+                                            <Link href="/discussions/[did]" as={`/discussions/${discussion.id}`}>
                                                 {discussion.name}
                                             </Link>
                                         </span>

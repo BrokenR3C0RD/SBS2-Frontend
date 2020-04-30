@@ -147,7 +147,7 @@ export default (({
                                         </li>)
                                     })}
                                 </ul>
-                                <br/>
+                                <br />
                             </>}
                             {pinned.length > 0 && <>
                                 <h2>Pinned content:</h2>
@@ -189,9 +189,9 @@ export default (({
 
                                 return <div className="resource-entry" key={discussion.id} ref={i == discussions.length - 1 && more ? ref : undefined}>
                                     <span className="page-name">
-                                        <button type="button" onClick={() => PinDiscussion(discussion.id)} disabled={!self || !category?.Permitted(self, CRUD.Update)}>
+                                        {((self && category?.Permitted(self, CRUD.Update)) || pinned.findIndex(p => discussion.id == p.id) != -1) && <button type="button" onClick={() => PinDiscussion(discussion.id)} disabled={!self || !category?.Permitted(self, CRUD.Update)}>
                                             {pinned.findIndex(p => discussion.id == p.id) != -1 ? `📌` : `📍`}
-                                        </button>
+                                        </button>}
                                         <Link href="/discussions/[did]" as={`/discussions/${discussion.id}`}>
                                             {discussion.name}
                                         </Link>

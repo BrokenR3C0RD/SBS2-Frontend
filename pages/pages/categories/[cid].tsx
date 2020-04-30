@@ -167,9 +167,9 @@ export default (({
                                 return <div className="resource-entry" key={page.id} ref={i == pages.length - 1 && more ? ref : undefined}>
                                     {/* <img src={img ? `${API_ENTITY("File")}/raw/${+img}?size=200` : "/res/img/logo.svg"} className="page-photo" /> */}
                                     <span className="page-name">
-                                        <button type="button" onClick={() => PinPage(page.id)} disabled={!self || !category?.Permitted(self, CRUD.Update)}>
+                                        {((self && category?.Permitted(self, CRUD.Update)) || pinned.findIndex(p => page.id == p.id) != -1) && <button type="button" onClick={() => PinPage(page.id)} disabled={!self || !category?.Permitted(self, CRUD.Update)}>
                                             {pinned.findIndex(p => page.id == p.id) != -1 ? `📌` : `📍`}
-                                        </button>
+                                        </button>}
                                         <Link href="/pages/[pid]" as={`/pages/${page.id}`}>
                                             {page.name}
                                         </Link>

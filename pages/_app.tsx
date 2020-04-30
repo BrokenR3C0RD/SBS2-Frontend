@@ -26,7 +26,7 @@ const App = (({
 
     const [, tree] = Category.useCategoryTree();
     const pageTree = tree?.find(category => category.name === "Pages");
-    const discussionTree = tree?.find(category => category.name === "Discussions");
+    //const discussionTree = tree?.find(category => category.name === "Discussions");
 
     const [, pinnedPages] = Page.usePage({
         ids: pageTree?.PinnedContent() || [0]
@@ -296,7 +296,7 @@ const App = (({
                         })}
                     </ul>
                 </li>
-                <li onClick={toggle} data-open="false">
+                {/* <li onClick={toggle} data-open="false">
                     <Link href="/discussions/categories/[cid]" as={`/discussions/categories/${tree?.find(page => page.name === "Discussions")?.id}`}><a>Discussions</a></Link>
                     <ul>
                         {
@@ -327,7 +327,7 @@ const App = (({
                             }
                         })}
                     </ul>
-                </li>
+                </li> */}
 
 
                 {user && user.super &&

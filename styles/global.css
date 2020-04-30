@@ -219,6 +219,8 @@ nav #user-info .user-avatar {
     margin: 0;
     padding: .25em;
     min-height: 2em;
+    max-height: max-content;
+    height: 100%;
     max-width: calc(100% - 2.75em);
     background-color: var(--secondary-bg);
     flex-grow: 1;

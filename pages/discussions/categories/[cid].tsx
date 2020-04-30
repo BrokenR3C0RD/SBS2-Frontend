@@ -210,7 +210,7 @@ export default (({
                     {self && category.Permitted(self, CRUD.Create) && <Cell x={1} y={4} width={3}>
                         <h2>Create a discussion</h2>
                         <Form onSubmit={CreateDiscussion}>
-                            <input type="text" name="title" placeholder="Title" />
+                            <input type="text" name="title" placeholder="Title" minLength={1} />
                             <Composer />
                             <br />
                             <input type="submit" value="Post discussion!" />

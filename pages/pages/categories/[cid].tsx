@@ -17,10 +17,11 @@ export default (({
     useEffect(() => setInfo("", []), []);
     const Router = useRouter();
 
-
     const { cid } = Router.query;
-    const [, tree] = Category.useCategoryTree();
+    const [, tree, allPinned, mutate] = Category.useCategoryTree();
     const [ref, inView] = useInView();
+
+    let pinned = allPinned.filter(pin => pin.parentId === +cid);
 
     const [users, pages, loading, loadMore, more] = Page.usePages({
         parentIds: [+cid],
@@ -52,10 +53,6 @@ export default (({
         }
     }
 
-    const [, pinned] = Page.usePage({
-        ids: category?.PinnedContent(true) || [0]
-    });
-
     let children: Category[] = crumbs?.[crumbs?.length - 1]?.children || [];
 
     useEffect(() => setInfo(category?.name || "", []), [tree]);
@@ -77,6 +74,7 @@ export default (({
         }
         category!.values.pinned = pinned.filter(n => n != 0).join(",");
         await Category.Update(category!);
+        mutate();
     }
 
     return <>

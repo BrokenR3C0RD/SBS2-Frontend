@@ -10,7 +10,7 @@ export type Dictionary<T> = {
 }
 
 export interface SearchQuery {
-    ids?: number[],
+    ids?: number[] | null,
     name?: string,
     keyword?: string,
     type?: string,

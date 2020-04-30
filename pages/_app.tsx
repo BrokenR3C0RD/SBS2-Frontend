@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import "normalize.css";
 import { useEffect, useRef, useState } from "react";
-import { Category, Page, BaseUser, Discussion } from "../classes";
+import { Category, Page, BaseUser } from "../classes";
 import "../styles/dark.css";
 import "../styles/global.css";
 import "../styles/light.css";
@@ -24,17 +24,10 @@ const App = (({
     const user = useUser();
     const [, settings, mutateSettings] = useSettings();
 
-    const [, tree] = Category.useCategoryTree();
+    const [, tree, pins] = Category.useCategoryTree();
     const pageTree = tree?.find(category => category.name === "Pages");
     const discussionTree = tree?.find(category => category.name === "Discussions");
 
-    const [, pinnedPages] = Page.usePage({
-        ids: pageTree?.PinnedContent() || [0]
-    });
-
-    const [, pinnedDiscussions] = Discussion.useDiscussion({
-        ids: discussionTree?.PinnedContent() || [0]
-    });
 
     const [title, setTitle] = useState("");
     const [sidebar, setSidebar] = useState(false);
@@ -269,14 +262,14 @@ const App = (({
                     <ul>
                         <li key={-1}><Link href="/pages/edit"><a>📝 Create a new page!</a></Link></li>
                         {
-                            pageTree && pinnedPages && pinnedPages.filter(p => p.parentId === pageTree.id).map(page =>
+                            pageTree && pins && pins.filter(p => p.parentId === pageTree.id).map(page =>
                                 <li key={page.id}>
                                     <Link href="/pages/[pid]" as={`/pages/${page.id}`}><a>{`📌`} {page.name}</a></Link>
                                 </li>
                             )
                         }
-                        {pageTree && pinnedPages && pageTree.children.map(function render(cat) {
-                            let pinned = pinnedPages.filter(page => page.parentId == cat.id);
+                        {pageTree && pins && pageTree.children.map(function render(cat) {
+                            let pinned = pins.filter(page => page.parentId == cat.id);
 
                             if (cat.children && cat.children.length == 0 && pinned.length == 0) {
                                 return <li key={cat.id}><Link href="/pages/categories/[cid]" as={`/pages/categories/${cat.id}`}><a>{cat.name}</a></Link></li>;
@@ -300,14 +293,14 @@ const App = (({
                     <Link href="/discussions/categories/[cid]" as={`/discussions/categories/${tree?.find(page => page.name === "Discussions")?.id}`}><a>Discussions</a></Link>
                     <ul>
                         {
-                            discussionTree && pinnedDiscussions && pinnedDiscussions.filter(p => p.parentId === discussionTree.id).map(discussion =>
+                            discussionTree && pins && pins.filter(p => p.parentId === discussionTree.id).map(discussion =>
                                 <li key={discussion.id}>
                                     <Link href="/discussions/[did]" as={`/discussions/${discussion.id}`}><a>{`📌`} {discussion.name}</a></Link>
                                 </li>
                             )
                         }
-                        {discussionTree && pinnedDiscussions && discussionTree.children.map(function render(cat) {
-                            let pinned = pinnedDiscussions.filter(discussion => discussion.parentId == cat.id);
+                        {discussionTree && pins && discussionTree.children.map(function render(cat) {
+                            let pinned = pins.filter(discussion => discussion.parentId == cat.id);
 
                             if (cat.children && cat.children.length == 0 && pinned.length == 0) {
                                 return <li key={cat.id}><Link href="/discussions/categories/[cid]" as={`/discussions/categories/${cat.id}`}><a>{cat.name}</a></Link></li>;

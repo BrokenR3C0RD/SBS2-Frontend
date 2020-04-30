@@ -20,8 +20,10 @@ export default (({
     const Router = useRouter();
 
     const { cid } = Router.query;
-    const [, tree] = Category.useCategoryTree();
+    const [, tree, allPinned, mutate] = Category.useCategoryTree();
     const [ref, inView] = useInView();
+
+    let pinned = allPinned.filter(pin => pin.parentId === +cid);
 
     const [users, discussions, loading, loadMore, more] = Discussion.useDiscussions({
         parentIds: [+cid],
@@ -78,18 +80,6 @@ export default (({
 
     useEffect(() => setInfo(category?.name || "", []), [tree]);
 
-    /*const [ref, inView] = useInView();
-
-    useEffect(() => {
-        if (inView)
-            fetchMoreComments();
-
-    }, [inView])*/
-
-    const [, pinned] = Discussion.useDiscussion({
-        ids: category?.PinnedContent(true) || [0]
-    });
-
     async function PinDiscussion(id: number) {
         let pinned: number[] = category?.PinnedContent() || [];
         if (pinned.indexOf(id) == -1) {
@@ -99,6 +89,7 @@ export default (({
         }
         category!.values.pinned = pinned.filter(n => n != 0).join(",");
         await Category.Update(category!);
+        mutate();
     }
 
     return <>

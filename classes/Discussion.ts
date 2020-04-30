@@ -95,7 +95,7 @@ export class Discussion extends Content {
             }
 
             return () => aborter.abort();
-        }, [fetchMore, query]);
+        }, [fetchMore, lquery]);
 
         return [users, content, loading, () => setFetchMore(true), more];
     }

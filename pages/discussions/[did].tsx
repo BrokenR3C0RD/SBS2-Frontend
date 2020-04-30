@@ -28,6 +28,7 @@ export default (({
     const [, users] = BaseUser.useUser({
         ids: [discussion?.createUserId as number, discussion?.editUserId as number]
     });
+    
     let user = users?.find(user => user.id == discussion?.createUserId)
     let editUser = users?.find(user => user.id == discussion?.editUserId);
 

@@ -5,6 +5,7 @@ import { plainToClass } from "class-transformer";
 import { DoRequest } from "../utils/Request";
 import { API_ENTITY } from "../utils/Constants";
 import { useEffect, useState } from "react";
+import { Content } from "./Content";
 
 function treeify<T>(list: T[], idAttr: string, parentAttr: string, childrenAttr: string): T[] {
     if (!idAttr) idAttr = 'id';
@@ -103,16 +104,28 @@ export class Category extends AccessControlledEntity {
         return Entity.useEntity(query, "Category", async (e) => plainToClass(Category, e)) as [any, Category[] | null, () => void];
     }
 
-    public static useCategoryTree(): [any, Category[] | null, () => void] {
+    public static useCategoryTree(): [any, Category[] | null, Content[], () => void] {
         const [err, categories, mutate] = Entity.useEntity({}, "Category", async (e) => plainToClass(Category, e))
-        const [categoryTree, setCategoryTree] = useState<Category[]>();
+        const [lastCats, setLastCats] = useState<Category[]>([]);
+        let [categoryTree, setCategoryTree] = useState<Category[]>();
+        let [pinned, setPinned] = useState<number[]>([0]);
+        const [pinnedContent, setPinnedContent] = useState<Content[]>([]);
+        const [, content] = Content.useContent({
+            ids: pinned
+        }) 
 
         useEffect(() => {
-            if (categories)
-                setCategoryTree(treeify<Category>(categories as Category[], "id", "parentId", "children"));
-        }, [categories]);
+            if(categories && categories !== lastCats){
+                setCategoryTree(categoryTree = treeify<Category>(categories as Category[], "id", "parentId", "children"));
+                setLastCats(categories as Category[]);
+                setPinned(pinned = categoryTree.reduce<number[]>((acc, cat) => acc.concat(cat.PinnedContent() || []), []).filter(pin => pin != 0));
+            } else if(categories && content && content != pinnedContent){
+                setPinnedContent(content);
+            }
+            
+        }, [categories, content, pinned]);
 
-        return [err, categoryTree || null, mutate];
+        return [err, categoryTree || null, pinnedContent, mutate];
     }
 
     public static async Update(category: Partial<Category>): Promise<Category> {

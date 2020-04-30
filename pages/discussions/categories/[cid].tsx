@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { PageProps, Dictionary } from "../../../interfaces";
 import { Grid, Cell, Spinner } from "../../../components/Layout";
-import { Category, ParentCategory, Discussion } from "../../../classes";
+import { Category, Discussion } from "../../../classes";
 import { useRouter } from "next/router";
 import { useInView } from "react-intersection-observer";
 import moment from "moment";
@@ -34,9 +34,9 @@ export default (({
             loadMore();
     }, [inView]);
 
-    let category: ParentCategory | undefined = undefined;
+    let category: Category | undefined = undefined;
 
-    let crumbs: ParentCategory[] = [];
+    let crumbs: Category[] = [];
     if (tree) {
         let root = tree.find(category => category.name == "Discussions");
         if (root && root.id == +cid) {
@@ -74,7 +74,7 @@ export default (({
         await Router.push("/discussions/[did]", `/discussions/${newDiscussion.id}`);
     }
 
-    let children: ParentCategory[] = crumbs?.[crumbs?.length - 1]?.children || [];
+    let children: Category[] = crumbs?.[crumbs?.length - 1]?.children || [];
 
     useEffect(() => setInfo(category?.name || "", []), [tree]);
 

@@ -25,11 +25,8 @@ const App = (({
     const [, settings, mutateSettings] = useSettings();
 
     const [, tree] = Category.useCategoryTree();
-    console.log(tree);
     const pageTree = tree?.find(category => category.name === "Pages");
     const discussionTree = tree?.find(category => category.name === "Discussions");
-
-    console.log(pageTree, discussionTree);
 
     const [, pinnedPages] = Page.usePage({
         ids: pageTree?.PinnedContent() || [0]

@@ -37,7 +37,7 @@ const Comments = (({
             setLastPos(document.querySelector(".comments-list")!.scrollHeight - document.querySelector(".comments-list")!.scrollTop);
             setPreparingScroll(true);
         }
-    }, [inView]);
+    }, [inView, preparingScroll, fetching]);
 
     useEffect(() => {
         if(preparingScroll && fetching) {

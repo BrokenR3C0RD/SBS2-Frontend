@@ -233,6 +233,13 @@ nav #user-info .user-avatar {
     padding-bottom: 2em;
 }
 
+.discussion-comments .comment .buttons {
+    display: none;
+}
+.discussion-comments .comment .editdate {
+    margin-left: .5em;
+}
+
 .discussion-view .topbutton {
     position: absolute;
     right: .25em;

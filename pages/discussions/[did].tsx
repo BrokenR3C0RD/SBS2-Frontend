@@ -11,6 +11,7 @@ import { Comments } from "../../components/Comment";
 import { CRUD } from "../../classes/Entity";
 import Form from "../../components/Form";
 import Composer from "../../components/Composer";
+import { Variable } from "../../utils/User";
 
 export default (({
     setInfo,
@@ -35,11 +36,31 @@ export default (({
     const [, tree] = Category.useCategoryTree();
 
     const [useComposer, setUseComposer] = useState<boolean>(false);
-    let [minimize, setMinimize] = useState<boolean>(true);
+    let [minimize, setMinimize] = useState<boolean>();
     useEffect(() => setInfo(discussion?.name || "", [], true), [discussions]);
 
     let [commentCode, setCommentCode] = useState("");
-    const [commentMarkup, setCommentMarkup] = useState("plaintext");
+    const [commentMarkup, setCommentMarkup] = useState("");
+
+    useEffect(() => {
+        if(commentMarkup == ""){
+            Variable("discussion-markup")
+                .then(markup => setCommentMarkup(markup || "plaintext"))
+        } else if(self){
+            Variable("discussion-markup", commentMarkup);
+        }
+    }, [commentMarkup]);
+
+    useEffect(() => {
+        Variable("minimize-topic")
+            .then(min => setMinimize(min == "true"));
+    }, []);
+
+
+    useEffect(() => {
+        if(minimize)
+            Variable("minimize-topic", minimize.toString())
+    }, [minimize])
 
     async function PostComment() {
         if(textRef.current){

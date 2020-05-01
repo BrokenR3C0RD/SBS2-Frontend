@@ -54,14 +54,26 @@ export default (({
                             as = `/user/${c.parentId}`;
                         }
 
+                        let userMessage = <Link href="/user/[uid]"><a style={{ color: "blue" }}>{cusers[0]?.username}</a></Link>;
+                        if (cusers.length > 1) {
+                            userMessage = <>
+                                <Link href="/user/[uid]"><a style={{ color: "blue" }}>{cusers[0]?.username}</a></Link>
+                                {` and ${cusers.length - 1} other${pl(cusers.length - 1)}`}
+                            </>
+                        }
+
                         return <li key={"c" + comment.parentId}>
                             <div className="imgs">
-                                {cusers.slice(0, 4).map(user => <Link href="/user/[uid]" as={`/user/${user!.id}`}><a><img src={user!.GetAvatarURL(64)} title={user!.username} /></a></Link>)}
+                                <Link href={href} as={as}>
+                                    <a>
+                                        {cusers.slice(0, 4).map(user => <Link href="/user/[uid]" as={`/user/${user!.id}`}><a><img src={user!.GetAvatarURL(64)} title={user!.username} /></a></Link>)}
+                                    </a>
+                                </Link>
                             </div>
                             <div className="content">
-                                <span>{comment.count} comment{pl(comment.count)} on <Link href={href} as={as}>
+                                <span>{userMessage} <Link href={href} as={as}>
                                     <a>
-                                        {c.name}
+                                        {` commented on ${c.name}`}
                                     </a>
                                 </Link></span>
                                 <span className="time">{Moment(comment.lastDate).fromNow()}</span>
@@ -87,7 +99,7 @@ export default (({
                                     if (user != null)
                                         content = <>
                                             <Link href="/user/[uid]" as={`/user/${user.id}`}>
-                                                <a>
+                                                <a style={{ color: "blue" }}>
                                                     {user.username}
                                                 </a>
                                             </Link>
@@ -95,12 +107,12 @@ export default (({
                                         </>;
                                 } else {               // Some type of content was created
                                     content = <>
-                                        <Link href="/user/[uid]" as={`/user/${user!.id}`}><a>
+                                        <Link href="/user/[uid]" as={`/user/${user!.id}`}><a style={{ color: "blue" }}>
                                             {user!.username}
                                         </a>
                                         </Link>
-                                        {` created `}
                                         <Link href={href} as={as}><a>
+                                            {` created `}
                                             {c!.name}
                                         </a></Link>
                                     </>;
@@ -113,11 +125,11 @@ export default (({
                                     </i>
                                 } else {
                                     content = <>
-                                        <Link href="/user/[uid]" as={`/user/${user!.id}`}><a>
+                                        <Link href="/user/[uid]" as={`/user/${user!.id}`}><a style={{ color: "blue" }}>
                                             {user!.username}
                                         </a></Link>
-                                        {` edited `}
                                         <Link href={href} as={as}><a>
+                                            {` edited `}
                                             {c!.name}
                                         </a></Link>
                                     </>;
@@ -125,7 +137,7 @@ export default (({
                                 break;
                             case CRUD.Delete:          // Something was deleted :(
                                 content = <>
-                                    <Link href="/user/[uid]" as={`/user/${user!.id}`}><a>
+                                    <Link href="/user/[uid]" as={`/user/${user!.id}`}><a style={{ color: "blue" }}>
                                         {user!.username}
                                     </a>
                                     </Link>
@@ -135,7 +147,7 @@ export default (({
                                 break;
                         }
                         return <li key={event.id} ref={events.length - 1 == i ? ref : undefined}>
-                            {event.contentId == self?.id && event.action == CRUD.Update ? <></> : <Link href="/user/[uid]" as={`/user/${user?.id}`}><img title={user?.username} src={user?.GetAvatarURL(128)} /></Link>}
+                            {event.contentId == self?.id && event.action == CRUD.Update ? <></> : <Link href={href} as={as}><img title={user?.username} src={user?.GetAvatarURL(128)} /></Link>}
                             <div className="content">
                                 <span>{content}</span>
                                 <span className="time">{Moment(event.date).fromNow()}</span>

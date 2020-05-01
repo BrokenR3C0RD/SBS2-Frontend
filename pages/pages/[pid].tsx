@@ -13,6 +13,7 @@ import { API_ENTITY } from "../../utils/Constants";
 import { Comments } from "../../components/Comment";
 import Composer from "../../components/Composer";
 import Form from "../../components/Form";
+import { Variable } from "../../utils/User";
 
 function size(number: number): string {
     const suffixes = ["KB", "MB", "GB"];
@@ -62,7 +63,19 @@ export default (({
     }
 
     const [commentCode, setCommentCode] = useState<string>("");
-    const [commentMarkup, setCommentMarkup] = useState<string>("12y");
+    const [commentMarkup, setCommentMarkup] = useState<string>("");
+
+    useEffect(() => {
+        Variable("comment-markup")
+            .then(markup => setCommentMarkup(markup || "12y"));
+    }, []);
+
+    useEffect(() => {
+        if(commentMarkup !== ""){
+            Variable("comment-markup", commentMarkup);
+        }
+    }, [commentMarkup])
+
 
     async function PostComment() {
         if (commentCode.trim().length == 0)

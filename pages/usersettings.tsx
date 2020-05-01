@@ -18,7 +18,7 @@ export default (({
     const Router = useRouter();
 
     const [pageCode, setPageCode] = useState<string>("");
-    const [pageMarkup, setPageMarkup] = useState<string>("12y");
+    const [userPageMarkup, setUserPageMarkup] = useState<string>("12y");
     const [uploaded, setUploaded] = useState<boolean>(false);
     const [errors, setErrors] = useState<string>();
     const [sensErrors, setSensErrors] = useState<string>();
@@ -29,13 +29,32 @@ export default (({
     useEffect(() => { user == null && Router.replace("/") });
     useEffect(() => setInfo("User Settings", []), []);
 
+    const [pageMarkup, setPageMarkup] = useState<string>();
+    const [commentMarkup, setCommentMarkup] = useState<string>();
+    const [discussionMarkup, setDiscussionMarkup] = useState<string>();
+    const [siteCSS, setSiteCSS] = useState<string>("");
+
+    useEffect(() => {
+        Variable("page-markup")
+            .then(markup => setPageMarkup(markup || "bbcode"));
+
+        Variable("comment-markup")
+            .then(markup => setCommentMarkup(markup || "12y"));
+
+        Variable("discussion-markup")
+            .then(markup => setDiscussionMarkup(markup || "plaintext"));
+
+        Variable("SiteCSS")
+            .then(css => setSiteCSS(css || ""));
+    }, [])
+
     const [, pages, mutate] = UserPage.useUserPage(user);
     let page = pages?.[0];
 
     useEffect(() => {
         if (page) {
             setPageCode(page.content);
-            setPageMarkup(page.values.markupLang);
+            setUserPageMarkup(page.values.markupLang);
         }
     }, [pages])
 
@@ -70,6 +89,13 @@ export default (({
     async function UpdateSettings(data: Dictionary<string | number | boolean>) {
         try {
             await Variable("user_settings", JSON.stringify(Object.assign({}, settings, data)));
+            
+            await Variable("page-markup", pageMarkup!);
+            await Variable("comment-markup", commentMarkup!);
+            await Variable("discussion-markup", discussionMarkup!);
+            await Variable("SiteCSS", siteCSS!);
+
+            
             mutateSettings();
             Router.push("/");
         } catch (e) {
@@ -86,7 +112,7 @@ export default (({
                 name: "Userpage",
                 content: pageCode,
                 values: {
-                    markupLang: pageMarkup
+                    markupLang: userPageMarkup
                 },
                 permissions: {
                     0: "cr"
@@ -104,9 +130,9 @@ export default (({
     async function UpdateUserInfo(data: Dictionary<string | number | boolean>) {
         try {
             setSensErrors("");
-            if(data["old_password"] == "")
+            if (data["old_password"] == "")
                 throw "You must provide your current password!";
-            
+
             await UpdateSenstiveInformation({
                 oldPassword: data["old_password"] as string,
                 password: (data["new_password"] as string || undefined),
@@ -115,7 +141,7 @@ export default (({
             });
 
             await Router.push("/");
-        } catch(e){
+        } catch (e) {
             console.log("Updating sensitive info failed: " + e.stack || e.toString());
             setSensErrors(e.toString());
         }
@@ -143,9 +169,38 @@ export default (({
                             <option value="light">Light</option>
                         </select>
                     </label>
+                    <h2>Default markups:</h2>
+                    <label>
+                        Pages:
+                        <select name="pagemarkup" value={pageMarkup} onChange={(evt) => setPageMarkup(evt.currentTarget.value)} title="Markup language">
+                            <option value="12y">12-Y-Markup</option>
+                            <option value="bbcode">BBCode</option>
+                            <option value="plaintext">Plaintext</option>
+                        </select>
+                    </label>
+                    <label>
+                        Comments:
+                        <select name="commentmarkup" value={commentMarkup} onChange={(evt) => setCommentMarkup(evt.currentTarget.value)} title="Markup language">
+                            <option value="12y">12-Y-Markup</option>
+                            <option value="bbcode">BBCode</option>
+                            <option value="plaintext">Plaintext</option>
+                        </select>
+                    </label>
+                    <label>
+                        Discussions:
+                        <select name="discussionmarkup" value={discussionMarkup} onChange={(evt) => setDiscussionMarkup(evt.currentTarget.value)} title="Markup language">
+                            <option value="12y">12-Y-Markup</option>
+                            <option value="bbcode">BBCode</option>
+                            <option value="plaintext">Plaintext</option>
+                        </select>
+                    </label>
                     <label>
                         SiteJS:
                         <textarea name="SiteJS" defaultValue={(settings?.["SiteJS"] as string) || ""} />
+                    </label>
+                    <label>
+                        SiteCSS:
+                        <textarea name="SiteCSS" value={siteCSS} onChange={evt => setSiteCSS(evt.currentTarget.value)} />
                     </label>
                     Avatar:
                     <div {...getRootProps({
@@ -188,7 +243,7 @@ export default (({
             </Cell>
             <Cell x={1} y={3} width={2}>
                 <h2>User page</h2>
-                <Composer code={pageCode} markup={pageMarkup} onChange={(code, markup) => { setPageCode(code); setPageMarkup(markup); }} />
+                <Composer code={pageCode} markup={userPageMarkup} onChange={(code, markup) => { setPageCode(code); setUserPageMarkup(markup); }} />
                 <button onClick={UpdatePage}>Update!</button>
                 {pageErrors && <p className="error">{pageErrors}</p>}
             </Cell>

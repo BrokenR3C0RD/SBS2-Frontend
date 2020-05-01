@@ -13,6 +13,7 @@ import { API_ENTITY } from "../../utils/Constants";
 import { CRUD } from "../../classes/Entity";
 import { useDropzone } from "react-dropzone";
 import { UploadFile } from "../../utils/Request";
+import { Variable } from "../../utils/User";
 
 function size(number: number): string {
     const suffixes = ["KB", "MB", "GB"];
@@ -55,7 +56,6 @@ export default (({
             setCode("");
             setPerms([]);
             setProgramPage(false);
-            setMarkup("bbcode");
             setKeywords([]);
         }
     }, [pid]);
@@ -91,7 +91,7 @@ export default (({
     const [key, setKey] = useState<string>();
     const [title, setTitle] = useState<string>();
     const [code, setCode] = useState<string>("");
-    const [markup, setMarkup] = useState<string>("bbcode")
+    const [markup, setMarkup] = useState<string>("");
     const [compat, setCompat] = useState<Dictionary<boolean>>({
         o3ds: false,
         n3ds: false,
@@ -111,6 +111,16 @@ export default (({
     const [keywords, setKeywords] = useState<string[]>([]);
 
     const [errors, setErrors] = useState<string[]>([]);
+
+    useEffect(() => {
+        Variable("page-markup")
+            .then(markup => markup == "" && setMarkup(markup || "bbcode"));
+    }, []);
+
+    useEffect(() => {
+        Variable("page-markup", markup);
+    }, [markup]);
+
 
     async function SubmitPage(data: Dictionary<string | boolean | number>) {
         setErrors([]);

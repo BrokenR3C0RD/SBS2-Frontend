@@ -161,6 +161,9 @@ export async function GetVariableNames() {
 export async function Variable(key: string): Promise<string | null>
 export async function Variable(key: string, value: string): Promise<boolean>
 export async function Variable(key: string, value?: string): Promise<string | null | boolean> {
+    if((localStorage.getItem("sbs-auth") || localStorage.getItem("sbs-auth")) == null)
+        return null;
+
     if (value) {
         await DoRequest({
             url: `${API_USER_VARIABLE}/${key}`,

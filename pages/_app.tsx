@@ -189,10 +189,33 @@ const App = (({
         return () => abort.abort();
     }, [query]);
 
+    const [style, setStyle] = useState<string>("");
+    const styleTag = useRef<HTMLStyleElement>(null);
+    useEffect(() => {
+        if(localStorage)
+            setStyle(localStorage.getItem("sbs-sitecss") || "");
+    }, []);
+
+    useEffect(() => {
+        Variable("SiteCSS")
+            .then(css => {
+                if(style !== css)
+                    setStyle(css || "");
+            });
+    });
+
+    useEffect(() => {
+        if(styleTag.current){
+            styleTag.current.innerHTML = style;
+            localStorage.setItem("sbs-sitecss", style || "");
+        }
+    }, [style, styleTag])
+
     const SearchTypeHref: { [i: string]: string } = {
         page: "/pages/[pid]",
         user: "/user/[uid]"
     }
+
 
     return <>
         <Head>
@@ -215,6 +238,7 @@ const App = (({
             <meta property="og:type" content="website" />
             <meta property="og:site_name" content="SmileBASIC Source" />
         </Head>
+        <style ref={styleTag} />
         <nav>
             <span id="nav-brand">
                 <Link href="/"><a><img src="/res/img/logo.svg" /></a></Link>

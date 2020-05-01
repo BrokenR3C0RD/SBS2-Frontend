@@ -107,11 +107,12 @@ nav .search-container {
 nav .search-container input {
     width: 100%;
     height: 1.5em;
+    border: 0;
     background: var(--secondary-bg);
-    border: 1px solid var(--secondary-accent);
     outline: none;
     color: var(--input-color);
     vertical-align: top;
+    border-bottom: 1px solid #333;
 }
 
 nav .search-container #results {
@@ -1032,6 +1033,10 @@ form input:not([type="checkbox"]), form button, form textarea {
 .bbcode-view img:focus {
     max-width: 100%;
 }
+
+.bbcode-view h1, .bbcode-view h2, .bbcode-view h3, .bbcode-view h4, .bbcode-view h5, .bbcode-view h6 {
+    margin: .45em 0;
+} 
 
 @font-face {
     font-family: "SMILEBASIC";

@@ -93,7 +93,7 @@ export default React.forwardRef(({
                 {isDragActive && <div className="composer-dropping">
                     <p>Drop here to upload</p>
                 </div>}
-                <textarea ref={areaRef} value={ccode} className="composer-editor" onInput={updatePreview} onKeyDown={handleKeys} autoCapitalize="off" autoComplete="off" autoCorrect="off" autoSave="off" data-enable-grammarly="false" name="composer-code" onChange={(evt) => onChange(evt.currentTarget.value, markup)}></textarea>
+                <textarea ref={areaRef} value={ccode} className="composer-editor" onInput={updatePreview} onKeyDown={handleKeys} name="composer-code" onChange={(evt) => onChange(evt.currentTarget.value, markup)}></textarea>
                 <ul className="composer-commands" onClick={(evt) => evt.currentTarget == evt.target && areaRef.current!.focus()}>
                     {cmarkup == "bbcode" && <>
                         <li><button onClick={insertTag("b")} type="button" title="Bold"><b>B</b></button></li>

@@ -136,7 +136,7 @@ export default (({
                         <button type="button" className="topbutton" onClick={() => setMinimize(!minimize)}><span className="iconify" data-icon="icomoon-free:shrink2" data-inline="true"></span></button>
                         <Comments className="discussion-comments" parent={discussion} self={self} autoScroll merge />
                         {self && discussion.Permitted(self, CRUD.Create) && (<Form onSubmit={PostComment} className="discussion-input">
-                            {!useComposer && <textarea ref={textRef} onKeyPress={handleEnter} />}
+                            {!useComposer && <textarea ref={textRef} defaultValue={commentCode} onKeyPress={handleEnter} onBlur={evt => setCommentCode(evt.currentTarget.value)} />}
                             {useComposer && <Composer hidePreview code={commentCode} markup={commentMarkup} onChange={(code, markup) => { setCommentCode(code); setCommentMarkup(markup); }} />}
                             <div className="discussion-buttons">
                                 <button type="submit"><span className="iconify" data-icon="mdi:send" data-inline="true"></span></button>

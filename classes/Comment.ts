@@ -245,8 +245,7 @@ export class Comment extends Entity {
                                 lastList = newc.slice().map((u: any) => u.userId);
                                 setList(lastList);
 
-                                newc = newc.filter((u: any) => listeners.indexOf(u.userId) === -1);
-                                if (newc.length > 0) {
+                                if (newc.length != listeners.length || newc.filter((u: any) => listeners.indexOf(u.userId) === -1)) {
                                     setListeners(newc.filter((info: any) => info.contentListenId == parent[0]!.id).map((info: any) => info.userId));
                                     let newUsers = (newc as any[])
                                         .map(listener => listener.userId as number)

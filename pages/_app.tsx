@@ -62,7 +62,6 @@ const App = (({
 
 
     async function SwitchTheme() {
-        console.log("Changing theme");
         if (user)
             await Variable("user_settings", JSON.stringify(Object.assign({}, settings, {
                 theme: localStorage.getItem("sbs-theme") === "dark" ? "light" : "dark"
@@ -237,6 +236,8 @@ const App = (({
             <meta property="og:image" content={`https://new.smilebasicsource.com/res/img/logo.svg`} />
             <meta property="og:type" content="website" />
             <meta property="og:site_name" content="SmileBASIC Source" />
+
+            <script async defer data-domain="new.smilebasicsource.com" src="http://analytics.sbapi.me/js/plausible.js"></script>
         </Head>
         <style ref={styleTag} />
         <nav>

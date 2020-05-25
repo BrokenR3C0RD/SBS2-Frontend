@@ -84,7 +84,7 @@ export default (({
                             if (c == null)
                                 return null;
 
-                            let cusers = comment.userIds.map(id => users.find(user => user.id == id)).filter(user => (user != null));
+                            let cusers = comment.userIds.map(id => users.find(user => user.id == id)).filter(user => (user != null)).slice().reverse();
                             if (cusers.length == 0)
                                 return null;
 

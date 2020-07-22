@@ -1,7 +1,7 @@
 import highlightSB from "./sbhighlight.js";
 
 parse.defoptions = (() => {
-	if (typeof document == "undefined")
+	if (!document)
 		return;
 	
 	var create = document.createElement.bind(document);
@@ -16,6 +16,9 @@ parse.defoptions = (() => {
 		},
 		parent: function (child) { // unused currently
 			return child.parent;
+		},
+		remove: function(child) {
+			child.remove();
 		},
 
 		//========================
@@ -88,6 +91,7 @@ parse.defoptions = (() => {
 		image: function (url) {
 			var node = create('img');
 			node.setAttribute('src', url);
+			node.setAttribute('tab-index', "-1");
 			return node;
 		},
 		error: function() {
@@ -106,7 +110,20 @@ export default function parse(code, options) {
 	
 	var output = options.root();
 	var curr = output;
-
+	var lastLineBreak = null;
+	var displayBlock = {
+		code: true,
+		audio: true,
+		video: true,
+		heading: true,
+		quote: true,
+		list: true,
+		item: true,
+		table: true,
+		image: true,
+	}
+	var skipNextLineBreak;
+	
 	try {
 		// this is a list of all nodes that we are currently inside
 		// as well as {}-block pseudo-nodes
@@ -117,6 +134,7 @@ export default function parse(code, options) {
 		var textBuffer = "";
 		var inside = {};
 		var startOfLine = true;
+		var leadingSpaces = 0;
 		var lastWasBlock;
 		// todo:
 		// so, the way to prevent extra linebreaks (without just ignoring them all) is
@@ -136,7 +154,7 @@ export default function parse(code, options) {
 			} else if (c == "\\") {
 				scan();
 				if (c == "\n")
-					addBlock(options.lineBreak());
+					addLineBreak();
 				else
 					addText(c);
 				scan();
@@ -145,8 +163,7 @@ export default function parse(code, options) {
 			} else if (c == "{") {
 				scan();
 				startBlock(null, {});
-				skipLinebreak();
-				startOfLine = true;
+				lineStart();
 				//=============
 				// } group end
 			} else if (c == "}") {
@@ -204,10 +221,10 @@ export default function parse(code, options) {
 				while (c == " ")
 					scan();
 				startBlock('quote', {}, name);
-				skipLinebreak();
 				//==============
 				// -... list/hr
 			} else if (c == "-" && startOfLine) {
+				console.log("SP:",leadingSpaces)
 				scan();
 				//----------
 				// --... hr
@@ -221,7 +238,6 @@ export default function parse(code, options) {
 					//-------------
 					// ---<EOL> hr
 					if (c == "\n" || !c) { //this is kind of bad
-						skipLinebreak();
 						addBlock(options.line());
 						//----------
 						// ---... normal text
@@ -232,15 +248,10 @@ export default function parse(code, options) {
 					// - ... list
 				} else if (c == " ") {
 					scan();
-					startBlock('list', {level:0});
-					startBlock('item', {level:0});
-					// hmm...
-					// it's strange to think that
-					// people will be reading this
-					// after I'm dead
-					//...
-					//---------------
-					// - normal char
+					startBlock('list', {level:leadingSpaces});
+					startBlock('item', {level:leadingSpaces});
+				//---------------
+				// - normal char
 				} else {
 					addText("-");
 				}
@@ -272,7 +283,6 @@ export default function parse(code, options) {
 					}
 					if (c == "[") {
 						scan();
-						skipLinebreak();
 						stack.top().inBrackets = true;
 					} else {
 						addText(url);
@@ -295,7 +305,8 @@ export default function parse(code, options) {
 					var row = top.row;
 					var table = top.row.table;
 					scan();
-					skipLinebreak();
+					if (c=="\n")
+						scan();
 					//--------------
 					// | | next row
 					if (c == "|") {
@@ -313,7 +324,6 @@ export default function parse(code, options) {
 							row.header = false;
 						}
 						startBlock('cell', {row:row}, row.header);
-						skipLinebreak();
 						//--------------------------
 						// | next cell or table end
 					} else {
@@ -327,7 +337,8 @@ export default function parse(code, options) {
 								endBlock();
 							if (top_is('table')) //always
 								endBlock();
-							skipLinebreak();
+							else
+								console.log("OH SHIT");
 						} else { // next cell
 							endBlock();
 							startBlock('cell', {row:row}, row.header);
@@ -408,7 +419,6 @@ export default function parse(code, options) {
 							i = code.length;
 							scan();
 						}
-						skipLinebreak();
 						//------------
 						// `` invalid
 					} else {
@@ -430,9 +440,12 @@ export default function parse(code, options) {
 		try {
 			flushText();
 			closeAll(true);
+			console.log(e);
 			addBlock(options.error());
+
 			addText(code.substr(i));
 			flushText();
+
 			return output;
 		} catch (e) {
 			alert("Fatal parse error at: "+i);
@@ -441,11 +454,6 @@ export default function parse(code, options) {
 	
 	// ######################
 	
-	function skipLinebreak() {
-		if (c == "\n")
-			scan();
-	}
-
 	// ew regex
 	function isUrlChar(c) {
 		return c && (/[-\w\$\.+!*'(),;/\?:@=&#%]/).test(c);
@@ -462,19 +470,6 @@ export default function parse(code, options) {
 			if (!force && top.type == null) {
 				endBlock();
 				break;
-			}
-			// hm maybe have a way to define actions on block close...
-			// nah
-			// TODO: add other block-type elements here
-			// maybe just have a list of which elements are blocks somewhere
-			// actually this is kind of weird
-			// basically it's to fix uh
-			// {| dumb small table}<linebreak>
-			// idk...
-			// oh and also this should always only skip ONE line break
-			// so probably have an 'eat' flag like before
-			if (top.type == 'table') {
-				skipLinebreak();
 			}
 			endBlock();
 		}
@@ -496,6 +491,7 @@ export default function parse(code, options) {
 					indent++;
 					scan();
 				}
+				console.log(indent);
 				// OPTION 1:
 				// no next item; end list
 				if (c != "-") {
@@ -509,6 +505,7 @@ export default function parse(code, options) {
 						scan();
 					// OPTION 2:
 					// next item has same indent level; add item to list
+					console.log(top.level);
 					if (indent == top.level) {
 						startBlock('item', {level: indent});
 						// OPTION 3:
@@ -550,7 +547,7 @@ export default function parse(code, options) {
 				}
 			} else {
 				if (!eat)
-					addBlock(options.lineBreak());
+					addLineBreak();
 				break;
 			}
 		}
@@ -593,12 +590,19 @@ export default function parse(code, options) {
 	function char_in(chr, list) {
 		return chr && list.indexOf(chr) != -1;
 	}
+
+	function lineStart() {
+		startOfLine = true;
+		leadingSpaces = 0;
+	}
 	
 	function scan() {
 		if (c == "\n" || !c)
-			startOfLine = true;
+			lineStart();
 		else if (c != " ")
 			startOfLine = false;
+		else if (startOfLine)
+			leadingSpaces++;
 		i++;
 		c = code.charAt(i);
 	}
@@ -621,6 +625,12 @@ export default function parse(code, options) {
 	}
 	
 	function startBlock(type, data, arg) {
+		if (displayBlock[type]) {
+			if (lastLineBreak) {
+				options.remove(lastLineBreak);
+			}
+			skipNextLineBreak = true;
+		}
 		data.type = type;
 		if (type) {
 			data.node = options[type](arg);
@@ -637,8 +647,14 @@ export default function parse(code, options) {
 		options.append(curr, node);
 	}
 	function addText(text) {
-		if (text)
+		if (text) {
 			textBuffer += text;
+			lastLineBreak = null;
+			if (skipNextLineBreak) {
+				console.log("clearing SNLB because text found: "+text);
+				skipNextLineBreak = false;
+			}
+		}
 	}
 	function flushText() {
 		if (textBuffer) {
@@ -646,9 +662,23 @@ export default function parse(code, options) {
 			textBuffer = ""
 		}
 	}
+	function addLineBreak() {
+		if (skipNextLineBreak) {
+			console.log("clearing SNLB because linebreak found");
+			skipNextLineBreak = false;
+		} else {
+			flushText();
+			lastLineBreak = options.lineBreak();
+			addBlock(lastLineBreak);
+		}
+	}
 	function endBlock() {
 		flushText();
-		stack.pop();
+		var node = stack.pop();
+		if (displayBlock[node.type]) {
+			console.log("setting SNLB flag because of node:"+node.type);
+			skipNextLineBreak = true;
+		}
 		var i=stack.length-1;
 		// this skips {} fake nodes
 		// it will always find at least the root <div> element I hope
